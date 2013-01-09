@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "œyÔ‡"
+title: "test"
 date: 2013-01-09 21:12
 comments: true
-categories: AndroidŒWÁ•
+categories: Android
 ---
+test
