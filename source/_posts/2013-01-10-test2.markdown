@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "test2"
+title: "æ±‰å­—æµ‹è¯•"
 date: 2013-01-10 10:27
 comments: true
-categories: 
+categories: android
 ---
-ºº×Ö²âÊÔ123
+æ±‰å­—æµ‹è¯•
