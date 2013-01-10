@@ -5,4 +5,20 @@ date: 2013-01-10 10:27
 comments: true
 categories: android
 ---
-汉字测试
+样式测试
+{% codeblock lang:java %}
+public class Count {
+　　int count;
+　　public Count(){
+　　　　count = 0;
+　　}
+　　public Count (int number){
+　　　　count = number;
+　　}
+}
+{% endcodeblock %}
+{% blockquote %}
+<b>加粗测试</b>
+Last night I lay in bed looking up at the stars in the sky and I thought to myself, where the heck is the ceiling.
+{% endblockquote %}
+<b>加粗测试</b>
