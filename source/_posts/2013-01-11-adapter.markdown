@@ -1,0 +1,44 @@
+---
+layout: post
+title: "adapter"
+date: 2013-01-11 10:27
+comments: true
+categories: android
+---
+<p id="article">Android Adapter 是将数据绑定到UI 界面上的桥接类。 Adapter负责创建和显示每个项目的子View和提供对下层数据的访问。支持Adapter绑定的UI控件必须扩展Adapter View抽象类。创建自己的继承自AdapterView的控件和创建新的Adapter类来绑定它们是可能的。</p>
+{% img http://img14.poco.cn/mypoco/myphoto/20130111/09/430947902013011109012106.png 610 %}
+{% img http://img14.poco.cn/mypoco/myphoto/20130111/09/4309479020130111090229016.jpg 610 %}
+<h2>ListView和ListAdapter</h2><p class="laiyuan">[转载]<a href="http://blog.sina.com.cn/s/blog_7db304660100x2f0.html">文章出处</a></p>
+{% codeblock lang:java %}
+//新建一个ListView,也就是新建一个列表，在新建一个组件是会将一个Content传递给构造函数
+listView = new ListView(this); 
+// 将ListView和ArrayAdapter进行绑定，listview会把ArrayAdapter里面的数据显示出来
+// ArrayAdapter的第一个参数是Context，即上下文的引用
+// 第二个参数为一个在R文件里定义的Layout，不过是系统的R文件
+// simple_list_item_single_choice表明ListView里边的每一项都只有一个TextView
+// 第三个参数为一个数组
+listView.setAdapter(new ArrayAdapter<String>(this,
+android.R.layout.simple_list_item_single_choice, data)); 
+listView.setItemsCanFocus(true);
+listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+// 将listView内容直接进行显示
+setContentView(listView);
+{% endcodeblock %}
+<h3>什么是ListAdapter?</h3>
+<p class="para">ListAdapter继承于Adapter，它是ListView和其里面数据的适配器。也就是要让一个ListView显示出来需要三个东西：</p>
+<ol>
+	<li>ListView (需要被显示的列表)。</li>
+	<li>Data, 和ListView绑定的数据，一般是一个Cursor或者一个字符串数组。</li>
+	<li>ListAdapter,是data和ListView的桥梁，起一个适配器的作用。</li>
+</ol>
+<h3>什么是ArrayAdapter?</h3>
+<p class="para">ArrayAdapter是ListAdapter的一个直接子类，意思是数组适配器。</p>
+<p class="para">它的作用就是一个数组和ListView之间的桥梁。它将数组里定义的数据一一对应的显示在ListView里，通常有ArrayAdapter进行适配的ListView每一项通常只有一个TextView，而TextView里面显示的内容就是数组里面的对象调用toString()方法后生成的字符串。</p>
+<h3>SimpleAdapter</h3>
+<p class="para">SimpleAdapter也是ListAdapter的直接子类。通过SimpleAdapter可以让ListView当中的每一项里边的内容更加个性化。通常将ListView中某项的布局信息写在一个xml的布局文件当中。这个布局文件通过R.layout.file获得。</p>
+<p class="para">ArrayAdapter的作用是数组和ListView间的桥梁；而SimpleAdapter的作用是ArrayList和ListView间的桥梁。</p>
+<p class="para">注意，这个ArrayList里面的每一项都是一个Map<String,?>类型。ArrayList当中的每一项Map对象都和ListView当中的一项进行数据绑定和一一对应。</p>
+<h3>Android系统默认的布局方式</h3>
+<p class="para">Android.R.layout_simple_list_item_1, 每一项只有一个TextView.</p>
+<p class="para">Android.R.layout_simple_list_item_2, 每一项只有两个TextView.</p>
+<p class="para">Android.R.layout_simple_list_item_single_choice, 每一项有一个TextView，但是这一项可以被选择。</p>

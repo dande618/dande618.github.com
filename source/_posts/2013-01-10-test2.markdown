@@ -1,11 +1,12 @@
 ---
 layout: post
-title: "汉字测试"
+title: "汉字测试123"
 date: 2013-01-10 10:27
 comments: true
 categories: android
 ---
-样式测试
+<embed src="http://www.xiami.com/widget/0_1769657875/singlePlayer.swf" type="application/x-shockwave-flash" width="257" height="33" wmode="transparent"></embed>
+<p id="article">首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试</p>
 {% codeblock lang:java %}
 public class Count {
 　　int count;
@@ -18,7 +19,16 @@ public class Count {
 }
 {% endcodeblock %}
 {% blockquote %}
-<b>加粗测试</b>
+<strong>加粗测试</strong>
 Last night I lay in bed looking up at the stars in the sky and I thought to myself, where the heck is the ceiling.
 {% endblockquote %}
-<b>加粗测试</b>
+<strong>加粗测试</strong>
+<em>斜体测试</em>
+
+<h1>标题1</h1>
+<h2>标题2</h2>
+<h3>标题3</h3>
+<p class="para">正文</p>
+<h4>标题4</h4>
+<h5>标题5</h5>
+<h6>标题6</h6>
