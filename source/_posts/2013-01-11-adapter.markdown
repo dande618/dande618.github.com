@@ -1,11 +1,12 @@
 ---
 layout: post
-title: "adapter"
+title: "SimpleAdapter"
 date: 2013-01-11 10:27
 comments: true
 categories: android
 ---
 <p id="article">Android Adapter 是将数据绑定到UI 界面上的桥接类。 Adapter负责创建和显示每个项目的子View和提供对下层数据的访问。支持Adapter绑定的UI控件必须扩展Adapter View抽象类。创建自己的继承自AdapterView的控件和创建新的Adapter类来绑定它们是可能的。</p>
+<!-- more -->
 {% img http://img14.poco.cn/mypoco/myphoto/20130111/09/430947902013011109012106.png 610 %}
 {% img http://img14.poco.cn/mypoco/myphoto/20130111/09/4309479020130111090229016.jpg 610 %}
 <h2>ListView和ListAdapter</h2><p class="laiyuan">[转载]<a href="http://blog.sina.com.cn/s/blog_7db304660100x2f0.html">文章出处</a></p>
