@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-01-28T21:50:13+08:00</updated>
+  <updated>2013-01-28T22:02:26+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[认识Handler]]></title>
+    <link href="http://dande618.github.com/blog/2013/01/28/handler/"/>
+    <updated>2013-01-28T11:36:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/01/28/handler</id>
+    <content type="html"><![CDATA[<p>主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
+主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
+
+<!-- more -->
+
+
+<p>Handler类的主要作用有两个：</p>
+
+<ul>
+    <li>在新启动的线程中发送消息。</li>
+    <li>在主线程中获取、处理消息。</li>
+</ul>
+
+
+<p>通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[事件处理]]></title>
@@ -79,29 +102,6 @@
     <li>boolean onTrackballEvent(MotionEvent event)</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[认识Handler]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/26/handler/"/>
-    <updated>2013-01-26T10:27:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/26/handler</id>
-    <content type="html"><![CDATA[<p>主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
-主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
-
-<!-- more -->
-
-
-<p>Handler类的主要作用有两个：</p>
-
-<ul>
-    <li>在新启动的线程中发送消息。</li>
-    <li>在主线程中获取、处理消息。</li>
-</ul>
-
-
-<p>通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
 ]]></content>
   </entry>
   
