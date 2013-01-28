@@ -4,11 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-<<<<<<< HEAD
-  <updated>2013-01-28T21:39:06+08:00</updated>
-=======
-  <updated>2013-01-19T16:57:36+08:00</updated>
->>>>>>> 04de0f7ec11424781ed6324e3b2c0e5eb9a6bca8
+  <updated>2013-01-28T21:50:13+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -18,7 +14,6 @@
 
   
   <entry>
-<<<<<<< HEAD
     <title type="html"><![CDATA[事件处理]]></title>
     <link href="http://dande618.github.com/blog/2013/01/26/listener/"/>
     <updated>2013-01-26T10:27:00+08:00</updated>
@@ -111,8 +106,6 @@
   </entry>
   
   <entry>
-=======
->>>>>>> 04de0f7ec11424781ed6324e3b2c0e5eb9a6bca8
     <title type="html"><![CDATA[SimpleAdapter]]></title>
     <link href="http://dande618.github.com/blog/2013/01/11/adapter/"/>
     <updated>2013-01-11T10:27:00+08:00</updated>
