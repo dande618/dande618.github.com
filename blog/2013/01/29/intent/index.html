@@ -5,14 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>修改代码时git的操作流程 - 初心</title>
+  <title>认识Intent - 初心</title>
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="[转载]　文章出处 修改任何代码前，请创建一个新的branch
-git checkout -b &lt;branch_name&gt; 执行完上述命令后会自动切换到&lt;branch_name&gt;分支，现在你就可以开始开发了。开发期间，你可能会多次执行
-git add .
-git &hellip;">
+  <meta name="description" content="Intent：意图 当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。 Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +18,7 @@ git &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://dande618.github.com/blog/2012/12/13/github/">
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/01/29/intent/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -68,7 +65,7 @@ git &hellip;">
   
   <header>
     
-      <h1 class="entry-title">修改代码时git的操作流程</h1>
+      <h1 class="entry-title">认识Intent</h1>
     
     
       <p class="meta">
@@ -84,47 +81,26 @@ git &hellip;">
   
 
 
-<time datetime="2012-12-13T16:50:00+08:00" pubdate data-updated="true">Dec 13<span>th</span>, 2012</time>
+<time datetime="2013-01-29T20:29:00+08:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><!-- more -->
+<div class="entry-content"><p class="para">Intent：意图</p>
 
 
-<p class="laiyuan">[转载]　<a href="http://yuanhsh.iteye.com/blog/987705">文章出处</a></p>
+<p class="para">当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
 
 
-<ol>
-<li>修改任何代码前，请创建一个新的branch
-<pre class="wiki">git checkout -b &lt;branch_name&gt;
-</pre>
-</li>
-<li>执行完上述命令后会自动切换到&lt;branch_name&gt;分支，现在你就可以开始开发了。开发期间，你可能会多次执行
-<pre class="wiki">git add .
-git commit -m ""
-</pre>
-</li>
-<li>当你开发完毕，需要合并到master上时
-<pre class="wiki">git checkout master    #先切换回master
-git pull                       #这里不可能有任何冲突，因为master是不会本地修改的
-git checkout &lt;branch_name&gt;  #切换回开发分支
-git rebase master       #这时候可能会产生冲突，哪些文件冲突了，反馈信息里有明确显示
-如果发生了冲突：
-首先，编辑修复所有冲突的代码。然后：
-git add .
-git rebase --continue
+<!-- more -->
 
-git checkout master   
-git merge &lt;branch_name&gt;
-git push                    #其实这个时候还是有可能有冲突
-git pull --rebase
-接着与上面处理冲突的方法一致</pre>
-</li>
-</ol>
 
+<p class="para">Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此，Intent还是应用程序组件之间通讯的重要媒介。两个Activity可以把需要交换的数据封装成Bundle对象，然后使用Intent来携带Bundle对象，这样就实现了两个Activity之间的数据交换。</p>
+
+
+<p>Android的应用程序包含三种重要的组件：Activity、Service、BroadcastReceiver，应用程序采用了一致的方式来启动他们——都是依靠Intent来进行启动的，Intent就封装了程序想要启动程序的意图，不仅如此，Intent还可用于与被启动组件交换信息。</p>
 </div>
 
 
@@ -147,12 +123,12 @@ git pull --rebase
   
 
 
-<time datetime="2012-12-13T16:50:00+08:00" pubdate data-updated="true">Dec 13<span>th</span>, 2012</time>
+<time datetime="2013-01-29T20:29:00+08:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/github/'>github</a>
+    <a class='category' href='/blog/categories/android/'>android</a>
   
 </span>
 
@@ -161,7 +137,7 @@ git pull --rebase
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dande618.github.com/blog/2012/12/13/github/" data-via="" data-counturl="http://dande618.github.com/blog/2012/12/13/github/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dande618.github.com/blog/2013/01/29/intent/" data-via="" data-counturl="http://dande618.github.com/blog/2013/01/29/intent/" >Tweet</a>
   
   
   
@@ -170,10 +146,8 @@ git pull --rebase
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/09/10/test2/" title="Previous Post: 汉字测试123">&laquo; 汉字测试123</a>
+        <a class="basic-alignment left" href="/blog/2013/01/29/Bundle/" title="Previous Post: 认识Bundle">&laquo; 认识Bundle</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/12/13/name/" title="Next Post: ANDROID命名规范">ANDROID命名规范 &raquo;</a>
       
     </p>
   </footer>

@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-01-29T19:08:55+08:00</updated>
+  <updated>2013-01-29T20:40:02+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,27 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[认识Intent]]></title>
+    <link href="http://dande618.github.com/blog/2013/01/29/intent/"/>
+    <updated>2013-01-29T20:29:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/01/29/intent</id>
+    <content type="html"><![CDATA[<p class="para">Intent：意图</p>
+
+
+<p class="para">当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
+
+
+<!-- more -->
+
+
+<p class="para">Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此，Intent还是应用程序组件之间通讯的重要媒介。两个Activity可以把需要交换的数据封装成Bundle对象，然后使用Intent来携带Bundle对象，这样就实现了两个Activity之间的数据交换。</p>
+
+
+<p>Android的应用程序包含三种重要的组件：Activity、Service、BroadcastReceiver，应用程序采用了一致的方式来启动他们——都是依靠Intent来进行启动的，Intent就封装了程序想要启动程序的意图，不仅如此，Intent还可用于与被启动组件交换信息。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[认识Bundle]]></title>
