@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ANDROID命名规范 - 初心</title>
+  <title>认识Handler - 初心</title>
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="要时刻注意代码的规范性和可读性。 类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class 成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 &hellip;">
+  <meta name="description" content="主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
+主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。 Handler类的主要作用有两个： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://dande618.github.com/blog/2012/12/13/name/">
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/01/28/handler/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -65,7 +66,7 @@
   
   <header>
     
-      <h1 class="entry-title">ANDROID命名规范</h1>
+      <h1 class="entry-title">认识Handler</h1>
     
     
       <p class="meta">
@@ -81,102 +82,28 @@
   
 
 
-<time datetime="2012-12-13T16:51:00+08:00" pubdate data-updated="true">Dec 13<span>th</span>, 2012</time>
+<time datetime="2013-01-28T11:36:00+08:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>要时刻注意代码的规范性和可读性。</p>
+<div class="entry-content"><p>主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
+主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
 
 <!-- more -->
 
 
+<p>Handler类的主要作用有两个：</p>
+
 <ul>
-    <li>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</li>
-    <li>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li>
-    <li>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li>
-    <li>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li>
+    <li>在新启动的线程中发送消息。</li>
+    <li>在主线程中获取、处理消息。</li>
 </ul>
 
 
-<p><a href=" http://source.android.com/source/code-style.html">android code style</a></p>
-
-<br/>
-
-
-<h2>Android命名规范</h2>
-
-
-<p class="laiyuan">[转载]<a href="http://www.cnblogs.com/xiongbo/archive/2011/08/15/2098130.html">文章出处</a></p>
-
-
-<h3>1.java代码中不出现中文，最多注释中可以出现中文</h3>
-
-
-<h3>2.局部变量命名、静态成员变量命名</h3>
-
-
-<p class="para">只能包含字母，单词首字母出第一个外，都为大写，其他字母都为小写</p>
-
-
-<h3>3.常量命名</h3>
-
-
-<p class="para">只能包含字母和_，字母全部大写，单词之间用_隔开</p>
-
-
-<h3>4.layout中的id命名</h3>
-
-
-<p class="para">命名模式为：view缩写_模块名称_view的逻辑名称</p>
-
-
-<p class="para">view的缩写详情如下</p>
-
-
-<p class="para">LayoutView：lv</p>
-
-
-<p class="para">RelativeView:rv</p>
-
-
-<p class="para">TextView:tv</p>
-
-
-<p class="para">ImageView:iv</p>
-
-
-<p class="para">ImageButton:im</p>
-
-
-<p class="para">Button:btn</p>
-
-
-<h3>5.activity中的view变量命名</h3>
-
-
-<p class="para">命名模式为：逻辑名称+view缩写</p>
-
-
-<p class="para">建议：如果layout文件很复杂，建议将layout分成多个模块，每个模块定义一个moduleViewHolder，其成员变量包含所属view</p>
-
-
-<h3>6.strings.xml中的id命名</h3>
-
-
-<p class="para">命名模式：activity名称_功能模块名称_逻辑名称/activity名称_逻辑名称/common_逻辑名称</p>
-
-
-<p class="para">strings.xml中，使用activity名称注释，将文件内容区分开来</p>
-
-
-<h3>7.drawable中的图片命名</h3>
-
-
-<p class="para">命名模式：activity名称_逻辑名称/common_逻辑名称</p>
-
+<p>通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
 </div>
 
 
@@ -199,7 +126,7 @@
   
 
 
-<time datetime="2012-12-13T16:51:00+08:00" pubdate data-updated="true">Dec 13<span>th</span>, 2012</time>
+<time datetime="2013-01-28T11:36:00+08:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -213,7 +140,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dande618.github.com/blog/2012/12/13/name/" data-via="" data-counturl="http://dande618.github.com/blog/2012/12/13/name/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dande618.github.com/blog/2013/01/28/handler/" data-via="" data-counturl="http://dande618.github.com/blog/2013/01/28/handler/" >Tweet</a>
   
   
   
@@ -222,10 +149,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/12/13/github/" title="Previous Post: 修改代码时git的操作流程">&laquo; 修改代码时git的操作流程</a>
+        <a class="basic-alignment left" href="/blog/2013/01/26/listener/" title="Previous Post: 事件处理">&laquo; 事件处理</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/12/14/object/" title="Next Post: 面向对象基本概念（一）">面向对象基本概念（一） &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2013/01/29/Bundle/" title="Next Post: 认识Bundle">认识Bundle &raquo;</a>
       
     </p>
   </footer>

@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-01-28T21:50:13+08:00</updated>
+  <updated>2013-01-29T18:49:47+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[认识Bundle]]></title>
+    <link href="http://dande618.github.com/blog/2013/01/29/Bundle/"/>
+    <updated>2013-01-29T15:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/01/29/Bundle</id>
+    <content type="html"><![CDATA[<p>用于不同Activity之间的数据传递</p>
+
+<!-- more -->
+
+
+<h2>重要方法</h2>
+
+
+<p>clear()：清除此Bundle映射中的所有保存的数据。
+clone()：克隆当前Bundle
+containsKey(String key)：返回指定key的值
+getString(String key)：返回指定key的字符
+hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符
+isEmpty()：如果这个捆绑映射为空，则返回true
+putString(String key, String value):插入一个给定key的字符串值
+readFromParcel(Parcel parcel)：读取这个parcel的内容
+remove(String key)：移除指定key的值
+writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
+
+<h2>Android Bundle类</h2>
+
+
+<p></p>
+
+<p class="laiyuan">[转载]　<a href="http://blog.csdn.net/randyjiawenjie/article/details/6651437">文章出处</a></p>
+
+
+<p>根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）
+Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”
+类继承关系：
+java.lang.Object
+android.os.Bundle
+Bundle类是一个final类：
+public final class
+Bundle
+extends Objectimplements Parcelable Cloneable
+两个activity之间的通讯可以通过bundle类来实现，做法就是：
+（1）新建一个bundle类
+[java] view plaincopy</p>
+
+<pre><code>Bundle mBundle = new Bundle();   
+</code></pre>
+
+<p>（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
+[java] view plaincopy</p>
+
+<pre><code>mBundle.putString("Data", "data from TestBundle");  
+</code></pre>
+
+<p>(3)新建一个intent对象，并将该bundle加入这个intent对象
+[cpp] view plaincopy</p>
+
+<pre><code>Intent intent = new Intent();    
+intent.setClass(TestBundle.this, Target.class);    
+intent.putExtras(mBundle);  
+</code></pre>
+
+<p>完整代码见原文</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[认识Handler]]></title>
+    <link href="http://dande618.github.com/blog/2013/01/28/handler/"/>
+    <updated>2013-01-28T11:36:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/01/28/handler</id>
+    <content type="html"><![CDATA[<p>主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
+主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
+
+<!-- more -->
+
+
+<p>Handler类的主要作用有两个：</p>
+
+<ul>
+    <li>在新启动的线程中发送消息。</li>
+    <li>在主线程中获取、处理消息。</li>
+</ul>
+
+
+<p>通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[事件处理]]></title>
@@ -79,29 +168,6 @@
     <li>boolean onTrackballEvent(MotionEvent event)</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[认识Handler]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/26/handler/"/>
-    <updated>2013-01-26T10:27:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/26/handler</id>
-    <content type="html"><![CDATA[<p>主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
-主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
-
-<!-- more -->
-
-
-<p>Handler类的主要作用有两个：</p>
-
-<ul>
-    <li>在新启动的线程中发送消息。</li>
-    <li>在主线程中获取、处理消息。</li>
-</ul>
-
-
-<p>通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
 ]]></content>
   </entry>
   

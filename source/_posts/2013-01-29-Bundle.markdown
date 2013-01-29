@@ -1,0 +1,44 @@
+---
+layout: post
+title: "认识Bundle"
+date: 2013-01-29 15:22
+comments: true
+categories: android
+---
+用于不同Activity之间的数据传递
+<!-- more -->
+<h2>重要方法</h2>
+clear()：清除此Bundle映射中的所有保存的数据。
+clone()：克隆当前Bundle
+containsKey(String key)：返回指定key的值
+getString(String key)：返回指定key的字符
+hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符
+isEmpty()：如果这个捆绑映射为空，则返回true
+putString(String key, String value):插入一个给定key的字符串值
+readFromParcel(Parcel parcel)：读取这个parcel的内容
+remove(String key)：移除指定key的值
+writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容
+<h2>Android Bundle类</h2> 
+<p class="laiyuan">[转载]　<a href="http://blog.csdn.net/randyjiawenjie/article/details/6651437">文章出处</a></p>
+根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）
+Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”
+类继承关系：
+java.lang.Object
+android.os.Bundle
+Bundle类是一个final类：
+public final class
+Bundle
+extends Objectimplements Parcelable Cloneable
+两个activity之间的通讯可以通过bundle类来实现，做法就是：
+（1）新建一个bundle类
+[java] view plaincopy
+    Bundle mBundle = new Bundle();   
+（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
+[java] view plaincopy
+    mBundle.putString("Data", "data from TestBundle");  
+(3)新建一个intent对象，并将该bundle加入这个intent对象
+[cpp] view plaincopy
+    Intent intent = new Intent();    
+    intent.setClass(TestBundle.this, Target.class);    
+    intent.putExtras(mBundle);  
+完整代码见原文

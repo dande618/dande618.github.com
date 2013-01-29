@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "认识Handler"
-date: 2013-01-26 10:27
+date: 2013-01-28 11:36
 comments: true
 categories: android
 ---
