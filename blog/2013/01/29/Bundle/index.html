@@ -171,18 +171,14 @@
 
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span><span class="o">;</span>
-</span><span class='line'><span class="n">Bundle</span> <span class="n">mBundle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">mBundle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span><span class="o">;</span>
-</span><span class='line'><span class="n">mBundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;Data&quot;</span><span class="o">,</span> <span class="s">&quot;data from TestBundle&quot;</span><span class="o">);</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mBundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;Data&quot;</span><span class="o">,</span> <span class="s">&quot;data from TestBundle&quot;</span><span class="o">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -191,9 +187,7 @@
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span><span class="o">;</span>
-</span><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
 </span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">TestBundle</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">Target</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 </span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">mBundle</span><span class="o">);</span>
 </span></code></pre></td></tr></table></div></figure>
