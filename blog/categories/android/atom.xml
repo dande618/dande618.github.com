@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-01-29T19:01:18+08:00</updated>
+  <updated>2013-01-29T19:06:11+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -18,7 +18,8 @@
     <link href="http://dande618.github.com/blog/2013/01/29/Bundle/"/>
     <updated>2013-01-29T15:22:00+08:00</updated>
     <id>http://dande618.github.com/blog/2013/01/29/Bundle</id>
-    <content type="html"><![CDATA[<p>用于不同Activity之间的数据传递</p>
+    <content type="html"><![CDATA[<p class="para">用于不同Activity之间的数据传递</p>
+
 
 <!-- more -->
 
@@ -97,23 +98,30 @@
 <p class="para">（1）新建一个bundle类</p>
 
 
-<p>{% codeblock lang:java %}
-view plaincopy
-Bundle mBundle = new Bundle();
-{% endcodeblock %} <br/>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span><span class="o">;</span>
+</span><span class='line'><span class="n">Bundle</span> <span class="n">mBundle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 （2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
-{% codeblock lang:java %}
-view plaincopy;
-mBundle.putString("Data", "data from TestBundle");
-{% endcodeblock %}
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span><span class="o">;</span>
+</span><span class='line'><span class="n">mBundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;Data&quot;</span><span class="o">,</span> <span class="s">&quot;data from TestBundle&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 (3)新建一个intent对象，并将该bundle加入这个intent对象
-{% codeblock lang:java %}
-view plaincopy;
-Intent intent = new Intent();  <br/>
-intent.setClass(TestBundle.this, Target.class);  <br/>
-intent.putExtras(mBundle);
-{% endcodeblock %}<br/>
-完整代码见原文</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span><span class="o">;</span>
+</span><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">TestBundle</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">Target</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">mBundle</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p class="para">完整代码见原文</p>
+
 ]]></content>
   </entry>
   
@@ -220,8 +228,8 @@ intent.putExtras(mBundle);
 <!-- more -->
 
 
-<p>{% img http://img14.poco.cn/mypoco/myphoto/20130111/09/430947902013011109012106.png 610 %}
-{% img http://img14.poco.cn/mypoco/myphoto/20130111/09/4309479020130111090229016.jpg 610 %}</p>
+<p><img src="http://img14.poco.cn/mypoco/myphoto/20130111/09/430947902013011109012106.png" width="610">
+<img src="http://img14.poco.cn/mypoco/myphoto/20130111/09/4309479020130111090229016.jpg" width="610"></p>
 
 <h2>ListView和ListAdapter</h2>
 
@@ -229,21 +237,33 @@ intent.putExtras(mBundle);
 <p class="laiyuan">[转载]<a href="http://blog.sina.com.cn/s/blog_7db304660100x2f0.html">文章出处</a></p>
 
 
-<p>{% codeblock lang:java %}
-//新建一个ListView,也就是新建一个列表，在新建一个组件是会将一个Content传递给构造函数
-listView = new ListView(this);
-// 将ListView和ArrayAdapter进行绑定，listview会把ArrayAdapter里面的数据显示出来
-// ArrayAdapter的第一个参数是Context，即上下文的引用
-// 第二个参数为一个在R文件里定义的Layout，不过是系统的R文件
-// simple_list_item_single_choice表明ListView里边的每一项都只有一个TextView
-// 第三个参数为一个数组
-listView.setAdapter(new ArrayAdapter<String>(this,
-android.R.layout.simple_list_item_single_choice, data));
-listView.setItemsCanFocus(true);
-listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-// 将listView内容直接进行显示
-setContentView(listView);
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//新建一个ListView,也就是新建一个列表，在新建一个组件是会将一个Content传递给构造函数</span>
+</span><span class='line'><span class="n">listView</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListView</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="c1">// 将ListView和ArrayAdapter进行绑定，listview会把ArrayAdapter里面的数据显示出来</span>
+</span><span class='line'><span class="c1">// ArrayAdapter的第一个参数是Context，即上下文的引用</span>
+</span><span class='line'><span class="c1">// 第二个参数为一个在R文件里定义的Layout，不过是系统的R文件</span>
+</span><span class='line'><span class="c1">// simple_list_item_single_choice表明ListView里边的每一项都只有一个TextView</span>
+</span><span class='line'><span class="c1">// 第三个参数为一个数组</span>
+</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayAdapter</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span>
+</span><span class='line'><span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">simple_list_item_single_choice</span><span class="o">,</span> <span class="n">data</span><span class="o">));</span>
+</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setItemsCanFocus</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setChoiceMode</span><span class="o">(</span><span class="n">ListView</span><span class="o">.</span><span class="na">CHOICE_MODE_MULTIPLE</span><span class="o">);</span>
+</span><span class='line'><span class="c1">// 将listView内容直接进行显示</span>
+</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">listView</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h3>什么是ListAdapter?</h3>
 
