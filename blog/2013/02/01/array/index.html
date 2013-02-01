@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java数组 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="Java数组声明、创建、初始化 [转载]　文章出处 一维数组的声明方式： type var[]; 或type[] var; 声明数组时不能指定其长度（数组中元素的个数）。 Java中使用关键字new创建数组对象，格式为： 数组名 = new 数组元素的类型 [数组元素的个数] TestNew. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/02/01/array/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java数组</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-01T20:29:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Java数组声明、创建、初始化</h2>
+
+
+<p class="laiyuan">[转载]　<a href="http://developer.51cto.com/art/200906/128274.htm">文章出处</a></p>
+
+
+<!-- more -->
+
+
+<p>一维数组的声明方式：</p>
+
+<p class="para">type var[]; 或type[] var;</p>
+
+
+<p class="para">声明数组时不能指定其长度（数组中元素的个数）。</p>
+
+
+<p class="para">Java中使用关键字new创建数组对象，格式为：</p>
+
+
+<p class="para">数组名 = new 数组元素的类型 [数组元素的个数]</p>
+
+
+<p>TestNew.java：
+程序代码：</p>
+
+<pre><code>public class TestNew  
+{  
+     public static void main(String args[]) {  
+         int[] s ;  
+         int i ;  
+         s = new int[5] ;  
+         for(i = 0 ; i &lt; 5 ; i++) {  
+             s[i] = i ;  
+         }  
+         for(i = 4 ; i &gt;= 0 ; i--) {  
+             System.out.println("" + s[i]) ;  
+         }  
+     }   
+} 
+</code></pre>
+
+<h3>初始化：</h3>
+
+
+<ol>
+    <li>1.动态初始化：数组定义与为数组分配空间和赋值的操作分开进行；</li>
+    <li>2.静态初始化：在定义数字的同时就为数组元素分配空间并赋值；</li>
+    <li>3.默认初始化：数组是引用类型，它的元素相当于类的成员变量，因此数组分配空间后，每个元素也被按照成员变量的规则被隐士初始化。</li>
+</ol>
+
+
+
+
+<h3>TestD.java(动态)：</h3>
+
+
+<p>程序代码：</p>
+
+<pre><code>public class TestD  
+{  
+     public static void main(String args[]) {  
+         int a[] ;  
+         a = new int[3] ;  
+         a[0] = 0 ;  
+         a[1] = 1 ;  
+         a[2] = 2 ;  
+         Date days[] ;  
+         days = new Date[3] ;  
+         days[0] = new Date(2008,4,5) ;  
+         days[1] = new Date(2008,2,31) ;  
+         days[2] = new Date(2008,4,4) ;  
+     }  
+}  
+
+class Date  
+{  
+     int year,month,day ;  
+     Date(int year ,int month ,int day) {  
+         this.year = year ;  
+         this.month = month ;  
+         this.day = day ;  
+     }  
+}  
+</code></pre>
+
+<h3>TestS.java(静态)：</h3>
+
+
+<p>程序代码：</p>
+
+<pre><code>public class TestS     
+{     
+     public static void main(String args[]) {     
+         int a[] = {0,1,2} ;     
+         Time times [] = {new Time(19,42,42),new Time(1,23,54),new Time(5,3,2)} ;     
+     }     
+}     
+
+class Time     
+{     
+     int hour,min,sec ;     
+     Time(int hour ,int min ,int sec) {     
+         this.hour = hour ;     
+         this.min = min ;     
+         this.sec = sec ;     
+     }     
+}    
+</code></pre>
+
+<h3>TestDefault.java(默认)：</h3>
+
+
+<p>程序代码：</p>
+
+<pre><code>public class TestDefault     
+{     
+     public static void main(String args[]) {     
+         int a [] = new int [5] ;     
+         System.out.println("" + a[3]) ;     
+     }     
+}   
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-01T20:29:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>JAVA</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dande618.github.com/blog/2013/02/01/array/" data-via="" data-counturl="http://dande618.github.com/blog/2013/02/01/array/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/29/intent/" title="Previous Post: 认识Intent">&laquo; 认识Intent</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/02/01/array/">Java数组</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/29/intent/">认识Intent</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/29/Bundle/">认识Bundle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/28/handler/">认识Handler</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/26/listener/">事件处理</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
