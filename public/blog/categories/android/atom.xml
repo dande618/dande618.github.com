@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-01-29T18:49:47+08:00</updated>
+  <updated>2013-02-01T18:34:41+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -14,11 +14,68 @@
 
   
   <entry>
+    <title type="html"><![CDATA[认识Intent]]></title>
+    <link href="http://dande618.github.com/blog/2013/01/29/intent/"/>
+    <updated>2013-01-29T20:29:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/01/29/intent</id>
+    <content type="html"><![CDATA[<p class="para">Intent：意图</p>
+
+
+<p class="para">当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
+
+
+<!-- more -->
+
+
+<p class="para">Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此，Intent还是应用程序组件之间通讯的重要媒介。两个Activity可以把需要交换的数据封装成Bundle对象，然后使用Intent来携带Bundle对象，这样就实现了两个Activity之间的数据交换。</p>
+
+
+<p>Android的应用程序包含三种重要的组件：Activity、Service、BroadcastReceiver，应用程序采用了一致的方式来启动他们——都是依靠Intent来进行启动的，Intent就封装了程序想要启动程序的意图，不仅如此，Intent还可用于与被启动组件交换信息。</p>
+
+<p class="para">通过点击按钮打开另一个Activity</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span>
+</span><span class='line'>  <span class="o">(</span>
+</span><span class='line'>   <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
+</span><span class='line'>   <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</span><span class='line'> <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">SecondActivity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'> <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">}</span>
+</span><span class='line'>  <span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[认识Bundle]]></title>
     <link href="http://dande618.github.com/blog/2013/01/29/Bundle/"/>
     <updated>2013-01-29T15:22:00+08:00</updated>
     <id>http://dande618.github.com/blog/2013/01/29/Bundle</id>
-    <content type="html"><![CDATA[<p>用于不同Activity之间的数据传递</p>
+    <content type="html"><![CDATA[<p class="para">用于不同Activity之间的数据传递</p>
+
 
 <!-- more -->
 
@@ -26,16 +83,35 @@
 <h2>重要方法</h2>
 
 
-<p>clear()：清除此Bundle映射中的所有保存的数据。
-clone()：克隆当前Bundle
-containsKey(String key)：返回指定key的值
-getString(String key)：返回指定key的字符
-hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符
-isEmpty()：如果这个捆绑映射为空，则返回true
-putString(String key, String value):插入一个给定key的字符串值
-readFromParcel(Parcel parcel)：读取这个parcel的内容
-remove(String key)：移除指定key的值
-writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
+<p class="para">clear()：清除此Bundle映射中的所有保存的数据。</p>
+
+
+<p class="para">clone()：克隆当前Bundle</p>
+
+
+<p class="para">containsKey(String key)：返回指定key的值</p>
+
+
+<p class="para">getString(String key)：返回指定key的字符</p>
+
+
+<p class="para">hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符</p>
+
+
+<p class="para">isEmpty()：如果这个捆绑映射为空，则返回true</p>
+
+
+<p class="para">putString(String key, String value):插入一个给定key的字符串值</p>
+
+
+<p class="para">readFromParcel(Parcel parcel)：读取这个parcel的内容</p>
+
+
+<p class="para">remove(String key)：移除指定key的值</p>
+
+
+<p class="para">writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
+
 
 <h2>Android Bundle类</h2>
 
@@ -45,37 +121,163 @@ writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
 <p class="laiyuan">[转载]　<a href="http://blog.csdn.net/randyjiawenjie/article/details/6651437">文章出处</a></p>
 
 
-<p>根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）
-Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”
-类继承关系：
-java.lang.Object
-android.os.Bundle
-Bundle类是一个final类：
-public final class
-Bundle
-extends Objectimplements Parcelable Cloneable
-两个activity之间的通讯可以通过bundle类来实现，做法就是：
-（1）新建一个bundle类
-[java] view plaincopy</p>
+<p class="para">根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）</p>
 
-<pre><code>Bundle mBundle = new Bundle();   
-</code></pre>
 
-<p>（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
-[java] view plaincopy</p>
+<p class="para">Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”</p>
 
-<pre><code>mBundle.putString("Data", "data from TestBundle");  
-</code></pre>
 
-<p>(3)新建一个intent对象，并将该bundle加入这个intent对象
-[cpp] view plaincopy</p>
+<p class="para">类继承关系：</p>
 
-<pre><code>Intent intent = new Intent();    
-intent.setClass(TestBundle.this, Target.class);    
-intent.putExtras(mBundle);  
-</code></pre>
 
-<p>完整代码见原文</p>
+<p class="dk">java.lang.Object</p>
+
+
+<p class="dk">android.os.Bundle</p>
+
+
+<p class="para">Bundle类是一个final类：</p>
+
+
+<p class="dk">public final class</p>
+
+
+<p class="dk">Bundle</p>
+
+
+<p class="dk">extends Objectimplements Parcelable Cloneable</p>
+
+
+<p class="para">两个activity之间的通讯可以通过bundle类来实现，做法就是：</p>
+
+
+<p class="para">（1）新建一个bundle类</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">mBundle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mBundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;Data&quot;</span><span class="o">,</span> <span class="s">&quot;data from TestBundle&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+(3)新建一个intent对象，并将该bundle加入这个intent对象
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">TestBundle</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">Target</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">mBundle</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p class="para">完整代码见原文</p>
+
+
+<p>————————</p>
+
+<p>Activity1：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">btn</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="o">(</span>
+</span><span class='line'>     <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
+</span><span class='line'>     <span class="o">{</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">String</span> <span class="n">str</span><span class="o">=</span><span class="n">ev</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">();</span>
+</span><span class='line'> <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</span><span class='line'> <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">Activity1</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">Activity2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'> <span class="n">Bundle</span> <span class="n">bundle</span><span class="o">=</span><span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
+</span><span class='line'> <span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;str&quot;</span><span class="o">,</span> <span class="n">str</span><span class="o">);</span>
+</span><span class='line'> <span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">bundle</span><span class="o">);</span><span class="c1">//绑定信息</span>
+</span><span class='line'> <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span><span class="c1">//启动Activity</span>
+</span><span class='line'> <span class="n">Activity1</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">finish</span><span class="o">();</span><span class="c1">//关闭Activity</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="o">}</span>
+</span><span class='line'><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Activity2：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span>
+</span><span class='line'> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">anthor</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">TextView</span> <span class="n">tv</span><span class="o">=(</span><span class="n">TextView</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">TextView1</span><span class="o">);</span><span class="c1">//显示的信息</span>
+</span><span class='line'>  <span class="n">Button</span> <span class="n">button</span><span class="o">=(</span><span class="n">Button</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">anthorButton</span><span class="o">);</span><span class="c1">//返回按钮</span>
+</span><span class='line'>  <span class="n">Bundle</span> <span class="n">bundle</span><span class="o">=</span><span class="k">this</span><span class="o">.</span><span class="na">getIntent</span><span class="o">().</span><span class="na">getExtras</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">str</span><span class="o">=</span><span class="n">bundle</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;str&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">StringBuilder</span> <span class="n">sb</span><span class="o">=</span><span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;您填写的信息为：&quot;</span><span class="o">+</span><span class="n">str</span><span class="o">+</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">tv</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">());&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span>
+</span><span class='line'>  <span class="o">(</span>
+</span><span class='line'>   <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
+</span><span class='line'>   <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</span><span class='line'> <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">Activity2</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">Activity1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'> <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+</span><span class='line'> <span class="n">AnotherActivity</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">finish</span><span class="o">();</span><span class="c1">//关闭Activity</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="o">}</span>
+</span><span class='line'>  <span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
@@ -263,76 +465,6 @@ intent.putExtras(mBundle);
 
 
 <p class="para">Android.R.layout_simple_list_item_single_choice, 每一项有一个TextView，但是这一项可以被选择。</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[面向对象基本概念（一）]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/14/object/"/>
-    <updated>2012-12-14T17:20:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/14/object</id>
-    <content type="html"><![CDATA[<p id="article">在深入某种编程语言或建模语言前必须先熟悉<strong>面向对象</strong>（object-oriented，ＯＯ）思维过程。</p>
-
-
-<!-- more -->
-
-
-<p class="dk">对象（object）可以定义为同时包含数据和行为的一个实体。这里的“同时包含”正是ＯＯ程序设计和其他程序设计方法的重要区别。</p>
-
-
-<p class="para">在ＯＯ设计中，属性和行为都包含在一个对象中，而在过程式设计中（或者说结构化设计）中，属性和行为是分开的。</p>
-
-
-<p class="dk">数据隐藏（data hiding）：在ＯＯ术语中，数据表示为属性，行为表示为方法，限制对某些属性和方法的访问称为数据隐藏。</p>
-
-
-<p class="dk">封装（encapsulation）：通过把属性和方法合并到一个实体中，就能控制对对象中数据的访问。</p>
-
-
-<p class="para">一般情况下，对象不应处理其他对象的内部数据。通常更好的做法是构建完成特定任务的小对象，而不是建立完成很多任务的大型对象。</p>
-
-
-<p class="para">过程式程序设计通常将系统的数据与处理这些数据的操作相分离。</p>
-
-
-<p class="para">ＯＯ程序设计最根本的优点是：数据和处理这些数据的操作（代码）都封装在对象中。</p>
-
-
-<p class="dk">存储在一个对象中的数据表示对象的状态。在ＯＯ程序设计术语中，该数据称为属性（attribute）。</p>
-
-
-<p class="dk">对象的行为（behavior）就是对象能够做什么。在ＯＯ程序设计术语中，这些行为包含在方法（method）中，要通过发送消息来调用方法。</p>
-
-
-<p class="para">要记住，使用对象有很多优点，其中最有意思（最强大）的一点就是数据是包的一部分——它不与代码分离。</p>
-
-
-<p class="para">获取方法和设置方法的概念支持数据隐藏的概念。因为其他对象不能直接处理另一个对象内部的数据，所以获取方法和设置方法提供了对对象的数据的一种控制访问。</p>
-
-
-<p class="para">只是给出方法的接口，而没有展示具体实现。用户只需要一下信息就能知道如何有效地使用这些方法。</p>
-
-
-<ul>
-    <li>方法名</li>
-    <li>传入方法的参数</li>
-    <li>方法的返回类型</li>
-</ul>
-
-
-<h3>类是什么？</h3>
-
-
-<p class="para">现在可以把类认为是一种<strong>模板</strong>，由这个模板建立对象。创建一个对象时，我们称对象被实例化。从概念层次来讲，可以认为对象完全是独立的，有其自己的属性和方法。</p>
-
-
-<p class="para">简单来讲，类是对象的一个<strong>蓝图</strong>。实例化一个对象时，就是使用一个类作为构建这个对象的基础。在ＯＯ软件中，应该先有类。如果没有类，对象就无法实例化。</p>
-
-
-<p class="para">每个对象都有其自己的属性和行为。类定义用这个类创建的所有对象拥有的属性和行为。类是一些代码。有类实例化得到的对象可以单独分布，也可以作为库的一部分。</p>
-
-
 
 ]]></content>
   </entry>

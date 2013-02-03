@@ -9,10 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="用于不同Activity之间的数据传递 重要方法 clear()：清除此Bundle映射中的所有保存的数据。
-clone()：克隆当前Bundle
-containsKey(String key)：返回指定key的值
-getString(String key)：返回指定key的字符 &hellip;">
+  <meta name="description" content="用于不同Activity之间的数据传递 重要方法 clear()：清除此Bundle映射中的所有保存的数据。 clone()：克隆当前Bundle containsKey(String key)：返回指定key的值 getString(String key)：返回指定key的字符 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,7 +88,8 @@ getString(String key)：返回指定key的字符 &hellip;">
   </header>
 
 
-<div class="entry-content"><p>用于不同Activity之间的数据传递</p>
+<div class="entry-content"><p class="para">用于不同Activity之间的数据传递</p>
+
 
 <!-- more -->
 
@@ -99,16 +97,35 @@ getString(String key)：返回指定key的字符 &hellip;">
 <h2>重要方法</h2>
 
 
-<p>clear()：清除此Bundle映射中的所有保存的数据。
-clone()：克隆当前Bundle
-containsKey(String key)：返回指定key的值
-getString(String key)：返回指定key的字符
-hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符
-isEmpty()：如果这个捆绑映射为空，则返回true
-putString(String key, String value):插入一个给定key的字符串值
-readFromParcel(Parcel parcel)：读取这个parcel的内容
-remove(String key)：移除指定key的值
-writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
+<p class="para">clear()：清除此Bundle映射中的所有保存的数据。</p>
+
+
+<p class="para">clone()：克隆当前Bundle</p>
+
+
+<p class="para">containsKey(String key)：返回指定key的值</p>
+
+
+<p class="para">getString(String key)：返回指定key的字符</p>
+
+
+<p class="para">hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符</p>
+
+
+<p class="para">isEmpty()：如果这个捆绑映射为空，则返回true</p>
+
+
+<p class="para">putString(String key, String value):插入一个给定key的字符串值</p>
+
+
+<p class="para">readFromParcel(Parcel parcel)：读取这个parcel的内容</p>
+
+
+<p class="para">remove(String key)：移除指定key的值</p>
+
+
+<p class="para">writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
+
 
 <h2>Android Bundle类</h2>
 
@@ -118,37 +135,168 @@ writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
 <p class="laiyuan">[转载]　<a href="http://blog.csdn.net/randyjiawenjie/article/details/6651437">文章出处</a></p>
 
 
-<p>根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）
-Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”
-类继承关系：
-java.lang.Object
-android.os.Bundle
-Bundle类是一个final类：
-public final class
-Bundle
-extends Objectimplements Parcelable Cloneable
-两个activity之间的通讯可以通过bundle类来实现，做法就是：
-（1）新建一个bundle类
-[java] view plaincopy</p>
+<p class="para">根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）</p>
 
-<pre><code>Bundle mBundle = new Bundle();   
-</code></pre>
 
-<p>（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
-[java] view plaincopy</p>
+<p class="para">Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”</p>
 
-<pre><code>mBundle.putString("Data", "data from TestBundle");  
-</code></pre>
 
-<p>(3)新建一个intent对象，并将该bundle加入这个intent对象
-[cpp] view plaincopy</p>
+<p class="para">类继承关系：</p>
 
-<pre><code>Intent intent = new Intent();    
-intent.setClass(TestBundle.this, Target.class);    
-intent.putExtras(mBundle);  
-</code></pre>
 
-<p>完整代码见原文</p>
+<p class="dk">java.lang.Object</p>
+
+
+<p class="dk">android.os.Bundle</p>
+
+
+<p class="para">Bundle类是一个final类：</p>
+
+
+<p class="dk">public final class</p>
+
+
+<p class="dk">Bundle</p>
+
+
+<p class="dk">extends Objectimplements Parcelable Cloneable</p>
+
+
+<p class="para">两个activity之间的通讯可以通过bundle类来实现，做法就是：</p>
+
+
+<p class="para">（1）新建一个bundle类</p>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">mBundle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mBundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;Data&quot;</span><span class="o">,</span> <span class="s">&quot;data from TestBundle&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(3)新建一个intent对象，并将该bundle加入这个intent对象</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">TestBundle</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">Target</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">mBundle</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p class="para">完整代码见原文</p>
+
+
+<p>————————</p>
+
+<p>Activity1：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">btn</span><span class="o">.</span><span class="na">setOnClickListener</span>
+</span><span class='line'>        <span class="o">(</span>
+</span><span class='line'>         <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
+</span><span class='line'>         <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">String</span> <span class="n">str</span><span class="o">=</span><span class="n">ev</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">Activity1</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">Activity2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">Bundle</span> <span class="n">bundle</span><span class="o">=</span><span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;str&quot;</span><span class="o">,</span> <span class="n">str</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">bundle</span><span class="o">);</span><span class="c1">//绑定信息</span>
+</span><span class='line'>     <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span><span class="c1">//启动Activity</span>
+</span><span class='line'>     <span class="n">Activity1</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">finish</span><span class="o">();</span><span class="c1">//关闭Activity</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Activity2：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span>
+</span><span class='line'> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">anthor</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">TextView</span> <span class="n">tv</span><span class="o">=(</span><span class="n">TextView</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">TextView1</span><span class="o">);</span><span class="c1">//显示的信息</span>
+</span><span class='line'>  <span class="n">Button</span> <span class="n">button</span><span class="o">=(</span><span class="n">Button</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">anthorButton</span><span class="o">);</span><span class="c1">//返回按钮</span>
+</span><span class='line'>  <span class="n">Bundle</span> <span class="n">bundle</span><span class="o">=</span><span class="k">this</span><span class="o">.</span><span class="na">getIntent</span><span class="o">().</span><span class="na">getExtras</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">String</span> <span class="n">str</span><span class="o">=</span><span class="n">bundle</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;str&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">StringBuilder</span> <span class="n">sb</span><span class="o">=</span><span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;您填写的信息为：&quot;</span><span class="o">+</span><span class="n">str</span><span class="o">+</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">tv</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span>
+</span><span class='line'>  <span class="o">(</span>
+</span><span class='line'>   <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
+</span><span class='line'>   <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>     <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">Activity2</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">Activity1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+</span><span class='line'>     <span class="n">AnotherActivity</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">finish</span><span class="o">();</span><span class="c1">//关闭Activity</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'>  <span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
@@ -197,6 +345,8 @@ intent.putExtras(mBundle);
         <a class="basic-alignment left" href="/blog/2013/01/28/handler/" title="Previous Post: 认识Handler">&laquo; 认识Handler</a>
       
       
+        <a class="basic-alignment right" href="/blog/2013/01/29/intent/" title="Next Post: 认识Intent">认识Intent &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -210,6 +360,14 @@ intent.putExtras(mBundle);
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/02/01/array/">Java数组</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/29/intent/">认识Intent</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/01/29/Bundle/">认识Bundle</a>
       </li>
     
@@ -219,14 +377,6 @@ intent.putExtras(mBundle);
     
       <li class="post">
         <a href="/blog/2013/01/26/listener/">事件处理</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/11/adapter/">SimpleAdapter</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/12/14/object/">面向对象基本概念（一）</a>
       </li>
     
   </ul>

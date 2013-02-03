@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java数组 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="Java数组声明、创建、初始化 [转载]　文章出处 一维数组的声明方式： type var[]; 或type[] var; 声明数组时不能指定其长度（数组中元素的个数）。 Java中使用关键字new创建数组对象，格式为： 数组名 = new 数组元素的类型 [数组元素的个数] TestNew. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/02/01/array/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java数组</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-01T20:29:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Java数组声明、创建、初始化</h2>
+
+
+<p class="laiyuan">[转载]　<a href="http://developer.51cto.com/art/200906/128274.htm">文章出处</a></p>
+
+
+<!-- more -->
+
+
+<p>一维数组的声明方式：</p>
+
+<p class="para">type var[]; 或type[] var;</p>
+
+
+<p class="para">声明数组时不能指定其长度（数组中元素的个数）。</p>
+
+
+<p class="para">Java中使用关键字new创建数组对象，格式为：</p>
+
+
+<p class="para">数组名 = new 数组元素的类型 [数组元素的个数]</p>
+
+
+<p>TestNew.java：
+程序代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestNew</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+</span><span class='line'>             <span class="kt">int</span><span class="o">[]</span> <span class="n">s</span> <span class="o">;</span>
+</span><span class='line'>             <span class="kt">int</span> <span class="n">i</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">;</span>
+</span><span class='line'>             <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>                 <span class="n">s</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">;</span>
+</span><span class='line'>             <span class="o">}</span>
+</span><span class='line'>             <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">;</span> <span class="n">i</span><span class="o">--)</span> <span class="o">{</span>
+</span><span class='line'>                 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">s</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">;</span>
+</span><span class='line'>             <span class="o">}</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>初始化：</h3>
+
+
+<ol>
+    <li>1.动态初始化：数组定义与为数组分配空间和赋值的操作分开进行；</li>
+    <li>2.静态初始化：在定义数字的同时就为数组元素分配空间并赋值；</li>
+    <li>3.默认初始化：数组是引用类型，它的元素相当于类的成员变量，因此数组分配空间后，每个元素也被按照成员变量的规则被隐士初始化。</li>
+</ol>
+
+
+<h3>TestD.java(动态)：</h3>
+
+
+<p>程序代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestD</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+</span><span class='line'>             <span class="kt">int</span> <span class="n">a</span><span class="o">[]</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">a</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">a</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">a</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">Date</span> <span class="n">days</span><span class="o">[]</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">days</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">days</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">2008</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">)</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">days</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">2008</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">31</span><span class="o">)</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">days</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">2008</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">4</span><span class="o">)</span> <span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">class</span> <span class="nc">Date</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>         <span class="kt">int</span> <span class="n">year</span><span class="o">,</span><span class="n">month</span><span class="o">,</span><span class="n">day</span> <span class="o">;</span>
+</span><span class='line'>         <span class="n">Date</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span> <span class="o">,</span><span class="kt">int</span> <span class="n">month</span> <span class="o">,</span><span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">year</span> <span class="o">=</span> <span class="n">year</span> <span class="o">;</span>
+</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">month</span> <span class="o">=</span> <span class="n">month</span> <span class="o">;</span>
+</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">day</span> <span class="o">=</span> <span class="n">day</span> <span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>TestS.java(静态)：</h3>
+
+
+<p>程序代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestS</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+</span><span class='line'>             <span class="kt">int</span> <span class="n">a</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">}</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">Time</span> <span class="n">times</span> <span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="k">new</span> <span class="n">Time</span><span class="o">(</span><span class="mi">19</span><span class="o">,</span><span class="mi">42</span><span class="o">,</span><span class="mi">42</span><span class="o">),</span><span class="k">new</span> <span class="n">Time</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">23</span><span class="o">,</span><span class="mi">54</span><span class="o">),</span><span class="k">new</span> <span class="n">Time</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">2</span><span class="o">)}</span> <span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">class</span> <span class="nc">Time</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>         <span class="kt">int</span> <span class="n">hour</span><span class="o">,</span><span class="n">min</span><span class="o">,</span><span class="n">sec</span> <span class="o">;</span>
+</span><span class='line'>         <span class="n">Time</span><span class="o">(</span><span class="kt">int</span> <span class="n">hour</span> <span class="o">,</span><span class="kt">int</span> <span class="n">min</span> <span class="o">,</span><span class="kt">int</span> <span class="n">sec</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">hour</span> <span class="o">=</span> <span class="n">hour</span> <span class="o">;</span>
+</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">min</span> <span class="o">=</span> <span class="n">min</span> <span class="o">;</span>
+</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">sec</span> <span class="o">=</span> <span class="n">sec</span> <span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>TestDefault.java(默认)：</h3>
+
+
+<p>程序代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestDefault</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+</span><span class='line'>             <span class="kt">int</span> <span class="n">a</span> <span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span> <span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">;</span>
+</span><span class='line'>             <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">])</span> <span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h2>java数组</h2>
+
+
+<p class="laiyuan">[转载]　<a href="http://www.cnblogs.com/iixiaowei/articles/2395937.html">文章出处</a></p>
+
+
+<p class="para">1、java数组要求所有数据元素具有相同的数据类型。</p>
+
+
+<p class="para">2、一旦数组的初始化完成，数组在内存中所占的空间将被固定下来，因此数组的长度将不可改变。</p>
+
+
+<p class="para">　　即使把某个数组元素清空，但它所占的空间依然被保留，依然属于该数组，数组的长度依然不变。</p>
+
+
+<p class="para">3、定义数组  type[] arrayName;</p>
+
+
+<p class="para">4、数组是一种引用类型的变量，因此使用它定义一个变量时，仅仅表示定义了一个引用变量（也就是定义了一个指针），</p>
+
+
+<p class="para">　　这个引用变量还未指向任何有效的内存，因此定义数组时不能指定数组的长度。</p>
+
+
+<p class="para">　　而且由于定义数组仅仅只是定义了一个引用变量，并未指向任何有效的内存空间，所以还没有内存空间来存储数组元素，因此这个数组也不能使用，只有对数组进行初始化后，才可以使用。</p>
+
+
+<p class="para">　　*定义数组时不能指定数组的长度  </p>
+
+
+<p></p>
+
+<p class="para">5、数组的初始化</p>
+
+
+<p class="para">　　java语言中数组必须先初始化，然后才可以使用。所谓初始化，就是为数组的数组元素分配内存空间，并为每个数组元素赋初始值。</p>
+
+
+<p>　　<p class="para">数组的初始化有两种方式：</p></p>
+
+<pre><code>      &lt;p class="para"&gt;1）静态初始化：初始化时由程序员显示指定每个数组元素的初始值，由系统决定需要的数组长度。&lt;/p&gt;
+</code></pre>
+
+<p class="para">　　语法：</p>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>     <span class="n">arrayName</span> <span class="o">=</span> <span class="k">new</span> <span class="n">type</span><span class="o">[]{</span><span class="n">element1</span><span class="o">,</span><span class="n">element2</span><span class="o">,</span><span class="n">element3</span><span class="o">,</span><span class="n">element4</span><span class="o">...};</span>
+</span><span class='line'>                   <span class="kt">int</span><span class="o">[]</span> <span class="n">intArr</span><span class="o">;</span>
+</span><span class='line'>                   <span class="n">intArr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">20</span><span class="o">};</span>
+</span><span class='line'>                   <span class="n">Object</span><span class="o">[]</span> <span class="n">objArr</span><span class="o">;</span>
+</span><span class='line'>                   <span class="n">objArr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="s">&quot;ＬＬ&quot;</span><span class="o">};</span>
+</span><span class='line'>                   <span class="n">Object</span><span class="o">[]</span> <span class="n">objArr2</span><span class="o">;</span>
+</span><span class='line'>                   <span class="n">objArr2</span><span class="o">=</span><span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="s">&quot;ＬＬ&quot;</span><span class="o">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>                   <span class="c1">//静态初始化还有如下简化的语法格式：</span>
+</span><span class='line'>                   <span class="n">arrayName</span> <span class="o">=</span> <span class="o">{</span><span class="n">element1</span><span class="o">,</span><span class="n">element2</span><span class="o">,</span><span class="n">element3</span><span class="o">,</span><span class="n">element4</span><span class="o">...};</span>
+</span><span class='line'>                   <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span> <span class="o">=</span> <span class="o">{</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">9</span><span class="o">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>      2）动态初始化：初始化时程序员只指定数组长度，由系统为数组元素分配初始值。
+         动态初始化只指定数组的长度，由系统为每个数组元素指定初始值，动态初始化的语法格式如下：
+</code></pre>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>        <span class="n">arrName</span> <span class="o">=</span> <span class="k">new</span> <span class="n">type</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
+</span><span class='line'>                   <span class="kt">int</span><span class="o">[]</span> <span class="n">prices</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">5</span><span class="o">];</span>
+</span><span class='line'>                   <span class="n">Object</span><span class="o">[]</span> <span class="n">books</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="mi">4</span><span class="o">];</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>               &lt;p class="para"&gt;　　length属性可以获取数组的长度。&lt;/p&gt;
+
+     &lt;p class="para"&gt;3）jdk1.5提供了foreach循环&lt;/p&gt;
+</code></pre>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>            <span class="k">for</span><span class="o">(</span><span class="n">type</span> <span class="n">variableName</span> <span class="o">:</span> <span class="n">array</span> <span class="o">|</span> <span class="n">collection</span><span class="o">){</span>
+</span><span class='line'>                <span class="c1">//variableName 自动迭代访问每个元素...</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>        &lt;p class="para"&gt;　　* 使用foreach循环迭代数组元素时，并不能改变数组元素的值，因此不要对foreach的循环变量进行赋值。&lt;/p&gt;
+</code></pre>
+
+<p class="para">6、深入数组</p>
+
+
+<p class="para">数组是一种引用数据类型，数组引用变量只是一个引用，数组元素和数组变量在内存里是分开存放的。下面将深入介绍数组在内存中的运行机制。</p>
+
+
+
+
+<p class="para">6．1内存中的数组</p>
+
+
+<p class="para">数组引用变量只是一个引用，这个引用变量可以指向任何有效的内存，只有当该引用指向有效内存后，才可通过该数组变量来访问数组元素。</p>
+
+
+<p class="para">与所有引用变量相同的是，引用变量是访问真实对象的根本方式。也就是说，如果我们希望在程序中访问数组，则只能通过这个数组的引用变量来访问它。</p>
+
+
+
+
+<p class="para">实际的数组元素被存储在堆内存中；数组引用变量是一个引用类型的变量，被存储在栈内存中。</p>
+
+
+
+
+<p class="para">如果堆内存中的数据不再有任何引用变量指向自己，则这个数组将成为垃圾，该数组所占的内存将会被系统的垃圾回收机制回收。因此，为了让垃圾回收一个数组所占的内存空间，则可以将该数组变量赋值为null，也就切断了数组引用变量和实际数组之间的引用关系，实际数组也就成了垃圾。</p>
+
+
+
+
+<p class="para">6．2操作数组的工具类</p>
+
+
+<p class="para">Java提供了Arrays类里包含了一些static修饰方法可以直接操作数组，这个Arrays类里包含了如下几个static修饰的方法(static修饰的方法可以直接通过类名调用)：</p>
+
+
+<p>|-public static int binarySearch(byte[] a,byte key):</p>
+
+<p class="para">使用二分法查询key元素值在a数组中出现的索引；如果a数组不包含key元素值，则返回负数。调用该方法时要求数组中元素已经按升序排列，这样才能得到正确结果。</p>
+
+
+<p>|-public static int binarySearch(byte[] a,int fromIndex, int toIndex,byte key)</p>
+
+<p class="para">搜索a数组中fromIndex到toIndex索引的元素。调用该方法时要求数组中元素已经按升序排列，这样才能得到正确结果。</p>
+
+
+<p>|-public static byte[] copyOf(byte[] original,int newLength)</p>
+
+<p class="para">将会把original数组复制成一个新数组，其中length是新数组的长度。如果length小于original数组的长度，则新数组就是原数组的前面length个元素；如果length大于original数组的长度，则新数组的前面元素就是原数组的所有元素，后面补充0（数值型）、false（布尔型）、或者null（引用型）。</p>
+
+
+<p>|-public static boolean[] copyOfRange(boolean[] original,int from,int to)</p>
+
+<p class="para">这个方法只复制original数组的from索引到to索引的元素。</p>
+
+
+<p>|-public static boolean equals(byte[] a, byte[] a2)</p>
+
+<p class="para">如果a数组a2数组的长度相等，而且a数组和a2数组的数组元素也一一相同，该方法将返回true。</p>
+
+
+<p>|-void fill(type[]a ,type val)</p>
+
+<p class="para">该方法将会把a数组所有元素值都赋值为val。</p>
+
+
+<p>|-void fill(type[] a, index fromIndex, int toIndex, type val)</p>
+
+<p class="para">区别只是该方法仅仅将a数组的fromIndex到toIndex索引的数组元素赋值为val</p>
+
+
+<p>|-void sort(type[] a):</p>
+
+<p class="para">该方法对a数组的数组元素进行排序</p>
+
+
+<p>|-void sort(type[] a,int fromIndex,int toIndex)</p>
+
+<p class="para">区别是该方法仅仅对fromIndex到toIndex。</p>
+
+
+<p>|-String toString(type[] a)</p>
+
+<p class="para">该方法将一个数组转换成一个字符串。该方法按顺序把多个数组元素连缀在一起，多个数组元素使用英文逗号，和空格隔开。</p>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestArrays</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+</span><span class='line'>         <span class="o">{</span>
+</span><span class='line'>              <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">};</span>
+</span><span class='line'>                    <span class="kt">int</span><span class="o">[]</span> <span class="n">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">};</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;a数组和a2数组是否相等：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">a</span><span class="o">,</span><span class="n">a2</span><span class="o">));</span> <span class="c1">//true</span>
+</span><span class='line'>                    <span class="kt">int</span><span class="o">[]</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOf</span><span class="o">(</span><span class="n">a</span><span class="o">,</span><span class="mi">6</span><span class="o">);</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;a数组和b数组是否相等：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">a</span><span class="o">,</span><span class="n">b</span><span class="o">));</span> <span class="c1">//false</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;b数组的元素为：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">b</span><span class="o">));</span>
+</span><span class='line'>                    <span class="n">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">b</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;b数组的元素为：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">b</span><span class="o">));</span>
+</span><span class='line'>                    <span class="n">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;b数组的元素为：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">b</span><span class="o">));</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-01T20:29:00+08:00" pubdate data-updated="true">Feb 1<span>st</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>JAVA</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dande618.github.com/blog/2013/02/01/array/" data-via="" data-counturl="http://dande618.github.com/blog/2013/02/01/array/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/29/intent/" title="Previous Post: 认识Intent">&laquo; 认识Intent</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/02/01/array/">Java数组</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/29/intent/">认识Intent</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/29/Bundle/">认识Bundle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/28/handler/">认识Handler</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/26/listener/">事件处理</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
