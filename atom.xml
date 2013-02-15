@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-07T00:05:20+08:00</updated>
+  <updated>2013-02-15T17:04:23+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -14,447 +14,105 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Java数组]]></title>
-    <link href="http://dande618.github.com/blog/2013/02/01/array/"/>
-    <updated>2013-02-01T20:29:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/02/01/array</id>
-    <content type="html"><![CDATA[<h2>Java数组声明、创建、初始化</h2>
+    <title type="html"><![CDATA[正则表达式]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/15/regex/"/>
+    <updated>2013-02-15T16:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/15/regex</id>
+    <content type="html"><![CDATA[<p>在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p>
 
-
-<p class="laiyuan">[转载]　<a href="http://developer.51cto.com/art/200906/128274.htm">文章出处</a></p>
+<br/>
 
 
 <!-- more -->
 
 
-<p>一维数组的声明方式：</p>
-
-<p class="para">type var[]; 或type[] var;</p>
-
-
-<p class="para">声明数组时不能指定其长度（数组中元素的个数）。</p>
-
-
-<p class="para">Java中使用关键字new创建数组对象，格式为：</p>
-
-
-<p class="para">数组名 = new 数组元素的类型 [数组元素的个数]</p>
-
-
-<p>TestNew.java：
-程序代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestNew</span>
-</span><span class='line'>    <span class="o">{</span>
-</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
-</span><span class='line'>             <span class="kt">int</span><span class="o">[]</span> <span class="n">s</span> <span class="o">;</span>
-</span><span class='line'>             <span class="kt">int</span> <span class="n">i</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">;</span>
-</span><span class='line'>             <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>                 <span class="n">s</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">;</span>
-</span><span class='line'>             <span class="o">}</span>
-</span><span class='line'>             <span class="k">for</span><span class="o">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">;</span> <span class="n">i</span><span class="o">--)</span> <span class="o">{</span>
-</span><span class='line'>                 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">s</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">;</span>
-</span><span class='line'>             <span class="o">}</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3>初始化：</h3>
-
-
-<ol>
-    <li>1.动态初始化：数组定义与为数组分配空间和赋值的操作分开进行；</li>
-    <li>2.静态初始化：在定义数字的同时就为数组元素分配空间并赋值；</li>
-    <li>3.默认初始化：数组是引用类型，它的元素相当于类的成员变量，因此数组分配空间后，每个元素也被按照成员变量的规则被隐士初始化。</li>
-</ol>
-
-
-<h3>TestD.java(动态)：</h3>
-
-
-<p>程序代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestD</span>
-</span><span class='line'>    <span class="o">{</span>
-</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
-</span><span class='line'>             <span class="kt">int</span> <span class="n">a</span><span class="o">[]</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">a</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">a</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">a</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">Date</span> <span class="n">days</span><span class="o">[]</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">days</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">days</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">2008</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">)</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">days</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">2008</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">31</span><span class="o">)</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">days</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Date</span><span class="o">(</span><span class="mi">2008</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">4</span><span class="o">)</span> <span class="o">;</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">class</span> <span class="nc">Date</span>
-</span><span class='line'>    <span class="o">{</span>
-</span><span class='line'>         <span class="kt">int</span> <span class="n">year</span><span class="o">,</span><span class="n">month</span><span class="o">,</span><span class="n">day</span> <span class="o">;</span>
-</span><span class='line'>         <span class="n">Date</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span> <span class="o">,</span><span class="kt">int</span> <span class="n">month</span> <span class="o">,</span><span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">year</span> <span class="o">=</span> <span class="n">year</span> <span class="o">;</span>
-</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">month</span> <span class="o">=</span> <span class="n">month</span> <span class="o">;</span>
-</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">day</span> <span class="o">=</span> <span class="n">day</span> <span class="o">;</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3>TestS.java(静态)：</h3>
-
-
-<p>程序代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestS</span>
-</span><span class='line'>    <span class="o">{</span>
-</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
-</span><span class='line'>             <span class="kt">int</span> <span class="n">a</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">}</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">Time</span> <span class="n">times</span> <span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="k">new</span> <span class="n">Time</span><span class="o">(</span><span class="mi">19</span><span class="o">,</span><span class="mi">42</span><span class="o">,</span><span class="mi">42</span><span class="o">),</span><span class="k">new</span> <span class="n">Time</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">23</span><span class="o">,</span><span class="mi">54</span><span class="o">),</span><span class="k">new</span> <span class="n">Time</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">2</span><span class="o">)}</span> <span class="o">;</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">class</span> <span class="nc">Time</span>
-</span><span class='line'>    <span class="o">{</span>
-</span><span class='line'>         <span class="kt">int</span> <span class="n">hour</span><span class="o">,</span><span class="n">min</span><span class="o">,</span><span class="n">sec</span> <span class="o">;</span>
-</span><span class='line'>         <span class="n">Time</span><span class="o">(</span><span class="kt">int</span> <span class="n">hour</span> <span class="o">,</span><span class="kt">int</span> <span class="n">min</span> <span class="o">,</span><span class="kt">int</span> <span class="n">sec</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">hour</span> <span class="o">=</span> <span class="n">hour</span> <span class="o">;</span>
-</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">min</span> <span class="o">=</span> <span class="n">min</span> <span class="o">;</span>
-</span><span class='line'>             <span class="k">this</span><span class="o">.</span><span class="na">sec</span> <span class="o">=</span> <span class="n">sec</span> <span class="o">;</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3>TestDefault.java(默认)：</h3>
-
-
-<p>程序代码：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestDefault</span>
-</span><span class='line'>    <span class="o">{</span>
-</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
-</span><span class='line'>             <span class="kt">int</span> <span class="n">a</span> <span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span> <span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">;</span>
-</span><span class='line'>             <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">])</span> <span class="o">;</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h2>java数组</h2>
-
-
-<p class="laiyuan">[转载]　<a href="http://www.cnblogs.com/iixiaowei/articles/2395937.html">文章出处</a></p>
-
-
-<p class="para">1、java数组要求所有数据元素具有相同的数据类型。</p>
-
-
-<p class="para">2、一旦数组的初始化完成，数组在内存中所占的空间将被固定下来，因此数组的长度将不可改变。</p>
-
-
-<p class="para">　　即使把某个数组元素清空，但它所占的空间依然被保留，依然属于该数组，数组的长度依然不变。</p>
-
-
-<p class="para">3、定义数组  type[] arrayName;</p>
-
-
-<p class="para">4、数组是一种引用类型的变量，因此使用它定义一个变量时，仅仅表示定义了一个引用变量（也就是定义了一个指针），</p>
-
-
-<p class="para">　　这个引用变量还未指向任何有效的内存，因此定义数组时不能指定数组的长度。</p>
-
-
-<p class="para">　　而且由于定义数组仅仅只是定义了一个引用变量，并未指向任何有效的内存空间，所以还没有内存空间来存储数组元素，因此这个数组也不能使用，只有对数组进行初始化后，才可以使用。</p>
-
-
-<p class="para">　　*定义数组时不能指定数组的长度  </p>
-
-
-<p></p>
-
-<p class="para">5、数组的初始化</p>
-
-
-<p class="para">　　java语言中数组必须先初始化，然后才可以使用。所谓初始化，就是为数组的数组元素分配内存空间，并为每个数组元素赋初始值。</p>
-
-
-<p>　　<p class="para">数组的初始化有两种方式：</p></p>
-
-<pre><code>      &lt;p class="para"&gt;1）静态初始化：初始化时由程序员显示指定每个数组元素的初始值，由系统决定需要的数组长度。&lt;/p&gt;
-</code></pre>
-
-<p class="para">　　语法：</p>
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>     <span class="n">arrayName</span> <span class="o">=</span> <span class="k">new</span> <span class="n">type</span><span class="o">[]{</span><span class="n">element1</span><span class="o">,</span><span class="n">element2</span><span class="o">,</span><span class="n">element3</span><span class="o">,</span><span class="n">element4</span><span class="o">...};</span>
-</span><span class='line'>                   <span class="kt">int</span><span class="o">[]</span> <span class="n">intArr</span><span class="o">;</span>
-</span><span class='line'>                   <span class="n">intArr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">8</span><span class="o">,</span><span class="mi">20</span><span class="o">};</span>
-</span><span class='line'>                   <span class="n">Object</span><span class="o">[]</span> <span class="n">objArr</span><span class="o">;</span>
-</span><span class='line'>                   <span class="n">objArr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="s">&quot;ＬＬ&quot;</span><span class="o">};</span>
-</span><span class='line'>                   <span class="n">Object</span><span class="o">[]</span> <span class="n">objArr2</span><span class="o">;</span>
-</span><span class='line'>                   <span class="n">objArr2</span><span class="o">=</span><span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&quot;java&quot;</span><span class="o">,</span><span class="s">&quot;ＬＬ&quot;</span><span class="o">};</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>                   <span class="c1">//静态初始化还有如下简化的语法格式：</span>
-</span><span class='line'>                   <span class="n">arrayName</span> <span class="o">=</span> <span class="o">{</span><span class="n">element1</span><span class="o">,</span><span class="n">element2</span><span class="o">,</span><span class="n">element3</span><span class="o">,</span><span class="n">element4</span><span class="o">...};</span>
-</span><span class='line'>                   <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span> <span class="o">=</span> <span class="o">{</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">9</span><span class="o">};</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>      2）动态初始化：初始化时程序员只指定数组长度，由系统为数组元素分配初始值。
-         动态初始化只指定数组的长度，由系统为每个数组元素指定初始值，动态初始化的语法格式如下：
-</code></pre>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>        <span class="n">arrName</span> <span class="o">=</span> <span class="k">new</span> <span class="n">type</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
-</span><span class='line'>                   <span class="kt">int</span><span class="o">[]</span> <span class="n">prices</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">5</span><span class="o">];</span>
-</span><span class='line'>                   <span class="n">Object</span><span class="o">[]</span> <span class="n">books</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="mi">4</span><span class="o">];</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>               &lt;p class="para"&gt;　　length属性可以获取数组的长度。&lt;/p&gt;
-
-     &lt;p class="para"&gt;3）jdk1.5提供了foreach循环&lt;/p&gt;
-</code></pre>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>            <span class="k">for</span><span class="o">(</span><span class="n">type</span> <span class="n">variableName</span> <span class="o">:</span> <span class="n">array</span> <span class="o">|</span> <span class="n">collection</span><span class="o">){</span>
-</span><span class='line'>                <span class="c1">//variableName 自动迭代访问每个元素...</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>        &lt;p class="para"&gt;　　* 使用foreach循环迭代数组元素时，并不能改变数组元素的值，因此不要对foreach的循环变量进行赋值。&lt;/p&gt;
-</code></pre>
-
-<p class="para">6、深入数组</p>
-
-
-<p class="para">数组是一种引用数据类型，数组引用变量只是一个引用，数组元素和数组变量在内存里是分开存放的。下面将深入介绍数组在内存中的运行机制。</p>
-
-
-
-
-<p class="para">6．1内存中的数组</p>
-
-
-<p class="para">数组引用变量只是一个引用，这个引用变量可以指向任何有效的内存，只有当该引用指向有效内存后，才可通过该数组变量来访问数组元素。</p>
-
-
-<p class="para">与所有引用变量相同的是，引用变量是访问真实对象的根本方式。也就是说，如果我们希望在程序中访问数组，则只能通过这个数组的引用变量来访问它。</p>
-
-
-
-
-<p class="para">实际的数组元素被存储在堆内存中；数组引用变量是一个引用类型的变量，被存储在栈内存中。</p>
-
-
-
-
-<p class="para">如果堆内存中的数据不再有任何引用变量指向自己，则这个数组将成为垃圾，该数组所占的内存将会被系统的垃圾回收机制回收。因此，为了让垃圾回收一个数组所占的内存空间，则可以将该数组变量赋值为null，也就切断了数组引用变量和实际数组之间的引用关系，实际数组也就成了垃圾。</p>
-
-
-
-
-<p class="para">6．2操作数组的工具类</p>
-
-
-<p class="para">Java提供了Arrays类里包含了一些static修饰方法可以直接操作数组，这个Arrays类里包含了如下几个static修饰的方法(static修饰的方法可以直接通过类名调用)：</p>
-
-
-<p>|-public static int binarySearch(byte[] a,byte key):</p>
-
-<p class="para">使用二分法查询key元素值在a数组中出现的索引；如果a数组不包含key元素值，则返回负数。调用该方法时要求数组中元素已经按升序排列，这样才能得到正确结果。</p>
-
-
-<p>|-public static int binarySearch(byte[] a,int fromIndex, int toIndex,byte key)</p>
-
-<p class="para">搜索a数组中fromIndex到toIndex索引的元素。调用该方法时要求数组中元素已经按升序排列，这样才能得到正确结果。</p>
-
-
-<p>|-public static byte[] copyOf(byte[] original,int newLength)</p>
-
-<p class="para">将会把original数组复制成一个新数组，其中length是新数组的长度。如果length小于original数组的长度，则新数组就是原数组的前面length个元素；如果length大于original数组的长度，则新数组的前面元素就是原数组的所有元素，后面补充0（数值型）、false（布尔型）、或者null（引用型）。</p>
-
-
-<p>|-public static boolean[] copyOfRange(boolean[] original,int from,int to)</p>
-
-<p class="para">这个方法只复制original数组的from索引到to索引的元素。</p>
-
-
-<p>|-public static boolean equals(byte[] a, byte[] a2)</p>
-
-<p class="para">如果a数组a2数组的长度相等，而且a数组和a2数组的数组元素也一一相同，该方法将返回true。</p>
-
-
-<p>|-void fill(type[]a ,type val)</p>
-
-<p class="para">该方法将会把a数组所有元素值都赋值为val。</p>
-
-
-<p>|-void fill(type[] a, index fromIndex, int toIndex, type val)</p>
-
-<p class="para">区别只是该方法仅仅将a数组的fromIndex到toIndex索引的数组元素赋值为val</p>
-
-
-<p>|-void sort(type[] a):</p>
-
-<p class="para">该方法对a数组的数组元素进行排序</p>
-
-
-<p>|-void sort(type[] a,int fromIndex,int toIndex)</p>
-
-<p class="para">区别是该方法仅仅对fromIndex到toIndex。</p>
-
-
-<p>|-String toString(type[] a)</p>
-
-<p class="para">该方法将一个数组转换成一个字符串。该方法按顺序把多个数组元素连缀在一起，多个数组元素使用英文逗号，和空格隔开。</p>
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestArrays</span>
-</span><span class='line'><span class="o">{</span>
-</span><span class='line'>         <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
-</span><span class='line'>         <span class="o">{</span>
-</span><span class='line'>              <span class="kt">int</span><span class="o">[]</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">};</span>
-</span><span class='line'>                    <span class="kt">int</span><span class="o">[]</span> <span class="n">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]{</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">6</span><span class="o">};</span>
-</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;a数组和a2数组是否相等：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">a</span><span class="o">,</span><span class="n">a2</span><span class="o">));</span> <span class="c1">//true</span>
-</span><span class='line'>                    <span class="kt">int</span><span class="o">[]</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOf</span><span class="o">(</span><span class="n">a</span><span class="o">,</span><span class="mi">6</span><span class="o">);</span>
-</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;a数组和b数组是否相等：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">a</span><span class="o">,</span><span class="n">b</span><span class="o">));</span> <span class="c1">//false</span>
-</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;b数组的元素为：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">b</span><span class="o">));</span>
-</span><span class='line'>                    <span class="n">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">b</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;b数组的元素为：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">b</span><span class="o">));</span>
-</span><span class='line'>                    <span class="n">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
-</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;b数组的元素为：&quot;</span><span class="o">+</span><span class="n">Arrays</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">b</span><span class="o">));</span>
-</span><span class='line'>         <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<table border="1" style="font-size:0.7em" log-set-param="table_view"><tr><td valign="top" > <div>元字符 </div>
+</td><td valign="top" > <div>描述</div>
+</td></tr><tr><td valign="top" > <div>\</div>
+</td><td valign="top" > <div>将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“\n”匹配字符“n”。“&#92;n”匹配一个换行符。序列“&#92;”匹配“\”而“\(”则匹配“(”。</div>
+</td></tr><tr><td valign="top" > <div>^</div>
+</td><td valign="top" > <div>匹配输入字符串的开始位置。如果设置了RegExp对象的Multiline属性，^也匹配“\n”或“\r”之后的位置。</div>
+</td></tr><tr><td valign="top" > <div>$</div>
+</td><td valign="top" > <div>匹配输入字符串的结束位置。如果设置了RegExp对象的Multiline属性，$也匹配“\n”或“\r”之前的位置。</div>
+</td></tr><tr><td valign="top" > <div>*</div>
+</td><td valign="top" > <div>匹配前面的子表达式零次或多次。例如，zo*能匹配“z”以及“zoo”。*等价于{0,}。</div>
+</td></tr><tr><td valign="top" > <div>+</div>
+</td><td valign="top" > <div>匹配前面的子表达式一次或多次。例如，“zo+”能匹配“zo”以及“zoo”，但不能匹配“z”。+等价于{1,}。</div>
+</td></tr><tr><td valign="top" > <div>?</div>
+</td><td valign="top" > <div>匹配前面的子表达式零次或一次。例如，“do(es)?”可以匹配“does”或“does”中的“do”。?等价于{0,1}。</div>
+</td></tr><tr><td valign="top" > <div>{n}</div>
+</td><td valign="top" > <div>n是一个非负整数。匹配确定的n次。例如，“o{2}”不能匹配“Bob”中的“o”，但是能匹配“food”中的两个o。</div>
+</td></tr><tr><td valign="top" > <div>{n,}</div>
+</td><td valign="top" > <div>n是一个非负整数。至少匹配n次。例如，“o{2,}”不能匹配“Bob”中的“o”，但能匹配“foooood”中的所有o。“o{1,}”等价于“o+”。“o{0,}”则等价于“o*”。</div>
+</td></tr><tr><td valign="top" > <div>{n,m}</div>
+</td><td valign="top" > <div>m和n均为非负整数，其中n&lt;=m。最少匹配n次且最多匹配m次。例如，“o{1,3}”将匹配“fooooood”中的前三个o。“o{0,1}”等价于“o?”。请注意在逗号和两个数之间不能有空格。</div>
+</td></tr><tr><td valign="top" > <div>?</div>
+</td><td valign="top" > <div>当该字符紧跟在任何一个其他限制符（*,+,?，{n}，{n,}，{n,m}）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串“oooo”，“o+?”将匹配单个“o”，而“o+”将匹配所有“o”。</div>
+</td></tr><tr><td valign="top" > <div>.点</div>
+</td><td valign="top" > <div>匹配除“\n”之外的任何单个字符。要匹配包括“\n”在内的任何字符，请使用像“&#91;\s\S&#93;”的模式。</div>
+</td></tr><tr><td valign="top" > <div>(pattern)</div>
+</td><td valign="top" > <div>匹配pattern并获取这一匹配。所获取的匹配可以从产生的Matches集合得到，在VBScript中使用SubMatches集合，在JScript中则使用$0…$9属性。要匹配圆括号字符，请使用“\(”或“\)”。</div>
+</td></tr><tr><td valign="top" > <div>(?:pattern)</div>
+</td><td valign="top" > <div>匹配pattern但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用或字符“(|)”来组合一个模式的各个部分是很有用。例如“industr(?:y|ies)”就是一个比“industry|industries”更简略的表达式。</div>
+</td></tr><tr><td valign="top" > <div>(?=pattern)</div>
+</td><td valign="top" > <div>正向肯定预查，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，“Windows(?=95|98|NT|2000)”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。</div>
+</td></tr><tr><td valign="top" > <div>(?!pattern)</div>
+</td><td valign="top" > <div>正向否定预查，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如“Windows(?!95|98|NT|2000)”能匹配“Windows3.1”中的“Windows”，但不能匹配“Windows2000”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。</div>
+</td></tr><tr><td valign="top" > <div>(?&lt;=pattern)</div>
+</td><td valign="top" > <div>反向肯定预查，与正向肯定预查类似，只是方向相反。例如，“(?&lt;=95|98|NT|2000)Windows”能匹配“2000Windows”中的“Windows”，但不能匹配“3.1Windows”中的“Windows”。</div>
+</td></tr><tr><td valign="top" > <div>(?&lt;!pattern)</div>
+</td><td valign="top" > <div>反向否定预查，与正向否定预查类似，只是方向相反。例如“(?&lt;!95|98|NT|2000)Windows”能匹配“3.1Windows”中的“Windows”，但不能匹配“2000Windows”中的“Windows”。</div>
+</td></tr><tr><td valign="top" > <div>x|y</div>
+</td><td valign="top" > <div>匹配x或y。例如，“z|food”能匹配“z”或“food”。“(z|f)ood”则匹配“zood”或“food”。</div>
+</td></tr><tr><td valign="top" > <div>&#91;xyz&#93;</div>
+</td><td valign="top" > <div>字符集合。匹配所包含的任意一个字符。例如，“&#91;abc&#93;”可以匹配“plain”中的“a”。</div>
+</td></tr><tr><td valign="top" > <div>&#91;^xyz&#93;</div>
+</td><td valign="top" > <div>负值字符集合。匹配未包含的任意字符。例如，“&#91;^abc&#93;”可以匹配“plain”中的“plin”。</div>
+</td></tr><tr><td valign="top" > <div>&#91;a-z&#93;</div>
+</td><td valign="top" > <div>字符范围。匹配指定范围内的任意字符。例如，“&#91;a-z&#93;”可以匹配“a”到“z”范围内的任意小写字母字符。</div>
+</td></tr><tr><td valign="top" > <div>&#91;^a-z&#93;</div>
+</td><td valign="top" > <div>负值字符范围。匹配任何不在指定范围内的任意字符。例如，“&#91;^a-z&#93;”可以匹配任何不在“a”到“z”范围内的任意字符。</div>
+</td></tr><tr><td valign="top" > <div>\b</div>
+</td><td valign="top" > <div>匹配一个单词边界，也就是指单词和空格间的位置。例如，“er\b”可以匹配“never”中的“er”，但不能匹配“verb”中的“er”。</div>
+</td></tr><tr><td valign="top" > <div>\B</div>
+</td><td valign="top" > <div>匹配非单词边界。“er\B”能匹配“verb”中的“er”，但不能匹配“never”中的“er”。</div>
+</td></tr><tr><td valign="top" > <div>\cx</div>
+</td><td valign="top" > <div>匹配由x指明的控制字符。例如，\cM匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的“c”字符。</div>
+</td></tr><tr><td valign="top" > <div>\d</div>
+</td><td valign="top" > <div>匹配一个数字字符。等价于&#91;0-9&#93;。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\D</div>
+</td><td align="left" valign="center" height="0"><div>匹配一个非数字字符。等价于&#91;^0-9&#93;。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\f</div>
+</td><td align="left" valign="center" height="0"><div>匹配一个换页符。等价于\x0c和\cL。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\n</div>
+</td><td align="left" valign="center" height="0"><div>匹配一个换行符。等价于\x0a和\cJ。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\r</div>
+</td><td align="left" valign="center" height="0"><div>匹配一个回车符。等价于\x0d和\cM。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\s</div>
+</td><td align="left" valign="center" height="0"><div>匹配任何空白字符，包括空格、制表符、换页符等等。等价于&#91; \f\n\r\t\v&#93;。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\S</div>
+</td><td align="left" valign="center" height="0"><div>匹配任何非空白字符。等价于&#91;^ \f\n\r\t\v&#93;。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\t</div>
+</td><td align="left" valign="center" height="0"><div>匹配一个制表符。等价于\x09和\cI。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\v</div>
+</td><td align="left" valign="center" height="0"><div>匹配一个垂直制表符。等价于\x0b和\cK。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\w</div>
+</td><td align="left" valign="center" height="0"><div>匹配包括下划线的任何单词字符。等价于“&#91;A-Za-z0-9_&#93;”。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\W</div>
+</td><td align="left" valign="center" height="0"><div>匹配任何非单词字符。等价于“&#91;^A-Za-z0-9_&#93;”。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\xn</div>
+</td><td align="left" valign="center" height="0"><div>匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，“\x41”匹配“A”。“\x041”则等价于“\x04&amp;1”。正则表达式中可以使用ASCII编码。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\num</div>
+</td><td align="left" valign="center" height="0"><div>匹配num，其中num是一个正整数。对所获取的匹配的引用。例如，“(.)\1”匹配两个连续的相同字符。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\n</div>
+</td><td align="left" valign="center" height="0"><div>标识一个八进制转义值或一个向后引用。如果\n之前至少n个获取的子表达式，则n为向后引用。否则，如果n为八进制数字（0-7），则n为一个八进制转义值。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\nm</div>
+</td><td align="left" valign="center" height="0"><div>标识一个八进制转义值或一个向后引用。如果\nm之前至少有nm个获得子表达式，则nm为向后引用。如果\nm之前至少有n个获取，则n为一个后跟文字m的向后引用。如果前面的条件都不满足，若n和m均为八进制数字（0-7），则\nm将匹配八进制转义值nm。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\nml</div>
+</td><td align="left" valign="center" height="0"><div>如果n为八进制数字（0-3），且m和l均为八进制数字（0-7），则匹配八进制转义值nml。</div>
+</td></tr><tr><td align="left" valign="center" height="0"><div>\un</div>
+</td><td align="left" valign="center" height="0"><div>匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\u00A9匹配版权符号（&copy;）。</div>
+</td></tr></table>
 
 ]]></content>
   </entry>
