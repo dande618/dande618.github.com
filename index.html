@@ -135,8 +135,7 @@
 			正则表达式</a>
 	</h2>
 	<div class="entry-content">
-		<p id="article">在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p>
-
+		<p>　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p></p>
 
 <br/>
 
@@ -182,11 +181,9 @@
 			认识Intent</a>
 	</h2>
 	<div class="entry-content">
-		<p class="para">Intent：意图</p>
+		<p>　　Intent：意图</p>
 
-
-<p class="para">当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
-
+<p>　　当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
 
 
 		
@@ -229,8 +226,7 @@
 			认识Bundle</a>
 	</h2>
 	<div class="entry-content">
-		<p class="para">用于不同Activity之间的数据传递</p>
-
+		<p>　　用于不同Activity之间的数据传递</p>
 
 
 		
@@ -273,8 +269,9 @@
 			认识Handler</a>
 	</h2>
 	<div class="entry-content">
-		<p>主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
-主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
+		<p>　　主要接受子线程发送的数据, 并用此数据配合主线程更新UI。</p>
+
+<p>　　主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
 
 
 		
@@ -366,8 +363,7 @@
 			SimpleAdapter</a>
 	</h2>
 	<div class="entry-content">
-		<p id="article">Android Adapter 是将数据绑定到UI 界面上的桥接类。 Adapter负责创建和显示每个项目的子View和提供对下层数据的访问。支持Adapter绑定的UI控件必须扩展Adapter View抽象类。创建自己的继承自AdapterView的控件和创建新的Adapter类来绑定它们是可能的。</p>
-
+		<p>　　Android Adapter 是将数据绑定到UI 界面上的桥接类。 Adapter负责创建和显示每个项目的子View和提供对下层数据的访问。支持Adapter绑定的UI控件必须扩展Adapter View抽象类。创建自己的继承自AdapterView的控件和创建新的Adapter类来绑定它们是可能的。</p>
 
 
 		
@@ -405,17 +401,18 @@
     <article class="post">
 	<h2 class="title">
 		
-		<a href="/blog/2012/12/14/object/">
+		<a href="/blog/2012/12/24/is_a_has_a/">
 		
-			面向对象基本概念（一）</a>
+			继承与组合</a>
 	</h2>
 	<div class="entry-content">
-		<p id="article">在深入某种编程语言或建模语言前必须先熟悉<strong>面向对象</strong>（object-oriented，ＯＯ）思维过程。</p>
+		<p>　　is-a表示的是属于得关系。代表类之间或类与接口的继承关系。比如兔子属于一种动物（继承关系）。</p>
 
+<p>　　has-a表示组合，包含关系。代表对象和他成员的从属关系。比如兔子包含有腿，头等组件；就不能说兔子腿是属于一种兔子（不能说是继承关系）</p>
 
 
 		
-		<a href="/blog/2012/12/14/object/" class="more-link">Read on &rarr;</a>
+		<a href="/blog/2012/12/24/is_a_has_a/" class="more-link">Read on &rarr;</a>
 	</div>
 
 
@@ -432,7 +429,7 @@
   
 
 
-<time datetime="2012-12-14T17:20:00+08:00" pubdate data-updated="true">Dec 14<span>th</span>, 2012</time></div>
+<time datetime="2012-12-24T22:11:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2012</time></div>
 	<div class="tags">
 
 
@@ -441,7 +438,7 @@
 
 </div>
 	
-		<div class="comments"><a href="/blog/2012/12/14/object//index.html#disqus_thread">Comments</a></div>
+		<div class="comments"><a href="/blog/2012/12/24/is_a_has_a//index.html#disqus_thread">Comments</a></div>
 	
 </div></article>
 
@@ -449,16 +446,16 @@
     <article class="post">
 	<h2 class="title">
 		
-		<a href="/blog/2012/12/13/name/">
+		<a href="/blog/2012/12/21/Encapsulation/">
 		
-			ANDROID命名规范</a>
+			Java中的封装</a>
 	</h2>
 	<div class="entry-content">
-		<p>要时刻注意代码的规范性和可读性。</p>
+		<p>　　对象只公开了用户与之交互所需的接口，而与对象使用无关的细节能对其他对象隐藏。</p>
 
 
 		
-		<a href="/blog/2012/12/13/name/" class="more-link">Read on &rarr;</a>
+		<a href="/blog/2012/12/21/Encapsulation/" class="more-link">Read on &rarr;</a>
 	</div>
 
 
@@ -475,7 +472,7 @@
   
 
 
-<time datetime="2012-12-13T16:51:00+08:00" pubdate data-updated="true">Dec 13<span>th</span>, 2012</time></div>
+<time datetime="2012-12-21T16:10:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2012</time></div>
 	<div class="tags">
 
 
@@ -484,7 +481,7 @@
 
 </div>
 	
-		<div class="comments"><a href="/blog/2012/12/13/name//index.html#disqus_thread">Comments</a></div>
+		<div class="comments"><a href="/blog/2012/12/21/Encapsulation//index.html#disqus_thread">Comments</a></div>
 	
 </div></article>
 
@@ -492,14 +489,16 @@
     <article class="post">
 	<h2 class="title">
 		
-		<a href="/blog/2012/12/13/github/">
+		<a href="/blog/2012/12/19/object3/">
 		
-			修改代码时git的操作流程</a>
+			面向对象基本概念（三）</a>
 	</h2>
 	<div class="entry-content">
+		<p>　　对象只公开了用户与之交互所需的接口，而与对象使用无关的细节能对其他对象隐藏。</p>
+
+
 		
-		
-		<a href="/blog/2012/12/13/github/" class="more-link">Read on &rarr;</a>
+		<a href="/blog/2012/12/19/object3/" class="more-link">Read on &rarr;</a>
 	</div>
 
 
@@ -516,21 +515,23 @@
   
 
 
-<time datetime="2012-12-13T16:50:00+08:00" pubdate data-updated="true">Dec 13<span>th</span>, 2012</time></div>
+<time datetime="2012-12-19T16:10:00+08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time></div>
 	<div class="tags">
 
 
-	<a class='category' href='/blog/categories/github/'>github</a>
+	<a class='category' href='/blog/categories/android/'>android</a>
 
 
 </div>
 	
-		<div class="comments"><a href="/blog/2012/12/13/github//index.html#disqus_thread">Comments</a></div>
+		<div class="comments"><a href="/blog/2012/12/19/object3//index.html#disqus_thread">Comments</a></div>
 	
 </div></article>
 
 <nav id="pagenavi">
     
+    
+        <a href="/blog/page/2/" class="next">Next</a>
     
     <div class="center"><a href="/blog/archives">Blog Archives</a></div>
 </nav></div>
