@@ -1,92 +1,17 @@
-
-<!DOCTYPE HTML>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>正则表达式 - 初心</title>
-	<meta name="author" content="dande618">
-
-	
-	<meta name="description" content="　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。 元字符 描述
-\
-将下一个字符标记为一个特殊字符、或一个原义字符 &hellip;">
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-	<link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/favicon.png" rel="shortcut icon">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	
-</head>
-
-<body>
-	<header id="header" class="inner"><h1><a href="/">初心</a></h1>
-<nav id="main-nav"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-</ul>
-</nav>
-<nav id="mobile-nav">
-	<div class="alignleft menu">
-		<a class="button">Menu</a>
-		<div class="container"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-</ul>
-</div>
-	</div>
-	<div class="alignright search">
-		<a class="button"></a>
-		<div class="container">
-			<form action="http://google.com/search" method="get">
-				<input type="text" name="q" results="0">
-				<input type="hidden" name="q" value="site:dande618.github.com">
-			</form>
-		</div>
-	</div>
-</nav>
-<nav id="sub-nav" class="alignright">
-	<div class="social">
-		
-		
-		
-		
-    
-		
-		
-		
-		
-		
-		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
-		
-	</div>
-	<form class="search" action="http://google.com/search" method="get">
-		<input class="alignright" type="text" name="q" results="0">
-		<input type="hidden" name="q" value="site:dande618.github.com">
-	</form>
-</nav>
-
-</header>
-	
-		
-	
-	<div id="content" class="inner"><article class="post">
-	<h2 class="title">正则表达式</h2>
-	<div class="entry-content"><p>　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p></p>
-
+---
+layout: post
+title: "正则表达式"
+date: 2013-02-15 16:00
+comments: true
+categories: 其他
+---
+　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p>
 <br/>
-
-
 <!-- more -->
-
-
 <table class="mytable"><tr><td class="mytable">元字符 
 </td><td class="mytable">描述
 </td></tr><tr><td class="mytable">\
-</td><td class="mytableb">将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“\n”匹配字符“n”。“&#92;n”匹配一个换行符。序列“&#92;”匹配“\”而“\(”则匹配“(”。
+</td><td class="mytableb">将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“\n”匹配字符“n”。“\\n”匹配一个换行符。序列“\\”匹配“\”而“\(”则匹配“(”。
 </td></tr><tr><td class="mytable">^
 </td><td class="mytableb">匹配输入字符串的开始位置。如果设置了RegExp对象的Multiline属性，^也匹配“\n”或“\r”之后的位置。
 </td></tr><tr><td class="mytable">$
@@ -171,157 +96,40 @@
 </td><td class="mytableb">匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\u00A9匹配版权符号（&copy;）。
 </td></tr></table>
 
+##使用emeditor宏批处理
+例
+1. 添加菜单项
+{% codeblock %}
+if (document.selection.isempty)
 
-<h2>使用emeditor宏批处理</h2>
+	nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
 
-<p>例
-1. 添加菜单项</p>
+else 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>if (document.selection.isempty)
-</span><span class='line'>
-</span><span class='line'>  nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
-</span><span class='line'>
-</span><span class='line'>else 
-</span><span class='line'>
-</span><span class='line'>  nFlags=eeFindNext | eeReplaceSelOnly | eeReplaceAll | eeFindReplaceRegExp;
-</span><span class='line'>
-</span><span class='line'>menu= CreatePopupMenu();
-</span><span class='line'>
-</span><span class='line'>menu.Add("使用正则表达式提取字符串",1);
-</span><span class='line'>
-</span><span class='line'>result = menu.Track( 0 );
-</span><span class='line'>
-</span><span class='line'>if (result>40) nFlags=nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
-</span><span class='line'>
-</span><span class='line'>switch(result){
-</span><span class='line'>
-</span><span class='line'>case 1: //内容
-</span><span class='line'>
-</span><span class='line'>      break;
-</span><span class='line'>
-</span><span class='line'>default:
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+	nFlags=eeFindNext | eeReplaceSelOnly | eeReplaceAll | eeFindReplaceRegExp;
 
+menu= CreatePopupMenu();
 
-<p>2.删除段首尾空格</p>
+menu.Add("使用正则表达式提取字符串",1);
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>document.selection.Replace("^\\s*","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);
-</span><span class='line'>
-</span><span class='line'>document.selection.Replace("\\s*$","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);</span></code></pre></td></tr></table></div></figure>
+result = menu.Track( 0 );
 
+if (result>40) nFlags=nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
 
+switch(result){
 
-</div>
+case 1: //内容
 
+		break;
 
-<div class="meta">
-	<div class="date">
+default:
 
+}
+{% endcodeblock %}
 
+2.删除段首尾空格
+{% codeblock %}
+document.selection.Replace("^\\s*","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);
 
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-15T16:00:00+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2013</time></div>
-	<div class="tags">
-
-
-	<a class='category' href='/blog/categories/其他/'>其他</a>
-
-
-</div>
-	
-		<div class="comments"><a href="/blog/2013/02/15/regex/#disqus_thread">Comments</a></div>
-	
-</div></article>
-
-	<div class="share">
-	<div class="addthis_toolbox addthis_default_style ">
-	
-	
-	<a class="addthis_button_tweet"></a>
-	
-	
-	<a class="addthis_counter addthis_pill_style"></a>
-	</div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
-</div>
-
-
-
-<section id="comment">
-    <h2 class="title">Comments</h2>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-</section>
-</div>
-	<footer id="footer" class="inner">Copyright &copy; 2013
-
-    dande618
-
-</footer>
-	<script src="/javascripts/slash.js"></script>
-<script src="/javascripts/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-	$('.fancybox').fancybox();
-})(jQuery);
-</script> <!-- Delete or comment this line to disable Fancybox -->
-
-
-<script type="text/javascript">
-      var disqus_shortname = 'dande618sblog';
-      
-        
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://dande618.github.com/blog/2013/02/15/regex/';
-        var disqus_url = 'http://dande618.github.com/blog/2013/02/15/regex/';
-        var disqus_script = 'embed.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
-
-
-
-
-
-</body>
-</html>
+document.selection.Replace("\\s*$","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);
+{% endcodeblock %}

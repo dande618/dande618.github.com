@@ -1,0 +1,37 @@
+---
+layout: post
+title: "继承与组合"
+date: 2012-12-24 22:11
+comments: true
+categories: java
+---
+　　is-a表示的是属于得关系。代表类之间或类与接口的继承关系。比如兔子属于一种动物（继承关系）。
+
+　　has-a表示组合，包含关系。代表对象和他成员的从属关系。比如兔子包含有腿，头等组件；就不能说兔子腿是属于一种兔子（不能说是继承关系）
+
+<!-- more -->
+
+　　对两个类之间"is a"或是"has a"关系的分析，有助于我们确定它们之间是否存在继承关系，避免设计上的错误，因而达到提高代码重用性的目的。
+
+　　在JAVA中，组合仅需将对象引用置于新类中即可。
+
+　　继承以关键字extends实现，即BaseClass extends SubClass{ }的形式实现导出类由BaseClass导出子类SubClass，子类可以在其接口中自动获取基类的方法而不论这些方法是否在子类中显示定义过；一方面，在子类中使用基类中的方法及对其进行修改都是可行的。需要特别说明的是，若要使用子类与基类中共有的属于基类方法时，则需要加关键字super表示当前类是从超类继承来的。
+
+__继承：__
+{% codeblock lang:java %}
+class A{
+     //.....
+}
+class B extends A{
+    //.....
+}
+{% endcodeblock %}
+__组合：__
+{% codeblock lang:java %}
+class A{
+    //.....
+}
+class B{
+     A a;
+}
+{% endcodeblock %}

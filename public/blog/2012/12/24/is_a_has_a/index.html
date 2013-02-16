@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>认识Intent - 初心</title>
+	<title>继承与组合 - 初心</title>
 	<meta name="author" content="dande618">
 
 	
-	<meta name="description" content="　　Intent：意图 　　当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。 　　Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此， &hellip;">
+	<meta name="description" content="　　is-a表示的是属于得关系。代表类之间或类与接口的继承关系。比如兔子属于一种动物（继承关系）。 　　has-a表示组合，包含关系。代表对象和他成员的从属关系。比如兔子包含有腿，头等组件；就不能说兔子腿是属于一种兔子（不能说是继承关系） 　　对两个类之间&#8221;is a&#8221;或是 &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -72,18 +72,21 @@
 		
 	
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">认识Intent</h2>
-	<div class="entry-content"><p>　　Intent：意图</p>
+	<h2 class="title">继承与组合</h2>
+	<div class="entry-content"><p>　　is-a表示的是属于得关系。代表类之间或类与接口的继承关系。比如兔子属于一种动物（继承关系）。</p>
 
-<p>　　当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
+<p>　　has-a表示组合，包含关系。代表对象和他成员的从属关系。比如兔子包含有腿，头等组件；就不能说兔子腿是属于一种兔子（不能说是继承关系）</p>
 
 <!-- more -->
 
 
-<p>　　Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此，Intent还是应用程序组件之间通讯的重要媒介。两个Activity可以把需要交换的数据封装成Bundle对象，然后使用Intent来携带Bundle对象，这样就实现了两个Activity之间的数据交换。</p>
-Android的应用程序包含三种重要的组件：Activity、Service、BroadcastReceiver，应用程序采用了一致的方式来启动他们——都是依靠Intent来进行启动的，Intent就封装了程序想要启动程序的意图，不仅如此，Intent还可用于与被启动组件交换信息。</p>
+<p>　　对两个类之间&#8221;is a&#8221;或是&#8221;has a&#8221;关系的分析，有助于我们确定它们之间是否存在继承关系，避免设计上的错误，因而达到提高代码重用性的目的。</p>
 
-<p>　　通过点击按钮打开另一个Activity</p></p>
+<p>　　在JAVA中，组合仅需将对象引用置于新类中即可。</p>
+
+<p>　　继承以关键字extends实现，即BaseClass extends SubClass{ }的形式实现导出类由BaseClass导出子类SubClass，子类可以在其接口中自动获取基类的方法而不论这些方法是否在子类中显示定义过；一方面，在子类中使用基类中的方法及对其进行修改都是可行的。需要特别说明的是，若要使用子类与基类中共有的属于基类方法时，则需要加关键字super表示当前类是从超类继承来的。</p>
+
+<p><strong>继承：</strong></p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -91,27 +94,30 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span>
-</span><span class='line'>  <span class="o">(</span>
-</span><span class='line'>   <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
-</span><span class='line'>   <span class="o">{</span>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
-</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">SecondActivity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>     <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'>  <span class="o">);</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">A</span><span class="o">{</span>
+</span><span class='line'>     <span class="c1">//.....</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">class</span> <span class="nc">B</span> <span class="kd">extends</span> <span class="n">A</span><span class="o">{</span>
+</span><span class='line'>    <span class="c1">//.....</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p><strong>组合：</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">A</span><span class="o">{</span>
+</span><span class='line'>    <span class="c1">//.....</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">class</span> <span class="nc">B</span><span class="o">{</span>
+</span><span class='line'>     <span class="n">A</span> <span class="n">a</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 </div>
 
@@ -129,16 +135,16 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
   
 
 
-<time datetime="2013-01-29T20:29:00+08:00" pubdate data-updated="true">Jan 29<span>th</span>, 2013</time></div>
+<time datetime="2012-12-24T22:11:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2012</time></div>
 	<div class="tags">
 
 
-	<a class='category' href='/blog/categories/android/'>android</a>
+	<a class='category' href='/blog/categories/java/'>java</a>
 
 
 </div>
 	
-		<div class="comments"><a href="/blog/2013/01/29/intent/#disqus_thread">Comments</a></div>
+		<div class="comments"><a href="/blog/2012/12/24/is_a_has_a/#disqus_thread">Comments</a></div>
 	
 </div></article>
 
@@ -181,8 +187,8 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://dande618.github.com/blog/2013/01/29/intent/';
-        var disqus_url = 'http://dande618.github.com/blog/2013/01/29/intent/';
+        var disqus_identifier = 'http://dande618.github.com/blog/2012/12/24/is_a_has_a/';
+        var disqus_url = 'http://dande618.github.com/blog/2012/12/24/is_a_has_a/';
         var disqus_script = 'embed.js';
       
     (function () {

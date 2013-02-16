@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>认识Handler - 初心</title>
+	<title>面向对象基本概念（二） - 初心</title>
 	<meta name="author" content="dande618">
 
 	
-	<meta name="description" content="　　主要接受子线程发送的数据, 并用此数据配合主线程更新UI。 　　主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。 Handler类的主要作用有两个： &hellip;">
+	<meta name="description" content="方法 　　方法实现了一个类所需的行为。从这个类实例化的各个对象都有该类所定义的方法。方法可能实现其他对象（消息）所调用的行为，或者提供这个类内部的基本行为。内部行为是不允许其他对象访问的私有方法。 　　在各种情况下，对一个对象中属性的访问要由这个对象自己来控制， &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -72,23 +72,35 @@
 		
 	
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">认识Handler</h2>
-	<div class="entry-content"><p>　　主要接受子线程发送的数据, 并用此数据配合主线程更新UI。</p>
+	<h2 class="title">面向对象基本概念（二）</h2>
+	<div class="entry-content"><h2>方法</h2>
 
-<p>　　主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
+<p>　　方法实现了一个类所需的行为。从这个类实例化的各个对象都有该类所定义的方法。方法可能实现其他对象（消息）所调用的行为，或者提供这个类内部的基本行为。内部行为是不允许其他对象访问的私有方法。</p>
+
+<p>　　在各种情况下，对一个对象中属性的访问要由这个对象自己来控制，而不允许其他对象直接修改另一个对象的属性。</p>
 
 <!-- more -->
 
 
-<p><strong>Handler类的主要作用有两个：</strong></p>
+<h2>消息</h2>
 
-<ol>
-<li><p>在新启动的线程中发送消息。</p></li>
-<li><p>在主线程中获取、处理消息。</p></li>
-</ol>
+<p>　　消息是对象之间的的通信机制。例如，当对象A调用对象B的一个方法时，对象A就是在向对象B发送一个消息。对象B的响应由其返回值定义。只有对象的公共方法（而不包括私有方法）能够由另一个对象调用。</p>
 
+<h2>封装和数据隐藏</h2>
 
-<p>　　通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
+<p>　　使用对象的主要优点之一是，对象不需要公开它的所有的属性和行为。在好的ＯＯ设计中，对象只应公开其他对象与之交互所必需的接口，与对象使用无关的细节应当对所有其他对象隐藏。</p>
+
+<h2>接口</h2>
+
+<p>　　接口定义了对象间通信的基本途径。每个类设计都要指定接口来正确地实现对象的实例化和操作。对象提供的行为必须通过使用某个接口发送的消息来调用。接口应当全面描述这个类的用户如何与之交互。在大多数ＯＯ语言中，接口中的方法都指定为public。</p>
+
+<p>　　要实现数据隐藏，所有属性都应当声明为private。</p>
+
+<h2>实现</h2>
+
+<p>　　只有公共属性和方法被认为是接口。用户不应该看到任何实现部分，与一个对象的交互只能通过类接口。</p>
+
+<p>　　因此，实现可以改变，但是它不会影响到用户的代码。</p>
 </div>
 
 
@@ -105,16 +117,16 @@
   
 
 
-<time datetime="2013-01-28T11:36:00+08:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time></div>
+<time datetime="2012-12-16T09:11:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2012</time></div>
 	<div class="tags">
 
 
-	<a class='category' href='/blog/categories/android/'>android</a>
+	<a class='category' href='/blog/categories/java/'>java</a>
 
 
 </div>
 	
-		<div class="comments"><a href="/blog/2013/01/28/handler/#disqus_thread">Comments</a></div>
+		<div class="comments"><a href="/blog/2012/12/16/object2/#disqus_thread">Comments</a></div>
 	
 </div></article>
 
@@ -157,8 +169,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://dande618.github.com/blog/2013/01/28/handler/';
-        var disqus_url = 'http://dande618.github.com/blog/2013/01/28/handler/';
+        var disqus_identifier = 'http://dande618.github.com/blog/2012/12/16/object2/';
+        var disqus_url = 'http://dande618.github.com/blog/2012/12/16/object2/';
         var disqus_script = 'embed.js';
       
     (function () {

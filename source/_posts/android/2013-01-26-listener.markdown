@@ -1,0 +1,48 @@
+---
+layout: post
+title: "事件处理"
+date: 2013-01-26 10:27
+comments: true
+categories: android
+---
+Android的时间处理机制包括
+<ul>
+	<li>基于监听的事件处理</li>
+	<li>基于回调的事件处理</li>
+</ul>
+<!-- more -->
+基于监听的事件处理：为界面组件绑定监听器。
+基于回调的事件处理：重写组件（Activity）特定的回调方法。
+<h2>基于监听的事件处理</h2>
+<ol>
+	<li>获取被监听的对象（即界面组件）</li>
+	<li>实现事件监听器（即一个实现XxxListener接口的类）</li>
+	<li>调用事件源的setXxxListener(XxxListener)方法将事件监听器注册给被监听的对象</li>
+</ol>
+View类的接口有
+<ul>
+	<li>View.OnClickListener</li>
+	<li>View.OnCreateContextMenuLister</li>
+	<li>View.OnFocusChangeListener</li>
+	<li>View.OnKeyListener</li>
+	<li>View.OnLongClickListener</li>
+	<li>View.OnTouchListener</li>
+</ul>
+实现事件监听器的形式
+<ul>
+	<li>内部类形式</li>
+	<li>外部类形式</li>
+	<li>Activity本身作为事件监听器类</li>
+	<li>匿名内部类</li>（常用）
+	<li>直接绑定到标签</li>
+</ul>
+<h2>基于回调的事件处理</h2>
+以View类为例，一些事件处理的回调方法
+<ul>
+	<li>boolean onKeyDown(int keyCode,KeyEvent event)</li>
+	<li>boolean onKeyLongPress(int keyCode,KeyEvent event)</li>
+	<li>boolean onKeyShortcut(int keyCode,KeyEvent event)</li>
+	<li>boolean onKeyUp(int keyCode,KeyEvent event)</li>
+	<li>boolean onTouchEvent(MotionEvent event)</li>
+	<li>boolean onTrackballEvent(MotionEvent event)</li>
+</ul>

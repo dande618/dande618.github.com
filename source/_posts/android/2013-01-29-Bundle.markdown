@@ -1,0 +1,100 @@
+---
+layout: post
+title: "认识Bundle"
+date: 2013-01-29 15:22
+comments: true
+categories: android
+---
+　　用于不同Activity之间的数据传递
+<!-- more -->
+<h2>重要方法</h2>
+<p class="para">clear()：清除此Bundle映射中的所有保存的数据。</p>
+<p class="para">clone()：克隆当前Bundle</p>
+<p class="para">containsKey(String key)：返回指定key的值</p>
+<p class="para">getString(String key)：返回指定key的字符</p>
+<p class="para">hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符</p>
+<p class="para">isEmpty()：如果这个捆绑映射为空，则返回true</p>
+<p class="para">putString(String key, String value):插入一个给定key的字符串值</p>
+<p class="para">readFromParcel(Parcel parcel)：读取这个parcel的内容</p>
+<p class="para">remove(String key)：移除指定key的值</p>
+<p class="para">writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
+<h2>Android Bundle类</h2> 
+<p class="laiyuan">[转载]　<a href="http://blog.csdn.net/randyjiawenjie/article/details/6651437">文章出处</a></p>
+<p class="para">根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）</p>
+<p class="para">Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”</p>
+<p class="para">类继承关系：</p>
+<p class="dk">java.lang.Object</p>
+<p class="dk">android.os.Bundle</p>
+<p class="para">Bundle类是一个final类：</p>
+<p class="dk">public final class</p>
+<p class="dk">Bundle</p>
+<p class="dk">extends Objectimplements Parcelable Cloneable</p>
+<p class="para">两个activity之间的通讯可以通过bundle类来实现，做法就是：</p>
+<p class="para">（1）新建一个bundle类</p>
+{% codeblock lang:java %}
+Bundle mBundle = new Bundle();
+{% endcodeblock %}
+（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）
+{% codeblock lang:java %}
+mBundle.putString("Data", "data from TestBundle");
+{% endcodeblock %}
+(3)新建一个intent对象，并将该bundle加入这个intent对象
+{% codeblock lang:java %}
+Intent intent = new Intent();    
+intent.setClass(TestBundle.this, Target.class);    
+intent.putExtras(mBundle);
+{% endcodeblock %}
+<p class="para">完整代码见原文</p>
+————————
+
+Activity1：
+{% codeblock lang:java %}
+btn.setOnClickListener
+        (
+         new OnClickListener()
+         {
+    @Override
+    public void onClick(View v) {
+     String str=ev.getText().toString().trim();
+     Intent intent=new Intent();
+     intent.setClass(Activity1.this,Activity2.class);
+     Bundle bundle=new Bundle();
+     bundle.putString("str", str);
+     intent.putExtras(bundle);//绑定信息
+     startActivity(intent);//启动Activity
+     Activity1.this.finish();//关闭Activity
+    }      
+ }
+);
+{% endcodeblock %}
+ 
+
+Activity2：
+{% codeblock lang:java %}
+public void onCreate(Bundle savedInstanceState)
+ {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.anthor);
+  TextView tv=(TextView)this.findViewById(R.id.TextView1);//显示的信息
+  Button button=(Button)this.findViewById(R.id.anthorButton);//返回按钮
+  Bundle bundle=this.getIntent().getExtras();
+  String str=bundle.getString("str");
+  StringBuilder sb=new StringBuilder();
+  sb.append("您填写的信息为："+str+"\n");
+  tv.setText(sb.toString().trim());
+  
+  button.setOnClickListener
+  (
+   new OnClickListener()
+   {
+    @Override
+    public void onClick(View v) {
+     Intent intent=new Intent();
+     intent.setClass(Activity2.this,Activity1.class);
+     startActivity(intent);
+     AnotherActivity.this.finish();//关闭Activity
+    }    
+   }
+  );
+ } 
+{% endcodeblock %}

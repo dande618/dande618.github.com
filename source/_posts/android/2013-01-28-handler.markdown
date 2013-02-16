@@ -1,0 +1,18 @@
+---
+layout: post
+title: "认识Handler"
+date: 2013-01-28 11:36
+comments: true
+categories: android
+---
+　　主要接受子线程发送的数据, 并用此数据配合主线程更新UI。
+
+　　主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。
+<!-- more -->
+__Handler类的主要作用有两个：__
+
+1. 在新启动的线程中发送消息。
+
+2. 在主线程中获取、处理消息。
+
+　　通过回调的方式来实现，重写Handler类中处理消息的方法。
