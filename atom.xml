@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-16T11:27:09+08:00</updated>
+  <updated>2013-02-16T14:54:29+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -1112,73 +1112,6 @@ git pull --rebase
 接着与上面处理冲突的方法一致</pre>
 </li>
 </ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[汉字测试123]]></title>
-    <link href="http://dande618.github.com/blog/2012/09/10/test2/"/>
-    <updated>2012-09-10T10:27:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/09/10/test2</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<p><embed src="http://www.xiami.com/widget/0_1769657875/singlePlayer.swf" type="application/x-shockwave-flash" width="257" height="33" wmode="transparent"></embed></p>
-
-<p id="article">首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试首字下沉测试</p>
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Count</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Count</span><span class="o">(){</span>
-</span><span class='line'><span class="err">　　　　</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Count</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">){</span>
-</span><span class='line'><span class="err">　　　　</span><span class="n">count</span> <span class="o">=</span> <span class="n">number</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<blockquote><p><strong>加粗测试</strong><br/>Last night I lay in bed looking up at the stars in the sky and I thought to myself, where the heck is the ceiling.</p></blockquote>
-
-
-<p><strong>加粗测试</strong>
-<em>斜体测试</em></p>
-
-<h1>标题1</h1>
-
-
-<h2>标题2</h2>
-
-
-<h3>标题3</h3>
-
-
-<p class="para">正文</p>
-
-
-<h4>标题4</h4>
-
-
-<h5>标题5</h5>
-
-
-<h6>标题6</h6>
 
 ]]></content>
   </entry>
