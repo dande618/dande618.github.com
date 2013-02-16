@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 其他 | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-15T17:47:01+08:00</updated>
+  <updated>2013-02-16T10:49:26+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,285 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[markdown]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/15/markdown/"/>
+    <updated>2013-02-15T19:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/15/markdown</id>
+    <content type="html"><![CDATA[<div style="float:left;padding-right:20px"><img src="http://mouapp.com/Mou_128.png"/></div>
+
+
+<p>Markdown是什么？</p>
+
+
+<p>Markdown 是一种轻量级标记语言，创始人为John Gruber和Aaron Swartz。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”。</p>
+
+
+<p>摘自维基百科Markdown条。</p>
+
+
+<!-- more -->
+
+
+<p>Markdown有啥好处？</p>
+
+<p>正如上文所述，Markdown具有：</p>
+
+<ol>
+<li><p>易学易用；</p></li>
+<li><p>方便转换为HTML等其他格式；</p></li>
+<li><p>支持广泛，便于维护；</p></li>
+</ol>
+
+
+<p>等等特性。</p>
+
+<h2>以下摘自 Markdown 语法说明 (简体中文版)</h2>
+
+<p><a href="http://wowubuntu.com/markdown/index.html">源地址</a></p>
+
+<p>Markdown 语法:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>A First Level Header&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h2>A Second Level Header&lt;/h2>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Now is the time for all good men to come to
+</span><span class='line'>the aid of their country. This is just a
+</span><span class='line'>regular paragraph.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>The quick brown fox jumped over the lazy
+</span><span class='line'>dog's back.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h3>Header 3&lt;/h3>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>&lt;p>This is a blockquote.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>This is the second paragraph in the blockquote.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h2>This is an H2 in a blockquote&lt;/h2>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
+输出 HTML 为：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>&lt;/blockquote>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>A First Level Header&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;h2>A Second Level Header&lt;/h2>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Now is the time for all good men to come to
+</span><span class='line'>the aid of their country. This is just a
+</span><span class='line'>regular paragraph.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>The quick brown fox jumped over the lazy
+</span><span class='line'>dog's back.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;h3>Header 3&lt;/h3>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>
+</span><span class='line'>&lt;p>This is a blockquote.&lt;/p>
+</span><span class='line'>&lt;p>This is the second paragraph in the blockquote.&lt;/p>
+</span><span class='line'>&lt;h2>This is an H2 in a blockquote&lt;/h2>
+</span><span class='line'>&lt;/blockquote>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>修辞和强调</h2>
+
+<p>Markdown 使用星号和底线来标记需要强调的区段。</p>
+
+<p>Markdown 语法:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Some of these words &lt;em>are emphasized&lt;/em>.
+</span><span class='line'>Some of these words &lt;em>are emphasized also&lt;/em>.
+</span><span class='line'>Use two asterisks for &lt;strong>strong emphasis&lt;/strong>.
+</span><span class='line'>Or, if you prefer, &lt;strong>use two underscores instead&lt;/strong>.</span></code></pre></td></tr></table></div></figure></notextile></div>
+输出 HTML 为:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Some of these words &lt;em>are emphasized&lt;/em>.
+</span><span class='line'>Some of these words &lt;em>are emphasized also&lt;/em>.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Use two asterisks for &lt;strong>strong emphasis&lt;/strong>.
+</span><span class='line'>Or, if you prefer, &lt;strong>use two underscores instead&lt;/strong>.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>列表</h2>
+
+<p>无序列表使用星号、加号和减号来做为列表的项目标记，这些符号是都可以使用的，使用星号：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>* Candy.
+</span><span class='line'>* Gum.
+</span><span class='line'>* Booze.</span></code></pre></td></tr></table></div></figure></notextile></div>
+有序的列表则是使用一般的数字接着一个英文句点作为项目标记：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1. Red
+</span><span class='line'>2. Green
+</span><span class='line'>3. Blue</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>链接</h2>
+
+<p>Markdown 支援两种形式的链接语法： 行内 和 参考 两种形式，两种都是使用角括号来把文字转成连结。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>This is an &lt;a href="http://example.com/" title="With a Title">example link&lt;/a>.</span></code></pre></td></tr></table></div></figure></notextile></div>
+参考形式的链接让你可以为链接定一个名称，之后你可以在文件的其他地方定义该链接的内容：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>I get 10 times more traffic from &lt;a href="http://google.com/" title="Google">Google&lt;/a> than from
+</span><span class='line'>&lt;a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo&lt;/a> or &lt;a href="http://search.msn.com/" title="MSN Search">MSN&lt;/a>.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>自动链接</h2>
+
+<p>Markdown 支持以比较简短的自动链接形式来处理网址和电子邮件信箱，只要是用方括号包起来， Markdown 就会自动把它转成链接。一般网址的链接文字就和链接地址一样，例如：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a href="http://example.com/">http://example.com/&lt;/a></span></code></pre></td></tr></table></div></figure></notextile></div>
+Markdown 会转为：</p>
+
+<h2>图片</h2>
+
+<p>图片的语法和链接很像。</p>
+
+<p>行内形式（title 是选择性的）：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;img src="/path/to/img.jpg" title="Title" alt="alt text" /></span></code></pre></td></tr></table></div></figure></notextile></div>
+参考形式：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;img src="/path/to/img.jpg" title="Title" alt="alt text" /></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>区块引用 Blockquotes</h2>
+
+<p>Markdown 标记区块引用是使用类似 email 中用 > 的引用方式。如果你还熟悉在 email 信件中的引言部分，你就知道怎么在 Markdown 文件中建立一个区块引用，那会看起来像是你自己先断好行，然后在每行的最前面加上 > ：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>&lt;p>This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+</span><span class='line'>consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+</span><span class='line'>Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
+</span><span class='line'>id sem consectetuer libero luctus adipiscing.</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>分隔线</h2></blockquote>
+
+<p>你可以在一行中用三个以上的星号、减号、底线来建立一个分隔线，行内不能有其他东西。你也可以在星号或是减号中间插入空格。下面每种写法都可以建立分隔线：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[正则表达式]]></title>
