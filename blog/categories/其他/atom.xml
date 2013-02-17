@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 其他 | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-16T23:04:06+08:00</updated>
+  <updated>2013-02-17T09:32:43+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -601,6 +601,76 @@ git pull --rebase
 </li>
 </ol>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[常见中文EPUB制作方法]]></title>
+    <link href="http://dande618.github.com/blog/2012/11/10/epub/"/>
+    <updated>2012-11-10T00:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2012/11/10/epub</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h2>1.Word排版+EpubStar</h2>
+
+<p><strong>概述：</strong></p>
+
+<p>　　使用Word排版（使用样式）后，用EpubStar生成Epub。EpubStar是大神 老牛 制作的软件。</p>
+
+<p><strong>优点：</strong></p>
+
+<p>　　大部分人对Word排版比较熟悉，熟练后可制作精美的书籍。</p>
+
+<p><strong>缺点：</strong></p>
+
+<p>　　免费版支持样式较少。样式较固定（当然也可以自行替换CSS文件）。</p>
+
+<h2>2.Sigil</h2>
+
+<p><strong>概述：</strong></p>
+
+<p>　　Sigil是一款功能丰富的开源Epub制作软件。可以修改源代码和文本内容。Sigil可以跨平台使用，支持Windows,Linux和Mac。</p>
+
+<p>　　熟练使用后可以制作精美的书籍。</p>
+
+<p><strong>优点：</strong></p>
+
+<p>　　完全透明的EPUB制作。支持正则。</p>
+
+<p><strong>缺点：</strong></p>
+
+<p>　　上手略难。Sigil会自动修改一些格式（可以尝试关闭此功能）。</p>
+
+<h2>3.epubBuilder</h2>
+
+<p><strong>概述：</strong></p>
+
+<p>　　掌上书苑出品的制作软件。可以导入各种格式的书籍，章节处理工具强大。</p>
+
+<p><strong>优点：</strong></p>
+
+<p>　　可以很省力地智能分章，去除广告等。可以压制图片制成EPUB漫画。</p>
+
+<p><strong>缺点：</strong></p>
+
+<p>　　无法制作样式复杂的书籍（可以生成后拆包使用文本工具排版）。部分细节还需优化。</p>
+
+<p>　　生成的EPUB结构不很标准，因此生成的文件导入Sigil可能会出现小问题（比如章节顺序）。</p>
+
+<h2>4.Calibre</h2>
+
+<p><strong>概述：</strong></p>
+
+<p>　　一款神级的书籍管理软件，可用于各种格式间的转化，抓取新闻等。使用其制作书籍不推荐。</p>
+
+<h2>5.手书代码</h2>
+
+<p><strong>概述：</strong></p>
+
+<p>　　完全地手写代码。适合有强迫症的同学。在较好地理解Epub结构和HTML、CSS的前提下，可以制作完美的书籍。</p>
+
+<h3>以上只是本人感受，如有错误和不足，欢迎批评指正。</h3>
 ]]></content>
   </entry>
   
