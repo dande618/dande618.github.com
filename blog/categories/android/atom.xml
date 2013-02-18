@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-18T20:56:10+08:00</updated>
+  <updated>2013-02-18T21:02:20+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -228,6 +228,12 @@
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">tv</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">].</span><span class="na">setTextColor</span><span class="o">(</span><span class="mh">0xFF0000FF</span><span class="o">);</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img src="http://img13.poco.cn/mypoco/myphoto/20130218/20/4309479020130218205705042.png" alt="图1" /></p>
+
+<p><img src="http://img13.poco.cn/mypoco/myphoto/20130218/20/4309479020130218205849091.png" alt="图2" /></p>
+
+<p><img src="http://img14.poco.cn/mypoco/myphoto/20130218/20/4309479020130218205932056.png" alt="图3" /></p>
 
 <p>源码地址：<a href="https://github.com/dande618/BinarySearchDemo.git">https://github.com/dande618/BinarySearchDemo.git</a></p>
 ]]></content>
