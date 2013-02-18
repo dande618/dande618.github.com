@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-18T21:28:58+08:00</updated>
+  <updated>2013-02-18T21:38:33+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -198,13 +198,18 @@
 <br/>
 
 
-<div><img style="float:left;width:200px;" src="http://img13.poco.cn/mypoco/myphoto/20130218/20/4309479020130218205705042.png"  alt="图1" />　<img style="float:left;width:200px;" src="http://img13.poco.cn/mypoco/myphoto/20130218/20/4309479020130218205849091.png"  alt="图2" />　<img style="float:left;width:200px;" src="http://img14.poco.cn/mypoco/myphoto/20130218/20/4309479020130218205932056.png"  alt="图3" /><div>
+<p><img style="width:600px;" src="http://img14.poco.cn/mypoco/myphoto/20130218/21/4309479020130218213456040.png"  alt="图" /></p>
+
 <br/>
+
+
 <hr>
+
+
 <br/>
 
-源码地址：<https://github.com/dande618/BinarySearchDemo.git>
 
+<p>源码地址：<a href="https://github.com/dande618/BinarySearchDemo.git">https://github.com/dande618/BinarySearchDemo.git</a></p>
 ]]></content>
   </entry>
   
