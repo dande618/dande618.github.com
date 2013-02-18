@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-17T09:32:43+08:00</updated>
+  <updated>2013-02-18T20:53:08+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,226 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[二分查找演示程序]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/18/BinarySearchDemo/"/>
+    <updated>2013-02-18T22:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/18/BinarySearchDemo</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h2>二分查找介绍</h2>
+
+<p>　　二分查找又称折半查找，优点是比较次数少，查找速度快，平均性能好；其缺点是要求待查表为有序表，且插入删除困难。因此，折半查找方法适用于不经常变动而查找频繁的有序列表。</p>
+
+<h2>二分查找原理</h2>
+
+<p>　　首先，假设表中元素是按升序排列，将表中间位置记录的关键字与查找关键字比较，如果两者相等，则查找成功；否则利用中间位置记录将表分成前、后两个子表，如果中间位置记录的关键字大于查找关键字，则进一步查找前一子表，否则进一步查找后一子表。重复以上过程，直到找到满足条件的记录，使查找成功，或直到子表不存在为止，此时查找不成功。</p>
+
+<h2>演示程序</h2>
+
+<ol>
+<li><p>给出一组固定升序排列的数组</p></li>
+<li><p>用户输入查找数字（限定0-9之间）</p></li>
+<li><p>点击按键逐次查找，显示查找次数和边界值变化</p></li>
+<li><p>查找完成后可复位成初始状态</p></li>
+</ol>
+
+
+<h2>程序代码分析</h2>
+
+<h3>初始化</h3>
+
+<p>　　给出数组和初始数值。其中mLow为上边界，mHigh为上边界，mMiddle为中间值。mTimes为计次变量。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">src</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">7</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">9</span> <span class="o">};</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">int</span> <span class="n">mLow</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">int</span> <span class="n">mHigh</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">int</span> <span class="n">mTimes</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">int</span> <span class="n">mMiddle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><strong>设置屏幕、组件，绑定监听器</strong></p>
+
+<p>　　批量设置textview的方法</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">TextView</span><span class="o">[]</span> <span class="n">tv</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="n">Integer</span><span class="o">[]</span> <span class="n">view</span> <span class="o">=</span> <span class="o">{</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num0</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num1</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num2</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num3</span><span class="o">,</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num4</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num5</span> <span class="o">};</span>
+</span><span class='line'><span class="n">tv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextView</span><span class="o">[</span><span class="mi">6</span><span class="o">];</span>
+</span><span class='line'><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">6</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">tv</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">view</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span><span class='line'>    <span class="n">tv</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">setText</span><span class="o">(</span><span class="n">src</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>设置“搜索”按键的监听类</h3>
+
+<p><strong>判断计次变量mTimes</strong></p>
+
+<p>　　为-1时表示查询结束，按查询键不再反应。</p>
+
+<p><strong>mLow与mHigh相比较</strong></p>
+
+<p>　　如果mLow大于mHigh，则说明未查找到，查找结束。</p>
+
+<p>　　如果mLow小于mHigh，则令mMiddle为二者和的一半。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span><span class="n">mLow</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;=</span> <span class="n">mHigh</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mMiddle</span> <span class="o">=</span> <span class="o">(</span><span class="n">mLow</span> <span class="o">+</span> <span class="n">mHigh</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><strong>mMiddle与目标查询值des相比较</strong></p>
+
+<p>■相等，则找到</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">des</span> <span class="o">==</span> <span class="n">src</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">])</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">//显示完成</span>
+</span><span class='line'><span class="n">mTimes</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>■mMiddle大，则目标在左侧，令mHigh为mMiddle-1</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">des</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">src</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">])</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">mHigh</span> <span class="o">=</span> <span class="n">mMiddle</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="n">mTimes</span><span class="o">++;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+■mMiddle小，则目标在右侧，令mLow为mMiddle+1
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">else</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">mLow</span> <span class="o">=</span> <span class="n">mMiddle</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="n">mTimes</span><span class="o">++;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>设置“复位”按键的监听类</h3>
+
+<p>　　属性、组件文字还原至初始值</p>
+
+<h3>其他细节备忘</h3>
+
+<ol>
+<li>查找第一次时将editview设为不可获得焦点（不可编辑），复位时还原。</li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">editText</span><span class="o">.</span><span class="na">setFocusable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<ol>
+<li>获得editview值</li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">int</span> <span class="n">des</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">editText</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<ol>
+<li>判断输入为空时提示</li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">editText</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">result</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;请输入要查询的数字&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<ol>
+<li>查找成功变色（颜色0xFF0000FF，0x是代表颜色整数的标记，FF是表示透明度，0000FF表示颜色）</li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">tv</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">].</span><span class="na">setTextColor</span><span class="o">(</span><span class="mh">0xFF0000FF</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>源码地址：https://github.com/dande618/BinarySearchDemo.git</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[认识Intent]]></title>
@@ -363,101 +583,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
     <li>boolean onTouchEvent(MotionEvent event)</li>
     <li>boolean onTrackballEvent(MotionEvent event)</li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SimpleAdapter]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/11/adapter/"/>
-    <updated>2013-01-11T10:27:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/11/adapter</id>
-    <content type="html"><![CDATA[<p>　　Android Adapter 是将数据绑定到UI 界面上的桥接类。 Adapter负责创建和显示每个项目的子View和提供对下层数据的访问。支持Adapter绑定的UI控件必须扩展Adapter View抽象类。创建自己的继承自AdapterView的控件和创建新的Adapter类来绑定它们是可能的。</p>
-
-<!-- more -->
-
-
-<p><img src="http://img14.poco.cn/mypoco/myphoto/20130111/09/430947902013011109012106.png" width="610">
-<img src="http://img14.poco.cn/mypoco/myphoto/20130111/09/4309479020130111090229016.jpg" width="610"></p>
-
-<h2>ListView和ListAdapter</h2>
-
-
-<p class="laiyuan">[转载]<a href="http://blog.sina.com.cn/s/blog_7db304660100x2f0.html">文章出处</a></p>
-
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//新建一个ListView,也就是新建一个列表，在新建一个组件是会将一个Content传递给构造函数</span>
-</span><span class='line'><span class="n">listView</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListView</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'><span class="c1">// 将ListView和ArrayAdapter进行绑定，listview会把ArrayAdapter里面的数据显示出来</span>
-</span><span class='line'><span class="c1">// ArrayAdapter的第一个参数是Context，即上下文的引用</span>
-</span><span class='line'><span class="c1">// 第二个参数为一个在R文件里定义的Layout，不过是系统的R文件</span>
-</span><span class='line'><span class="c1">// simple_list_item_single_choice表明ListView里边的每一项都只有一个TextView</span>
-</span><span class='line'><span class="c1">// 第三个参数为一个数组</span>
-</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayAdapter</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span>
-</span><span class='line'><span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">simple_list_item_single_choice</span><span class="o">,</span> <span class="n">data</span><span class="o">));</span>
-</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setItemsCanFocus</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setChoiceMode</span><span class="o">(</span><span class="n">ListView</span><span class="o">.</span><span class="na">CHOICE_MODE_MULTIPLE</span><span class="o">);</span>
-</span><span class='line'><span class="c1">// 将listView内容直接进行显示</span>
-</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">listView</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>什么是ListAdapter?</h3>
-
-
-<p class="para">ListAdapter继承于Adapter，它是ListView和其里面数据的适配器。也就是要让一个ListView显示出来需要三个东西：</p>
-
-
-<ol>
-    <li>ListView (需要被显示的列表)。</li>
-    <li>Data, 和ListView绑定的数据，一般是一个Cursor或者一个字符串数组。</li>
-    <li>ListAdapter,是data和ListView的桥梁，起一个适配器的作用。</li>
-</ol>
-
-
-<h3>什么是ArrayAdapter?</h3>
-
-
-<p class="para">ArrayAdapter是ListAdapter的一个直接子类，意思是数组适配器。</p>
-
-
-<p class="para">它的作用就是一个数组和ListView之间的桥梁。它将数组里定义的数据一一对应的显示在ListView里，通常有ArrayAdapter进行适配的ListView每一项通常只有一个TextView，而TextView里面显示的内容就是数组里面的对象调用toString()方法后生成的字符串。</p>
-
-
-<h3>SimpleAdapter</h3>
-
-
-<p class="para">SimpleAdapter也是ListAdapter的直接子类。通过SimpleAdapter可以让ListView当中的每一项里边的内容更加个性化。通常将ListView中某项的布局信息写在一个xml的布局文件当中。这个布局文件通过R.layout.file获得。</p>
-
-
-<p class="para">ArrayAdapter的作用是数组和ListView间的桥梁；而SimpleAdapter的作用是ArrayList和ListView间的桥梁。</p>
-
-
-<p class="para">注意，这个ArrayList里面的每一项都是一个Map<String,?>类型。ArrayList当中的每一项Map对象都和ListView当中的一项进行数据绑定和一一对应。</p>
-
-
-<h3>Android系统默认的布局方式</h3>
-
-
-<p class="para">Android.R.layout_simple_list_item_1, 每一项只有一个TextView.</p>
-
-
-<p class="para">Android.R.layout_simple_list_item_2, 每一项只有两个TextView.</p>
-
-
-<p class="para">Android.R.layout_simple_list_item_single_choice, 每一项有一个TextView，但是这一项可以被选择。</p>
 
 ]]></content>
   </entry>
