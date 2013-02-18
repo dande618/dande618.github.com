@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-18T21:38:33+08:00</updated>
+  <updated>2013-02-18T21:41:12+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -144,7 +144,7 @@
 <h3>其他细节备忘</h3>
 
 <ol>
-<li>查找第一次时将editview设为不可获得焦点（不可编辑），复位时还原。</li>
+<li>查找第一次时将editview设为不可获得焦点（不可编辑），按复位时还原。</li>
 </ol>
 
 
@@ -154,7 +154,7 @@
 
 
 <ol>
-<li>获得editview值</li>
+<li>获得editview内用户输入的值</li>
 </ol>
 
 
