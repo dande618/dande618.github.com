@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-18T20:53:08+08:00</updated>
+  <updated>2013-02-18T20:56:10+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -18,12 +18,12 @@
     <link href="http://dande618.github.com/blog/2013/02/18/BinarySearchDemo/"/>
     <updated>2013-02-18T22:00:00+08:00</updated>
     <id>http://dande618.github.com/blog/2013/02/18/BinarySearchDemo</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<h2>二分查找介绍</h2>
+    <content type="html"><![CDATA[<h2>二分查找介绍</h2>
 
 <p>　　二分查找又称折半查找，优点是比较次数少，查找速度快，平均性能好；其缺点是要求待查表为有序表，且插入删除困难。因此，折半查找方法适用于不经常变动而查找频繁的有序列表。</p>
+
+<!-- more -->
+
 
 <h2>二分查找原理</h2>
 
@@ -229,7 +229,7 @@
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">tv</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">].</span><span class="na">setTextColor</span><span class="o">(</span><span class="mh">0xFF0000FF</span><span class="o">);</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>源码地址：https://github.com/dande618/BinarySearchDemo.git</p>
+<p>源码地址：<a href="https://github.com/dande618/BinarySearchDemo.git">https://github.com/dande618/BinarySearchDemo.git</a></p>
 ]]></content>
   </entry>
   
