@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 其他 | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-18T21:43:56+08:00</updated>
+  <updated>2013-02-24T13:14:39+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -476,10 +476,10 @@ Markdown 会转为：</p>
 
 
 <ul>
-    <li>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</li>
-    <li>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li>
-    <li>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li>
-    <li>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li>
+<li><p>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</p></li>
+<li><p>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li></p></li>
+<li><p>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li></p></li>
+<li><p>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li></p></li>
 </ul>
 
 

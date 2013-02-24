@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-18T21:43:56+08:00</updated>
+  <updated>2013-02-24T13:14:39+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,279 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[【转载】Android的线程使用来更新UI----Thread、Handler、Looper、TimerTask等]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/23/Runnable/"/>
+    <updated>2013-02-23T21:29:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/23/Runnable</id>
+    <content type="html"><![CDATA[<p>文章来源：<a href="http://www.cnblogs.com/playing/archive/2011/03/24/1993583.html">http://www.cnblogs.com/playing/archive/2011/03/24/1993583.html</a></p>
+
+<!-- more -->
+
+
+<h2>方法一：(java习惯，在android不推荐使用）</h2>
+
+<p>刚刚开始接触android线程编程的时候，习惯好像java一样，试图用下面的代码解决问题</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">myView</span><span class="o">.</span><span class="na">invalidate</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以实现功能，刷新UI界面。但是这样是不行的，因为它违背了单线程模型：Android UI操作并不是线程安全的并且这些操作必须在UI线程中执行。</p>
+
+<h2>方法二：（Thread+Handler)</h2>
+
+<p>查阅了文档和apidemo后，发觉常用的方法是利用Handler来实现UI线程的更新的。</p>
+
+<p>Handler来根据接收的消息，处理UI更新。Thread线程发出Handler消息，通知更新UI。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Handler</span> <span class="n">myHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">case</span> <span class="n">TestHandler</span><span class="o">.</span><span class="na">GUIUPDATEIDENTIFIER</span><span class="o">:</span>
+</span><span class='line'><span class="n">myBounceView</span><span class="o">.</span><span class="na">invalidate</span><span class="o">();</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">handleMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">myThread</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(!</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">isInterrupted</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Message</span><span class="o">();</span>
+</span><span class='line'><span class="n">message</span><span class="o">.</span><span class="na">what</span> <span class="o">=</span> <span class="n">TestHandler</span><span class="o">.</span><span class="na">GUIUPDATEIDENTIFIER</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">TestHandler</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">myHandler</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">interrupt</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上方法demo看:http://rayleung.javaeye.com/blog/411860</p>
+
+<h2>方法三：（java习惯，不推荐）</h2>
+
+<p>在Android平台中需要反复按周期执行方法可以使用Java上自带的TimerTask类，TimerTask相对于Thread来说对于资源消耗的更低，除了使用Android自带的AlarmManager使用Timer定时器是一种更好的解决方法。 我们需要引入import java.util.Timer; 和 import java.util.TimerTask;</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JavaTimer</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Timer</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Timer</span><span class="o">();</span>
+</span><span class='line'><span class="n">TimerTask</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TimerTask</span><span class="o">(){</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">setTitle</span><span class="o">(</span><span class="s">&quot;hear me?&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="mi">10000</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>方法四：(TimerTask + Handler)</h2>
+
+<p>实际上这样做是不行的，这跟Android的线程安全有关！应该通过配合Handler来实现timer功能的！</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestTimer</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Timer</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Timer</span><span class="o">();</span>
+</span><span class='line'><span class="n">Handler</span> <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(){</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+</span><span class='line'><span class="n">setTitle</span><span class="o">(</span><span class="s">&quot;hear me?&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">handleMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">TimerTask</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TimerTask</span><span class="o">(){</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Message</span><span class="o">();</span>
+</span><span class='line'><span class="n">message</span><span class="o">.</span><span class="na">what</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="mi">10000</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法五：( Runnable + Handler.postDelayed(runnable,time) )</p>
+
+<p>在Android里定时更新 UI，通常使用的是 java.util.Timer, java.util.TimerTask, android.os.Handler组合。实际上Handler 自身已经提供了定时的功能。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">Handler</span> <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">Runnable</span> <span class="n">myRunnable</span><span class="o">=</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'><span class="n">count</span><span class="o">++;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">tvCounter</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Count: &quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在其他地方调用</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="n">myRunnable</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="n">myRunnable</span><span class="o">,</span><span class="n">time</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>案例看：http://shaobin0604.javaeye.com/blog/515820</p>
+
+<p>====================================================================</p>
+
+<h2>知识点总结补充：</h2>
+
+<p>　　很多初入Android或Java开发的新手对Thread、Looper、Handler和Message仍然比较迷惑，衍生的有HandlerThread、java.util.concurrent、Task、AsyncTask由于目前市面上的书籍等资料都没有谈到这些问题，今天就这一问题做更系统性的总结。我们创建的Service、Activity以及Broadcast均是一个主线程处理，这里我们可以理解为UI线程。但是在操作一些耗时操作时，比如I/O读写的大文件读写，数据库操作以及网络下载需要很长时间，为了不阻塞用户界面，出现ANR的响应提示窗口，这个时候我们可以考虑使用Thread线程来解决。</p>
+
+<p>　　对于从事过J2ME开发的程序员来说Thread比较简单，直接匿名创建重写run方法，调用start方法执行即可。或者从Runnable接口继承，但对于Android平台来说UI控件都没有设计成为线程安全类型，所以需要引入一些同步的机制来使其刷新，这点Google在设计Android时倒是参考了下Win32的消息处理机制。</p>
+
+<ol>
+<li><p>对于线程中的刷新一个View为基类的界面，可以使用postInvalidate()方法在线程中来处理，其中还提供了一些重写方法比如postInvalidate(int left,int top,int right,int bottom) 来刷新一个矩形区域，以及延时执行，比如postInvalidateDelayed(long delayMilliseconds)或postInvalidateDelayed(long delayMilliseconds,int left,int top,int right,int bottom) 方法，其中第一个参数为毫秒</p></li>
+<li><p>当然推荐的方法是通过一个Handler来处理这些，可以在一个线程的run方法中调用handler对象的 postMessage或sendMessage方法来实现，Android程序内部维护着一个消息队列，会轮训处理这些，如果你是Win32程序员可以很好理解这些消息处理，不过相对于Android来说没有提供 PreTranslateMessage这些干涉内部的方法。</p></li>
+<li><p>Looper又是什么呢? ，其实Android中每一个Thread都跟着一个Looper，Looper可以帮助Thread维护一个消息队列，但是Looper和Handler没有什么关系，我们从开源的代码可以看到Android还提供了一个Thread继承类HanderThread可以帮助我们处理，在HandlerThread对象中可以通过getLooper方法获取一个Looper对象控制句柄，我们可以将其这个Looper对象映射到一个Handler中去来实现一个线程同步机制，Looper对象的执行需要初始化Looper.prepare方法就是昨天我们看到的问题，同时推出时还要释放资源，使用Looper.release方法。</p></li>
+<li><p>Message 在Android是什么呢? 对于Android中Handler可以传递一些内容，通过Bundle对象可以封装String、Integer以及Blob二进制对象，我们通过在线程中使用Handler对象的sendEmptyMessage或sendMessage方法来传递一个Bundle对象到Handler处理器。对于Handler类提供了重写方法handleMessage(Message msg) 来判断，通过msg.what来区分每条信息。将Bundle解包来实现Handler类更新UI线程中的内容实现控件的刷新操作。相关的Handler对象有关消息发送sendXXXX相关方法如下，同时还有postXXXX相关方法，这些和Win32中的道理基本一致，一个为发送后直接返回，一个为处理后才返回 .</p></li>
+<li><p>java.util.concurrent对象分析，对于过去从事Java开发的程序员不会对Concurrent对象感到陌生吧，他是JDK 1.5以后新增的重要特性作为掌上设备，我们不提倡使用该类，考虑到Android为我们已经设计好的Task机制，这里不做过多的赘述，相关原因参考下面的介绍:</p></li>
+<li><p>在Android中还提供了一种有别于线程的处理方式，就是Task以及AsyncTask，从开源代码中可以看到是针对Concurrent的封装，开发人员可以方便的处理这些异步任务。</p></li>
+</ol>
+
+
+<p>摘录自：<a href="http://www.android123.com.cn/androidkaifa/422.html">http://www.android123.com.cn/androidkaifa/422.html</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[二分查找演示程序]]></title>
@@ -1957,10 +2230,10 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 
 
 <ul>
-    <li>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</li>
-    <li>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li>
-    <li>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li>
-    <li>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li>
+<li><p>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</p></li>
+<li><p>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li></p></li>
+<li><p>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li></p></li>
+<li><p>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li></p></li>
 </ul>
 
 
@@ -2082,76 +2355,6 @@ git pull --rebase
 </li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[常见中文EPUB制作方法]]></title>
-    <link href="http://dande618.github.com/blog/2012/11/10/epub/"/>
-    <updated>2012-11-10T00:00:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/11/10/epub</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<h2>1.Word排版+EpubStar</h2>
-
-<p><strong>概述：</strong></p>
-
-<p>　　使用Word排版（使用样式）后，用EpubStar生成Epub。EpubStar是大神 老牛 制作的软件。</p>
-
-<p><strong>优点：</strong></p>
-
-<p>　　大部分人对Word排版比较熟悉，熟练后可制作精美的书籍。</p>
-
-<p><strong>缺点：</strong></p>
-
-<p>　　免费版支持样式较少。样式较固定（当然也可以自行替换CSS文件）。</p>
-
-<h2>2.Sigil</h2>
-
-<p><strong>概述：</strong></p>
-
-<p>　　Sigil是一款功能丰富的开源Epub制作软件。可以修改源代码和文本内容。Sigil可以跨平台使用，支持Windows,Linux和Mac。</p>
-
-<p>　　熟练使用后可以制作精美的书籍。</p>
-
-<p><strong>优点：</strong></p>
-
-<p>　　完全透明的EPUB制作。支持正则。</p>
-
-<p><strong>缺点：</strong></p>
-
-<p>　　上手略难。Sigil会自动修改一些格式（可以尝试关闭此功能）。</p>
-
-<h2>3.epubBuilder</h2>
-
-<p><strong>概述：</strong></p>
-
-<p>　　掌上书苑出品的制作软件。可以导入各种格式的书籍，章节处理工具强大。</p>
-
-<p><strong>优点：</strong></p>
-
-<p>　　可以很省力地智能分章，去除广告等。可以压制图片制成EPUB漫画。</p>
-
-<p><strong>缺点：</strong></p>
-
-<p>　　无法制作样式复杂的书籍（可以生成后拆包使用文本工具排版）。部分细节还需优化。</p>
-
-<p>　　生成的EPUB结构不很标准，因此生成的文件导入Sigil可能会出现小问题（比如章节顺序）。</p>
-
-<h2>4.Calibre</h2>
-
-<p><strong>概述：</strong></p>
-
-<p>　　一款神级的书籍管理软件，可用于各种格式间的转化，抓取新闻等。使用其制作书籍不推荐。</p>
-
-<h2>5.手书代码</h2>
-
-<p><strong>概述：</strong></p>
-
-<p>　　完全地手写代码。适合有强迫症的同学。在较好地理解Epub结构和HTML、CSS的前提下，可以制作完美的书籍。</p>
-
-<h3>以上只是本人感受，如有错误和不足，欢迎批评指正。</h3>
 ]]></content>
   </entry>
   
