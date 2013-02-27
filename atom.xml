@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-24T13:14:39+08:00</updated>
+  <updated>2013-02-27T16:30:36+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,83 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[冒泡排序]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/27/BubbleSort/"/>
+    <updated>2013-02-27T13:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/27/BubbleSort</id>
+    <content type="html"><![CDATA[<h3>问题</h3>
+
+<p>　　有一数组a，长度为n，把数组中的元素从小到大重新排列</p>
+
+<h3>思路</h3>
+
+<p>　　从0到n-1，两两比较数组中的元素，如果前者大于后者，则交换之(如a[0]>a[1]，则交换a[0]和a[1])。作一趟冒泡排序后，最大值就在最后一个位置a[n-1]上了。然后对余下的0到n-2个元素作第二趟冒泡排序，次最大值就去到倒数第二个位置a[n-2]上了，如此类推。</p>
+
+<!-- more -->
+
+
+<h3>JAVA代码</h3>
+
+<p>　　传入参数：未排序的数组</p>
+
+<p>　　返回参数：排序后的数组</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kt">int</span><span class="o">[]</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">int</span><span class="o">[]</span> <span class="n">sortedArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">sortedArray</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">boolean</span> <span class="n">isSort</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">isSort</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">length</span> <span class="o">-</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                  <span class="n">temp</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>                  <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>                  <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>                  <span class="n">isSort</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">isSort</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">break</span><span class="o">;</span> <span class="c1">// 如果没有发生交换，则退出循环</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">sortedArray</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　由于JAVA数组是引用类型，为了保护原数组，开始时将原数组赋值给另一数组，对后者进行排序。</p>
+
+<p>　　复杂度是O(n<sup>2)。</sup></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[【转载】Android的线程使用来更新UI----Thread、Handler、Looper、TimerTask等]]></title>
@@ -2312,48 +2389,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 
 
 <p class="para">命名模式：activity名称_逻辑名称/common_逻辑名称</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[修改代码时git的操作流程]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/13/github/"/>
-    <updated>2012-12-13T16:50:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/13/github</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<p class="laiyuan">[转载]　<a href="http://yuanhsh.iteye.com/blog/987705">文章出处</a></p>
-
-
-<ol>
-<li>修改任何代码前，请创建一个新的branch
-<pre class="wiki">git checkout -b &lt;branch_name&gt;
-</pre>
-</li>
-<li>执行完上述命令后会自动切换到&lt;branch_name&gt;分支，现在你就可以开始开发了。开发期间，你可能会多次执行
-<pre class="wiki">git add .
-git commit -m ""
-</pre>
-</li>
-<li>当你开发完毕，需要合并到master上时
-<pre class="wiki">git checkout master    #先切换回master
-git pull                       #这里不可能有任何冲突，因为master是不会本地修改的
-git checkout &lt;branch_name&gt;  #切换回开发分支
-git rebase master       #这时候可能会产生冲突，哪些文件冲突了，反馈信息里有明确显示
-如果发生了冲突：
-首先，编辑修复所有冲突的代码。然后：
-git add .
-git rebase --continue
-
-git checkout master   
-git merge &lt;branch_name&gt;
-git push                    #其实这个时候还是有可能有冲突
-git pull --rebase
-接着与上面处理冲突的方法一致</pre>
-</li>
-</ol>
 
 ]]></content>
   </entry>
