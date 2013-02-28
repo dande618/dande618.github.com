@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-27T16:30:36+08:00</updated>
+  <updated>2013-02-28T21:37:14+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,115 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android使用淘宝开放平台API]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/28/TOP/"/>
+    <updated>2013-02-28T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/28/TOP</id>
+    <content type="html"><![CDATA[<p>淘宝开放平台：<a href="http://open.taobao.com/index.htm">http://open.taobao.com/index.htm</a></p>
+
+<!-- more -->
+
+
+<p>API在线文档：<a href="http://open.taobao.com/doc/category_list.htm?spm=0.0.0.0.Zt7VwY&amp;id=102">http://open.taobao.com/doc/category_list.htm?spm=0.0.0.0.Zt7VwY&amp;id=102</a></p>
+
+<p>API在线测试工具：<a href="http://api.taobao.com/apitools/apiTools.htm">http://api.taobao.com/apitools/apiTools.htm</a></p>
+
+<p>android环境搭建：见安卓SDK内的文档</p>
+
+<h3>使用REST API</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">TopParameters</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TopParameters</span><span class="o">();</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">setMethod</span><span class="o">(</span><span class="s">&quot;taobao.taobaoke.items.get&quot;</span><span class="o">);</span><span class="c1">//调用的API</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addFields</span><span class="o">(</span><span class="s">&quot;pic_url&quot;</span><span class="o">,</span> <span class="s">&quot;title&quot;</span><span class="o">);</span><span class="c1">//返回参数</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addParam</span><span class="o">(</span><span class="s">&quot;cid&quot;</span><span class="o">,</span> <span class="s">&quot;0&quot;</span><span class="o">);</span><span class="c1">//设定输入参数</span>
+</span><span class='line'><span class="c1">//API不必要userId时，userId可为NULL，必要时要先授权</span>
+</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="na">api</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">userId</span><span class="o">,</span> <span class="k">new</span> <span class="n">TopApiListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onComplete</span><span class="o">(</span><span class="n">JSONObject</span> <span class="n">json</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//do something</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onError</span><span class="o">(</span><span class="n">ApiError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//do something</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//do something</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">},</span> <span class="kc">true</span><span class="o">);</span><span class="c1">//true表示异步</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>onComplete()接受返回的JSONObject，然后可以对JSONObject进行处理，获得所需的数据。</p>
+
+<p>比如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">JSONArray</span> <span class="n">items</span> <span class="o">=</span> <span class="n">json</span>
+</span><span class='line'><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;taobaoke_items_get_response&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;taobaoke_items&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;taobaoke_item&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">setImage</span><span class="o">(</span><span class="n">items</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;pic_url&quot;</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Android中的JSON详细总结：<a href="http://shazhuzhu1.iteye.com/blog/974758">http://shazhuzhu1.iteye.com/blog/974758</a></p>
+
+<h3>异步加载TextView</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">setText</span><span class="o">(</span><span class="kd">final</span> <span class="n">TextView</span> <span class="n">textView</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ret</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">runOnUiThread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">ret</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>异步加载网络图片资源</h3>
+
+<p>使用的类来自</p>
+
+<p><a href="http://www.linuxidc.com/Linux/2011-12/48664.htm">http://www.linuxidc.com/Linux/2011-12/48664.htm</a></p>
+
+<p>AsyncImageLoader.java</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[冒泡排序]]></title>
@@ -2293,103 +2402,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 <p>　　简单来讲，类是对象的一个<strong>蓝图</strong>。实例化一个对象时，就是使用一个类作为构建这个对象的基础。在ＯＯ软件中，应该先有类。如果没有类，对象就无法实例化。</p>
 
 <p>　　每个对象都有其自己的属性和行为。类定义用这个类创建的所有对象拥有的属性和行为。类是一些代码。有类实例化得到的对象可以单独分布，也可以作为库的一部分。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ANDROID命名规范]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/13/name/"/>
-    <updated>2012-12-13T16:51:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/13/name</id>
-    <content type="html"><![CDATA[<p>　　要时刻注意代码的规范性和可读性。</p>
-
-<!-- more -->
-
-
-<ul>
-<li><p>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</p></li>
-<li><p>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li></p></li>
-<li><p>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li></p></li>
-<li><p>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li></p></li>
-</ul>
-
-
-<p><a href=" http://source.android.com/source/code-style.html">android code style</a></p>
-
-<br/>
-
-
-<h2>Android命名规范</h2>
-
-
-<p class="laiyuan">[转载]<a href="http://www.cnblogs.com/xiongbo/archive/2011/08/15/2098130.html">文章出处</a></p>
-
-
-<h3>1.java代码中不出现中文，最多注释中可以出现中文</h3>
-
-
-<h3>2.局部变量命名、静态成员变量命名</h3>
-
-
-<p class="para">只能包含字母，单词首字母出第一个外，都为大写，其他字母都为小写</p>
-
-
-<h3>3.常量命名</h3>
-
-
-<p class="para">只能包含字母和_，字母全部大写，单词之间用_隔开</p>
-
-
-<h3>4.layout中的id命名</h3>
-
-
-<p class="para">命名模式为：view缩写_模块名称_view的逻辑名称</p>
-
-
-<p class="para">view的缩写详情如下</p>
-
-
-<p class="para">LayoutView：lv</p>
-
-
-<p class="para">RelativeView:rv</p>
-
-
-<p class="para">TextView:tv</p>
-
-
-<p class="para">ImageView:iv</p>
-
-
-<p class="para">ImageButton:im</p>
-
-
-<p class="para">Button:btn</p>
-
-
-<h3>5.activity中的view变量命名</h3>
-
-
-<p class="para">命名模式为：逻辑名称+view缩写</p>
-
-
-<p class="para">建议：如果layout文件很复杂，建议将layout分成多个模块，每个模块定义一个moduleViewHolder，其成员变量包含所属view</p>
-
-
-<h3>6.strings.xml中的id命名</h3>
-
-
-<p class="para">命名模式：activity名称_功能模块名称_逻辑名称/activity名称_逻辑名称/common_逻辑名称</p>
-
-
-<p class="para">strings.xml中，使用activity名称注释，将文件内容区分开来</p>
-
-
-<h3>7.drawable中的图片命名</h3>
-
-
-<p class="para">命名模式：activity名称_逻辑名称/common_逻辑名称</p>
-
 ]]></content>
   </entry>
   
