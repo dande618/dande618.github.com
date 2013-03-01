@@ -1,0 +1,270 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>【摘抄】JAVA多线程 - 初心</title>
+	<meta name="author" content="dande618">
+
+	
+	<meta name="description" content="一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。 线程与进程相似，是一段完成某个特定功能的代码，是程序中单个顺序的流控制；但与进程不同的是，同类的多个线程是共享一块内存空间和一组系统资源， &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">初心</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:dande618.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:dande618.github.com">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">【摘抄】JAVA多线程</h2>
+	<div class="entry-content"><!-- more -->
+
+
+<p>一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。</p>
+
+<p>线程与进程相似，是一段完成某个特定功能的代码，是程序中单个顺序的流控制；但与进程不同的是，同类的多个线程是共享一块内存空间和一组系统资源，而线程本身的数据通常只有微处理器的寄存器数据，以及一个供程序执行时使用的堆栈。所以系统在产生一个线程，或者在各个线程之间切换时，负担要比进程小的多，正因如此，线程被称为轻负荷进程（light-weight process）。一个进程中可以包含多个线程。</p>
+
+<p>一个线程是一个程序内部的顺序控制流。</p>
+
+<ol>
+<li><p>进程：每个进程都有独立的代码和数据空间（进程上下文），进程切换的开销大。</p></li>
+<li><p>线程：轻量的进程，同一类线程共享代码和数据空间，每个线程有独立的运行栈和程序计数器（PC），线程切换的开销小。</p></li>
+<li><p>多进程：在操作系统中，能同时运行多个任务程序。</p></li>
+<li><p>多线程：在同一应用程序中，有多个顺序流同时执行。</p></li>
+</ol>
+
+
+<p>Java的线程是通过java.lang.Thread类来实现的。当我们生成一个Thread类的对象之后,一个新的线程就产生了。</p>
+
+<p>任何实现接口Runnable的对象都可以作为一个线程的目标对象，类Thread本身也实现了接口Runnable，因此我们可以通过两种方法实现线程体。</p>
+
+<p>（一）定义一个线程类，它继承线程类Thread并重写其中的方法 run（），这时在初始化这个类的实例时，目标target可为null，表示由这个实例对来执行线程体。由于Java只支持单重继承，用这种方法定义的类不能再继承其它父类。</p>
+
+<p>（二）提供一个实现接口Runnable的类作为一个线程的目标对象，在初始化一个Thread类或者Thread子类的线程对象时，把目标对象传递给这个线程实例，由该目标对象提供线程体 run（）。这时，实现接口Runnable的类仍然可以继承其它父类。</p>
+
+<p>每个线程都是通过某个特定Thread对象的方法run( )来完成其操作的，方法run( )称为线程体。</p>
+
+<ol>
+<li>创建状态(new Thread)</li>
+</ol>
+
+
+<p>执行下列语句时，线程就处于创建状态：</p>
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>当一个线程处于创建状态时，它仅仅是一个空的线程对象，系统不为它分配资源。</p>
+
+<ol>
+<li>可运行状态( Runnable )</li>
+</ol>
+
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>myThread.start( );</p>
+
+<p>当一个线程处于可运行状态时，系统为这个线程分配了它需的系统资源，安排其运行并调用线程运行方法，这样就使得该线程处于可运行( Runnable )状态。需要注意的是这一状态并不是运行中状态（Running )，因为线程也许实际上并未真正运行。由于很多计算机都是单处理器的，所以要在同一时刻运行所有的处于可运行状态的线程是不可能的，Java的运行系统必须实现调度来保证这些线程共享处理器。</p>
+
+<ol>
+<li>不可运行状态（Not Runnable）</li>
+</ol>
+
+
+<p>进入不可运行状态的原因有如下几条：</p>
+
+<p>1) 调用了sleep（）方法;</p>
+
+<p>2) 调用了suspend（）方法;</p>
+
+<p>3) 为等候一个条件变量，线程调用wait（）方法;</p>
+
+<p>4) 输入输出流中发生线程阻塞;</p>
+
+<p>不可运行状态也称为阻塞状态（Blocked）。因为某种原因（输入/输出、等待消息或其它阻塞情况），系统不能执行线程的状态。这时即使处理器空闲，也不能执行该线程。</p>
+
+<ol>
+<li>死亡状态（Dead）</li>
+</ol>
+
+
+<p>线程的终止一般可通过两种方法实现：自然撤消（线程执行完）或是被停止（调用stop()方法）。目前不推荐通过调用stop()来终止线程的执行，而是让线程执行完。</p>
+
+<ol>
+<li>使用Runnable接口　</li>
+</ol>
+
+
+<p>1) 可以将CPU，代码和数据分开，形成清晰的模型;</p>
+
+<p>2) 还可以从其他类继承;</p>
+
+<p>3) 保持程序风格的一致性。</p>
+
+<ol>
+<li>直接继承Thread类</li>
+</ol>
+
+
+<p>1) 不能再从其他类继承;</p>
+
+<p>2) 编写简单，可以直接操纵线程，无需使用Thread.currentThread()。</p>
+
+<h2>多线程的互斥与同步</h2>
+
+<h3>互斥锁</h3>
+
+<p>为解决操作的不完整性问题，在Java 语言中，引入了对象互斥锁的概念，来保证共享数据操作的完整性。每个对象都对应于一个可称为&#8221; 互斥锁&#8221; 的标记，这个标记用来保证在任一时刻，只能有一个线程访问该对象。 关键字synchronized 来与对象的互斥锁联系。当某个对象用synchronized 修饰时，表明该对象在任一时刻只能由一个线程访问。</p>
+
+<h3>多线程的同步</h3>
+
+<p>通过运用wait()和notify()方法来实现线程的同步，在同步中还会用到notifyAll()方法，一般来说，每个共享对象的互斥锁存在两个队列，一个是锁等待队列，另一个是锁申请队列，锁申请队列中的第一个线程可以对该共享对象进行操作，而锁等待队列中的线程在某些情况下将移入到锁申请队列。下面比较一下wait()、notify()和notifyAll()方法：</p>
+
+<p>(1) wait,nofity,notifyAll必须在已经持有锁的情况下执行,所以它们只能出现在synchronized作用的范围内，也就是出现在用synchronized修饰的方法或类中。</p>
+
+<p>(2) wait的作用:释放已持有的锁,进入等待队列.</p>
+
+<p>(3) notify的作用:唤醒wait队列中的第一个线程并把它移入锁申请队列.</p>
+
+<p>(4) notifyAll的作用:唤醒wait队列中的所有的线程并把它们移入锁申请队列.</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-01T22:22:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2013</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/java/'>java</a>
+
+
+</div>
+	
+		<div class="comments"><a href="/blog/2013/03/01/Thread/#disqus_thread">Comments</a></div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    dande618
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/03/01/Thread/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/03/01/Thread/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+</body>
+</html>
