@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-03-01T21:36:51+08:00</updated>
+  <updated>2013-03-02T16:59:31+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -53,7 +53,7 @@
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">TopParameters</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TopParameters</span><span class="o">();</span>
 </span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">setMethod</span><span class="o">(</span><span class="s">&quot;taobao.taobaoke.items.get&quot;</span><span class="o">);</span><span class="c1">//调用的API</span>
 </span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addFields</span><span class="o">(</span><span class="s">&quot;pic_url&quot;</span><span class="o">,</span> <span class="s">&quot;title&quot;</span><span class="o">);</span><span class="c1">//返回参数</span>
-</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addParam</span><span class="o">(</span><span class="s">&quot;cid&quot;</span><span class="o">,</span> <span class="s">&quot;0&quot;</span><span class="o">);</span><span class="c1">//设定输入参数</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addParam</span><span class="o">(</span><span class="s">&quot;keyword&quot;</span><span class="o">,</span> <span class="s">&quot;android&quot;</span><span class="o">);</span><span class="c1">//设定输入参数</span>
 </span><span class='line'><span class="c1">//API不必要userId时，userId可为NULL，必要时要先授权</span>
 </span><span class='line'><span class="n">client</span><span class="o">.</span><span class="na">api</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">userId</span><span class="o">,</span> <span class="k">new</span> <span class="n">TopApiListener</span><span class="o">()</span> <span class="o">{</span>
 </span><span class='line'><span class="nd">@Override</span>
