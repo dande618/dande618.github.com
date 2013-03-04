@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-16T16:52:52+08:00</updated>
+  <updated>2013-03-04T23:07:00+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,808 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[goagent]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/04/goagent/"/>
+    <updated>2013-03-04T23:33:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/04/goagent</id>
+    <content type="html"><![CDATA[<p>goagent是国内很多朋友常用的免费代理工具，也是使用最广泛的谷歌应用之一，今天我们就来分享下goagent下载以及使用的相关事宜。 首先介绍一下goagent，它是使用Python和Google App EngineSDK编写的，可以在 Windows，Mac，Linux，Android，iPod Touch，iPhone，iPad，webOS，OpenWrt，Maemo 等平台上使用。</p>
+
+<!-- more -->
+
+
+<ol>
+<li><p>goagent 下载地址 <a href="https://code.google.com/p/goagent/">https://code.google.com/p/goagent/</a> （下载对应平台<strong>最新</strong>版本）</p></li>
+<li><p>申请 Google Appengine 并创建 appid <a href="https://code.google.com/p/goagent/wiki/InstallGuide">https://code.google.com/p/goagent/wiki/InstallGuide</a></p></li>
+<li><p>修改 local\proxy.ini 中的 gae 下的 appid = goagent 为你的appid</p></li>
+<li><p>运行 server\uploader.bat 上传</p></li>
+<li><p>运行 goagent.exe</p></li>
+<li><p>使用chrome浏览器，安装 SwitchySharp 插件，然后导入设置： <a href="https://goagent.googlecode.com/files/SwitchyOptions.bak">https://goagent.googlecode.com/files/SwitchyOptions.bak</a></p></li>
+<li><p>在右上图标出选择 goagent 即可</p></li>
+</ol>
+
+
+<blockquote><p>goagent对用户是有流量限制的，目前为每帐号每天1GB</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【摘抄】JAVA多线程]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/01/Thread/"/>
+    <updated>2013-03-01T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/01/Thread</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。</p>
+
+<p>线程与进程相似，是一段完成某个特定功能的代码，是程序中单个顺序的流控制；但与进程不同的是，同类的多个线程是共享一块内存空间和一组系统资源，而线程本身的数据通常只有微处理器的寄存器数据，以及一个供程序执行时使用的堆栈。所以系统在产生一个线程，或者在各个线程之间切换时，负担要比进程小的多，正因如此，线程被称为轻负荷进程（light-weight process）。一个进程中可以包含多个线程。</p>
+
+<p>一个线程是一个程序内部的顺序控制流。</p>
+
+<ol>
+<li><p>进程：每个进程都有独立的代码和数据空间（进程上下文），进程切换的开销大。</p></li>
+<li><p>线程：轻量的进程，同一类线程共享代码和数据空间，每个线程有独立的运行栈和程序计数器（PC），线程切换的开销小。</p></li>
+<li><p>多进程：在操作系统中，能同时运行多个任务程序。</p></li>
+<li><p>多线程：在同一应用程序中，有多个顺序流同时执行。</p></li>
+</ol>
+
+
+<p>Java的线程是通过java.lang.Thread类来实现的。当我们生成一个Thread类的对象之后,一个新的线程就产生了。</p>
+
+<p>任何实现接口Runnable的对象都可以作为一个线程的目标对象，类Thread本身也实现了接口Runnable，因此我们可以通过两种方法实现线程体。</p>
+
+<p>（一）定义一个线程类，它继承线程类Thread并重写其中的方法 run（），这时在初始化这个类的实例时，目标target可为null，表示由这个实例对来执行线程体。由于Java只支持单重继承，用这种方法定义的类不能再继承其它父类。</p>
+
+<p>（二）提供一个实现接口Runnable的类作为一个线程的目标对象，在初始化一个Thread类或者Thread子类的线程对象时，把目标对象传递给这个线程实例，由该目标对象提供线程体 run（）。这时，实现接口Runnable的类仍然可以继承其它父类。</p>
+
+<p>每个线程都是通过某个特定Thread对象的方法run( )来完成其操作的，方法run( )称为线程体。</p>
+
+<ol>
+<li>创建状态(new Thread)</li>
+</ol>
+
+
+<p>执行下列语句时，线程就处于创建状态：</p>
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>当一个线程处于创建状态时，它仅仅是一个空的线程对象，系统不为它分配资源。</p>
+
+<ol>
+<li>可运行状态( Runnable )</li>
+</ol>
+
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>myThread.start( );</p>
+
+<p>当一个线程处于可运行状态时，系统为这个线程分配了它需的系统资源，安排其运行并调用线程运行方法，这样就使得该线程处于可运行( Runnable )状态。需要注意的是这一状态并不是运行中状态（Running )，因为线程也许实际上并未真正运行。由于很多计算机都是单处理器的，所以要在同一时刻运行所有的处于可运行状态的线程是不可能的，Java的运行系统必须实现调度来保证这些线程共享处理器。</p>
+
+<ol>
+<li>不可运行状态（Not Runnable）</li>
+</ol>
+
+
+<p>进入不可运行状态的原因有如下几条：</p>
+
+<p>1) 调用了sleep（）方法;</p>
+
+<p>2) 调用了suspend（）方法;</p>
+
+<p>3) 为等候一个条件变量，线程调用wait（）方法;</p>
+
+<p>4) 输入输出流中发生线程阻塞;</p>
+
+<p>不可运行状态也称为阻塞状态（Blocked）。因为某种原因（输入/输出、等待消息或其它阻塞情况），系统不能执行线程的状态。这时即使处理器空闲，也不能执行该线程。</p>
+
+<ol>
+<li>死亡状态（Dead）</li>
+</ol>
+
+
+<p>线程的终止一般可通过两种方法实现：自然撤消（线程执行完）或是被停止（调用stop()方法）。目前不推荐通过调用stop()来终止线程的执行，而是让线程执行完。</p>
+
+<ol>
+<li>使用Runnable接口　</li>
+</ol>
+
+
+<p>1) 可以将CPU，代码和数据分开，形成清晰的模型;</p>
+
+<p>2) 还可以从其他类继承;</p>
+
+<p>3) 保持程序风格的一致性。</p>
+
+<ol>
+<li>直接继承Thread类</li>
+</ol>
+
+
+<p>1) 不能再从其他类继承;</p>
+
+<p>2) 编写简单，可以直接操纵线程，无需使用Thread.currentThread()。</p>
+
+<h2>多线程的互斥与同步</h2>
+
+<h3>互斥锁</h3>
+
+<p>为解决操作的不完整性问题，在Java 语言中，引入了对象互斥锁的概念，来保证共享数据操作的完整性。每个对象都对应于一个可称为&#8221; 互斥锁&#8221; 的标记，这个标记用来保证在任一时刻，只能有一个线程访问该对象。 关键字synchronized 来与对象的互斥锁联系。当某个对象用synchronized 修饰时，表明该对象在任一时刻只能由一个线程访问。</p>
+
+<h3>多线程的同步</h3>
+
+<p>通过运用wait()和notify()方法来实现线程的同步，在同步中还会用到notifyAll()方法，一般来说，每个共享对象的互斥锁存在两个队列，一个是锁等待队列，另一个是锁申请队列，锁申请队列中的第一个线程可以对该共享对象进行操作，而锁等待队列中的线程在某些情况下将移入到锁申请队列。下面比较一下wait()、notify()和notifyAll()方法：</p>
+
+<p>(1) wait,nofity,notifyAll必须在已经持有锁的情况下执行,所以它们只能出现在synchronized作用的范围内，也就是出现在用synchronized修饰的方法或类中。</p>
+
+<p>(2) wait的作用:释放已持有的锁,进入等待队列.</p>
+
+<p>(3) notify的作用:唤醒wait队列中的第一个线程并把它移入锁申请队列.</p>
+
+<p>(4) notifyAll的作用:唤醒wait队列中的所有的线程并把它们移入锁申请队列.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android使用淘宝开放平台API]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/28/TOP/"/>
+    <updated>2013-02-28T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/28/TOP</id>
+    <content type="html"><![CDATA[<p>淘宝开放平台：<a href="http://open.taobao.com/index.htm">http://open.taobao.com/index.htm</a></p>
+
+<!-- more -->
+
+
+<p>API在线文档：<a href="http://open.taobao.com/doc/category_list.htm?spm=0.0.0.0.Zt7VwY&amp;id=102">http://open.taobao.com/doc/category_list.htm?spm=0.0.0.0.Zt7VwY&amp;id=102</a></p>
+
+<p>API在线测试工具：<a href="http://api.taobao.com/apitools/apiTools.htm">http://api.taobao.com/apitools/apiTools.htm</a></p>
+
+<p>android环境搭建：见安卓SDK内的文档</p>
+
+<h3>使用REST API</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">TopParameters</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TopParameters</span><span class="o">();</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">setMethod</span><span class="o">(</span><span class="s">&quot;taobao.taobaoke.items.get&quot;</span><span class="o">);</span><span class="c1">//调用的API</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addFields</span><span class="o">(</span><span class="s">&quot;pic_url&quot;</span><span class="o">,</span> <span class="s">&quot;title&quot;</span><span class="o">);</span><span class="c1">//返回参数</span>
+</span><span class='line'><span class="n">params</span><span class="o">.</span><span class="na">addParam</span><span class="o">(</span><span class="s">&quot;keyword&quot;</span><span class="o">,</span> <span class="s">&quot;android&quot;</span><span class="o">);</span><span class="c1">//设定输入参数</span>
+</span><span class='line'><span class="c1">//API不必要userId时，userId可为NULL，必要时要先授权</span>
+</span><span class='line'><span class="n">client</span><span class="o">.</span><span class="na">api</span><span class="o">(</span><span class="n">params</span><span class="o">,</span> <span class="n">userId</span><span class="o">,</span> <span class="k">new</span> <span class="n">TopApiListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onComplete</span><span class="o">(</span><span class="n">JSONObject</span> <span class="n">json</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//do something</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onError</span><span class="o">(</span><span class="n">ApiError</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//do something</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//do something</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">},</span> <span class="kc">true</span><span class="o">);</span><span class="c1">//true表示异步</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>onComplete()接受返回的JSONObject，然后可以对JSONObject进行处理，获得所需的数据。</p>
+
+<p>比如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">JSONArray</span> <span class="n">items</span> <span class="o">=</span> <span class="n">json</span>
+</span><span class='line'><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;taobaoke_items_get_response&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;taobaoke_items&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;taobaoke_item&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">setImage</span><span class="o">(</span><span class="n">items</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;pic_url&quot;</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Android中的JSON详细总结：<a href="http://shazhuzhu1.iteye.com/blog/974758">http://shazhuzhu1.iteye.com/blog/974758</a></p>
+
+<h3>异步加载TextView</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">setText</span><span class="o">(</span><span class="kd">final</span> <span class="n">TextView</span> <span class="n">textView</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ret</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">runOnUiThread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">ret</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>异步加载网络图片资源</h3>
+
+<p>使用的类来自</p>
+
+<p><a href="http://www.linuxidc.com/Linux/2011-12/48664.htm">http://www.linuxidc.com/Linux/2011-12/48664.htm</a></p>
+
+<p>AsyncImageLoader.java</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[冒泡排序]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/27/BubbleSort/"/>
+    <updated>2013-02-27T13:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/27/BubbleSort</id>
+    <content type="html"><![CDATA[<h3>问题</h3>
+
+<p>　　有一数组a，长度为n，把数组中的元素从小到大重新排列</p>
+
+<h3>思路</h3>
+
+<p>　　从0到n-1，两两比较数组中的元素，如果前者大于后者，则交换之(如a[0]>a[1]，则交换a[0]和a[1])。作一趟冒泡排序后，最大值就在最后一个位置a[n-1]上了。然后对余下的0到n-2个元素作第二趟冒泡排序，次最大值就去到倒数第二个位置a[n-2]上了，如此类推。</p>
+
+<!-- more -->
+
+
+<h3>JAVA代码</h3>
+
+<p>　　传入参数：未排序的数组</p>
+
+<p>　　返回参数：排序后的数组</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kt">int</span><span class="o">[]</span> <span class="nf">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">int</span><span class="o">[]</span> <span class="n">sortedArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">sortedArray</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>      <span class="kt">boolean</span> <span class="n">isSort</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">isSort</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">length</span> <span class="o">-</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">if</span> <span class="o">(</span><span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                  <span class="n">temp</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>                  <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>                  <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>                  <span class="n">isSort</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(!</span><span class="n">isSort</span><span class="o">)</span>
+</span><span class='line'>              <span class="k">break</span><span class="o">;</span> <span class="c1">// 如果没有发生交换，则退出循环</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">sortedArray</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　由于JAVA数组是引用类型，为了保护原数组，开始时将原数组赋值给另一数组，对后者进行排序。</p>
+
+<p>　　复杂度是O(n<sup>2)。</sup></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【转载】Android的线程使用来更新UI----Thread、Handler、Looper、TimerTask等]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/23/Runnable/"/>
+    <updated>2013-02-23T21:29:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/23/Runnable</id>
+    <content type="html"><![CDATA[<p>文章来源：<a href="http://www.cnblogs.com/playing/archive/2011/03/24/1993583.html">http://www.cnblogs.com/playing/archive/2011/03/24/1993583.html</a></p>
+
+<!-- more -->
+
+
+<h2>方法一：(java习惯，在android不推荐使用）</h2>
+
+<p>刚刚开始接触android线程编程的时候，习惯好像java一样，试图用下面的代码解决问题</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">myView</span><span class="o">.</span><span class="na">invalidate</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以实现功能，刷新UI界面。但是这样是不行的，因为它违背了单线程模型：Android UI操作并不是线程安全的并且这些操作必须在UI线程中执行。</p>
+
+<h2>方法二：（Thread+Handler)</h2>
+
+<p>查阅了文档和apidemo后，发觉常用的方法是利用Handler来实现UI线程的更新的。</p>
+
+<p>Handler来根据接收的消息，处理UI更新。Thread线程发出Handler消息，通知更新UI。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Handler</span> <span class="n">myHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">case</span> <span class="n">TestHandler</span><span class="o">.</span><span class="na">GUIUPDATEIDENTIFIER</span><span class="o">:</span>
+</span><span class='line'><span class="n">myBounceView</span><span class="o">.</span><span class="na">invalidate</span><span class="o">();</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">handleMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">myThread</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(!</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">isInterrupted</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Message</span><span class="o">();</span>
+</span><span class='line'><span class="n">message</span><span class="o">.</span><span class="na">what</span> <span class="o">=</span> <span class="n">TestHandler</span><span class="o">.</span><span class="na">GUIUPDATEIDENTIFIER</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">TestHandler</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">myHandler</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">interrupt</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上方法demo看:http://rayleung.javaeye.com/blog/411860</p>
+
+<h2>方法三：（java习惯，不推荐）</h2>
+
+<p>在Android平台中需要反复按周期执行方法可以使用Java上自带的TimerTask类，TimerTask相对于Thread来说对于资源消耗的更低，除了使用Android自带的AlarmManager使用Timer定时器是一种更好的解决方法。 我们需要引入import java.util.Timer; 和 import java.util.TimerTask;</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JavaTimer</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Timer</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Timer</span><span class="o">();</span>
+</span><span class='line'><span class="n">TimerTask</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TimerTask</span><span class="o">(){</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">setTitle</span><span class="o">(</span><span class="s">&quot;hear me?&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="mi">10000</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>方法四：(TimerTask + Handler)</h2>
+
+<p>实际上这样做是不行的，这跟Android的线程安全有关！应该通过配合Handler来实现timer功能的！</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestTimer</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Timer</span> <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Timer</span><span class="o">();</span>
+</span><span class='line'><span class="n">Handler</span> <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(){</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+</span><span class='line'><span class="n">setTitle</span><span class="o">(</span><span class="s">&quot;hear me?&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">handleMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">TimerTask</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TimerTask</span><span class="o">(){</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Message</span><span class="o">();</span>
+</span><span class='line'><span class="n">message</span><span class="o">.</span><span class="na">what</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="mi">10000</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>方法五：( Runnable + Handler.postDelayed(runnable,time) )</p>
+
+<p>在Android里定时更新 UI，通常使用的是 java.util.Timer, java.util.TimerTask, android.os.Handler组合。实际上Handler 自身已经提供了定时的功能。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">Handler</span> <span class="n">handler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">Runnable</span> <span class="n">myRunnable</span><span class="o">=</span> <span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">run</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'><span class="n">count</span><span class="o">++;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">tvCounter</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Count: &quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在其他地方调用</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="n">myRunnable</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">handler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="n">myRunnable</span><span class="o">,</span><span class="n">time</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>案例看：http://shaobin0604.javaeye.com/blog/515820</p>
+
+<p>====================================================================</p>
+
+<h2>知识点总结补充：</h2>
+
+<p>　　很多初入Android或Java开发的新手对Thread、Looper、Handler和Message仍然比较迷惑，衍生的有HandlerThread、java.util.concurrent、Task、AsyncTask由于目前市面上的书籍等资料都没有谈到这些问题，今天就这一问题做更系统性的总结。我们创建的Service、Activity以及Broadcast均是一个主线程处理，这里我们可以理解为UI线程。但是在操作一些耗时操作时，比如I/O读写的大文件读写，数据库操作以及网络下载需要很长时间，为了不阻塞用户界面，出现ANR的响应提示窗口，这个时候我们可以考虑使用Thread线程来解决。</p>
+
+<p>　　对于从事过J2ME开发的程序员来说Thread比较简单，直接匿名创建重写run方法，调用start方法执行即可。或者从Runnable接口继承，但对于Android平台来说UI控件都没有设计成为线程安全类型，所以需要引入一些同步的机制来使其刷新，这点Google在设计Android时倒是参考了下Win32的消息处理机制。</p>
+
+<ol>
+<li><p>对于线程中的刷新一个View为基类的界面，可以使用postInvalidate()方法在线程中来处理，其中还提供了一些重写方法比如postInvalidate(int left,int top,int right,int bottom) 来刷新一个矩形区域，以及延时执行，比如postInvalidateDelayed(long delayMilliseconds)或postInvalidateDelayed(long delayMilliseconds,int left,int top,int right,int bottom) 方法，其中第一个参数为毫秒</p></li>
+<li><p>当然推荐的方法是通过一个Handler来处理这些，可以在一个线程的run方法中调用handler对象的 postMessage或sendMessage方法来实现，Android程序内部维护着一个消息队列，会轮训处理这些，如果你是Win32程序员可以很好理解这些消息处理，不过相对于Android来说没有提供 PreTranslateMessage这些干涉内部的方法。</p></li>
+<li><p>Looper又是什么呢? ，其实Android中每一个Thread都跟着一个Looper，Looper可以帮助Thread维护一个消息队列，但是Looper和Handler没有什么关系，我们从开源的代码可以看到Android还提供了一个Thread继承类HanderThread可以帮助我们处理，在HandlerThread对象中可以通过getLooper方法获取一个Looper对象控制句柄，我们可以将其这个Looper对象映射到一个Handler中去来实现一个线程同步机制，Looper对象的执行需要初始化Looper.prepare方法就是昨天我们看到的问题，同时推出时还要释放资源，使用Looper.release方法。</p></li>
+<li><p>Message 在Android是什么呢? 对于Android中Handler可以传递一些内容，通过Bundle对象可以封装String、Integer以及Blob二进制对象，我们通过在线程中使用Handler对象的sendEmptyMessage或sendMessage方法来传递一个Bundle对象到Handler处理器。对于Handler类提供了重写方法handleMessage(Message msg) 来判断，通过msg.what来区分每条信息。将Bundle解包来实现Handler类更新UI线程中的内容实现控件的刷新操作。相关的Handler对象有关消息发送sendXXXX相关方法如下，同时还有postXXXX相关方法，这些和Win32中的道理基本一致，一个为发送后直接返回，一个为处理后才返回 .</p></li>
+<li><p>java.util.concurrent对象分析，对于过去从事Java开发的程序员不会对Concurrent对象感到陌生吧，他是JDK 1.5以后新增的重要特性作为掌上设备，我们不提倡使用该类，考虑到Android为我们已经设计好的Task机制，这里不做过多的赘述，相关原因参考下面的介绍:</p></li>
+<li><p>在Android中还提供了一种有别于线程的处理方式，就是Task以及AsyncTask，从开源代码中可以看到是针对Concurrent的封装，开发人员可以方便的处理这些异步任务。</p></li>
+</ol>
+
+
+<p>摘录自：<a href="http://www.android123.com.cn/androidkaifa/422.html">http://www.android123.com.cn/androidkaifa/422.html</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[二分查找演示程序]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/18/BinarySearchDemo/"/>
+    <updated>2013-02-18T22:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/18/BinarySearchDemo</id>
+    <content type="html"><![CDATA[<h2>二分查找介绍</h2>
+
+<p>　　二分查找又称折半查找，优点是比较次数少，查找速度快，平均性能好；其缺点是要求待查表为有序表，且插入删除困难。因此，折半查找方法适用于不经常变动而查找频繁的有序列表。</p>
+
+<!-- more -->
+
+
+<h2>二分查找原理</h2>
+
+<p>　　首先，假设表中元素是按升序排列，将表中间位置记录的关键字与查找关键字比较，如果两者相等，则查找成功；否则利用中间位置记录将表分成前、后两个子表，如果中间位置记录的关键字大于查找关键字，则进一步查找前一子表，否则进一步查找后一子表。重复以上过程，直到找到满足条件的记录，使查找成功，或直到子表不存在为止，此时查找不成功。</p>
+
+<h2>演示程序</h2>
+
+<ol>
+<li><p>给出一组固定升序排列的数组</p></li>
+<li><p>用户输入查找数字（限定0-9之间）</p></li>
+<li><p>点击按键逐次查找，显示查找次数和边界值变化</p></li>
+<li><p>查找完成后可复位成初始状态</p></li>
+</ol>
+
+
+<h2>程序代码分析</h2>
+
+<h3>初始化</h3>
+
+<p>　　给出数组和初始数值。其中mLow为上边界，mHigh为上边界，mMiddle为中间值。mTimes为计次变量。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">src</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">7</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">9</span> <span class="o">};</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">mLow</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">mHigh</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">mTimes</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span> <span class="n">mMiddle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>设置屏幕、组件，绑定监听器</strong></p>
+
+<p>　　批量设置textview的方法</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">TextView</span><span class="o">[]</span> <span class="n">tv</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">Integer</span><span class="o">[]</span> <span class="n">view</span> <span class="o">=</span> <span class="o">{</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num0</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num1</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num2</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num3</span><span class="o">,</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num4</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">num5</span> <span class="o">};</span>
+</span><span class='line'>  <span class="n">tv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextView</span><span class="o">[</span><span class="mi">6</span><span class="o">];</span>
+</span><span class='line'>  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">tv</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">view</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span><span class='line'>      <span class="n">tv</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">setText</span><span class="o">(</span><span class="n">src</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>设置“搜索”按键的监听类</h3>
+
+<p><strong>判断计次变量mTimes</strong></p>
+
+<p>　　为-1时表示查询结束，按查询键不再反应。</p>
+
+<p><strong>mLow与mHigh相比较</strong></p>
+
+<p>　　如果mLow大于mHigh，则说明未查找到，查找结束。</p>
+
+<p>　　如果mLow小于mHigh，则令mMiddle为二者和的一半。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="k">if</span> <span class="o">(</span><span class="n">mLow</span> <span class="o">&lt;=</span> <span class="n">mHigh</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">mMiddle</span> <span class="o">=</span> <span class="o">(</span><span class="n">mLow</span> <span class="o">+</span> <span class="n">mHigh</span><span class="o">)</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>mMiddle与目标查询值des相比较</strong></p>
+
+<p>■ 相等，则找到</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">des</span> <span class="o">==</span> <span class="n">src</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//显示完成</span>
+</span><span class='line'>  <span class="n">mTimes</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>■ mMiddle大，则目标在左侧，令mHigh为mMiddle-1</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">des</span> <span class="o">&lt;</span> <span class="n">src</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">mHigh</span> <span class="o">=</span> <span class="n">mMiddle</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">mTimes</span><span class="o">++;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>■ mMiddle小，则目标在右侧，令mLow为mMiddle+1</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">mLow</span> <span class="o">=</span> <span class="n">mMiddle</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">mTimes</span><span class="o">++;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>设置“复位”按键的监听类</h3>
+
+<p>　　属性、组件文字还原至初始值</p>
+
+<h3>其他细节备忘</h3>
+
+<ol>
+<li>查找第一次时将editview设为不可获得焦点（不可编辑），按复位时还原。</li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">editText</span><span class="o">.</span><span class="na">setFocusable</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>获得editview内用户输入的值</li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">int</span> <span class="n">des</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">editText</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>判断输入为空时提示</li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">editText</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">result</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;请输入要查询的数字&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>查找成功变色（颜色0xFF0000FF，0x是代表颜色整数的标记，FF是表示透明度，0000FF表示颜色）</li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">tv</span><span class="o">[</span><span class="n">mMiddle</span><span class="o">].</span><span class="na">setTextColor</span><span class="o">(</span><span class="mh">0xFF0000FF</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br/>
+
+
+<hr>
+
+
+<br/>
+
+
+<p><img style="width:600px;" src="http://img14.poco.cn/mypoco/myphoto/20130218/21/4309479020130218213456040.png"  alt="图" /></p>
+
+<br/>
+
+
+<hr>
+
+
+<br/>
+
+
+<p>源码地址：<a href="https://github.com/dande618/BinarySearchDemo.git">https://github.com/dande618/BinarySearchDemo.git</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[markdown]]></title>
@@ -1031,16 +1833,19 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 
 <h3>静态绑定：</h3>
 
-<p>　　在程序执行前方法已经被绑定，此时由编译器或其它连接程序实现。例如：C。
-针对java简单的可以理解为程序编译期的绑定；这里特别说明一点，java当中的方法只有final，static，private和构造方法是前期绑定。</p>
+<p>　　在程序执行前方法已经被绑定，此时由编译器或其它连接程序实现。例如：C。</p>
+
+<p>　　针对java简单的可以理解为程序编译期的绑定；这里特别说明一点，java当中的方法只有final，static，private和构造方法是前期绑定。</p>
 
 <h3>动态绑定：</h3>
 
-<p>　　后期绑定：在运行时根据具体对象的类型进行绑定。
-　　若一种语言实现了后期绑定，同时必须提供一些机制，可在运行期间判断对象的类型，并分别调用适当的方法。也就是说，编译器此时依然不知道对象的类型，但方法调用机制能自己去调查，找到正确的方法主体。不同的语言对后期绑定的实现方法是有所区别的。但我们至少可以这样认为：它们都要在对象中安插某些特殊类型的信息。</p>
+<p>　　后期绑定：在运行时根据具体对象的类型进行绑定。</p>
+
+<p>　　若一种语言实现了后期绑定，同时必须提供一些机制，可在运行期间判断对象的类型，并分别调用适当的方法。也就是说，编译器此时依然不知道对象的类型，但方法调用机制能自己去调查，找到正确的方法主体。不同的语言对后期绑定的实现方法是有所区别的。但我们至少可以这样认为：它们都要在对象中安插某些特殊类型的信息。</p>
+
+<p><strong>动态绑定的过程：</strong></p>
 
 <ul>
-<li><p>动态绑定的过程：</p></li>
 <li><p>虚拟机提取对象的实际类型的方法表；</p></li>
 <li><p>虚拟机搜索方法签名；</p></li>
 <li><p>调用方法。</p></li>
@@ -1123,7 +1928,7 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>　　由于子类重写了父类的method方法，根据上面的理论知道会去调用子类的method方法去执行，因为子类对象有method方法而没有向上转型去寻找</p>
+<p>　　由于子类重写了父类的method方法，根据上面的理论知道会去调用子类的method方法去执行，因为子类对象有method方法而没有向上转型去寻找。</p>
 
 <p>　　前面的理论当中已经提到了java的绑定规则，由此可知，在处理java类中的成员变量时，并不是采用运行时绑定，而是一般意义上的静态绑定。所以在向上转型的情况下，对象的方法可以找到子类，而对象的属性还是父类的属性。
 代码如下：</p>
@@ -1653,232 +2458,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 -继承——一个类可以从另一个类继承，并且可以利用超类定义的属性和方法。
 -多态——多态是指类似的对象可以采用不同的方式对相同的消息作出响应。例如，你可能有一个包含多种形状的系统。小过，圆形、正方形和星形分别采用不同的方式绘制。通过使用多态，可以向以上各个形状发送相同的消息（如Draw），各形状则会负责自行完成绘制。
 -组合——组合是指—个对象由其他对象构建而成。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[面向对象基本概念（二）]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/16/object2/"/>
-    <updated>2012-12-16T09:11:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/16/object2</id>
-    <content type="html"><![CDATA[<h2>方法</h2>
-
-<p>　　方法实现了一个类所需的行为。从这个类实例化的各个对象都有该类所定义的方法。方法可能实现其他对象（消息）所调用的行为，或者提供这个类内部的基本行为。内部行为是不允许其他对象访问的私有方法。</p>
-
-<p>　　在各种情况下，对一个对象中属性的访问要由这个对象自己来控制，而不允许其他对象直接修改另一个对象的属性。</p>
-
-<!-- more -->
-
-
-<h2>消息</h2>
-
-<p>　　消息是对象之间的的通信机制。例如，当对象A调用对象B的一个方法时，对象A就是在向对象B发送一个消息。对象B的响应由其返回值定义。只有对象的公共方法（而不包括私有方法）能够由另一个对象调用。</p>
-
-<h2>封装和数据隐藏</h2>
-
-<p>　　使用对象的主要优点之一是，对象不需要公开它的所有的属性和行为。在好的ＯＯ设计中，对象只应公开其他对象与之交互所必需的接口，与对象使用无关的细节应当对所有其他对象隐藏。</p>
-
-<h2>接口</h2>
-
-<p>　　接口定义了对象间通信的基本途径。每个类设计都要指定接口来正确地实现对象的实例化和操作。对象提供的行为必须通过使用某个接口发送的消息来调用。接口应当全面描述这个类的用户如何与之交互。在大多数ＯＯ语言中，接口中的方法都指定为public。</p>
-
-<p>　　要实现数据隐藏，所有属性都应当声明为private。</p>
-
-<h2>实现</h2>
-
-<p>　　只有公共属性和方法被认为是接口。用户不应该看到任何实现部分，与一个对象的交互只能通过类接口。</p>
-
-<p>　　因此，实现可以改变，但是它不会影响到用户的代码。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[面向对象基本概念（一）]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/14/object/"/>
-    <updated>2012-12-14T17:20:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/14/object</id>
-    <content type="html"><![CDATA[<p>　　在深入某种编程语言或建模语言前必须先熟悉<strong>面向对象</strong>（object-oriented，ＯＯ）思维过程。</p>
-
-<!-- more -->
-
-
-<blockquote><p>　　对象（object）可以定义为同时包含数据和行为的一个实体。这里的“同时包含”正是ＯＯ程序设计和其他程序设计方法的重要区别。</p></blockquote>
-
-<p>　　在ＯＯ设计中，属性和行为都包含在一个对象中，而在过程式设计中（或者说结构化设计）中，属性和行为是分开的。</p>
-
-<blockquote><p>　　数据隐藏（data hiding）：在ＯＯ术语中，数据表示为属性，行为表示为方法，限制对某些属性和方法的访问称为数据隐藏。</p>
-
-<p>　　封装（encapsulation）：通过把属性和方法合并到一个实体中，就能控制对对象中数据的访问。</p></blockquote>
-
-<p>　　一般情况下，对象不应处理其他对象的内部数据。通常更好的做法是构建完成特定任务的小对象，而不是建立完成很多任务的大型对象。</p>
-
-<p>　　过程式程序设计通常将系统的数据与处理这些数据的操作相分离。</p>
-
-<p>　　ＯＯ程序设计最根本的优点是：数据和处理这些数据的操作（代码）都封装在对象中。</p>
-
-<blockquote><p>　　存储在一个对象中的数据表示对象的状态。在ＯＯ程序设计术语中，该数据称为属性（attribute）。</p>
-
-<p>　　对象的行为（behavior）就是对象能够做什么。在ＯＯ程序设计术语中，这些行为包含在方法（method）中，要通过发送消息来调用方法。</p></blockquote>
-
-<p>　　要记住，使用对象有很多优点，其中最有意思（最强大）的一点就是数据是包的一部分——它不与代码分离。</p>
-
-<p>　　获取方法和设置方法的概念支持数据隐藏的概念。因为其他对象不能直接处理另一个对象内部的数据，所以获取方法和设置方法提供了对对象的数据的一种控制访问。</p>
-
-<p>　　只是给出方法的接口，而没有展示具体实现。用户只需要一下信息就能知道如何有效地使用这些方法。</p>
-
-<ul>
-<li><p>方法名</p></li>
-<li><p>传入方法的参数</p></li>
-<li><p>方法的返回类型</p></li>
-</ul>
-
-
-<h3>类是什么？</h3>
-
-<p>　　现在可以把类认为是一种<strong>模板</strong>，由这个模板建立对象。创建一个对象时，我们称对象被实例化。从概念层次来讲，可以认为对象完全是独立的，有其自己的属性和方法。</p>
-
-<p>　　简单来讲，类是对象的一个<strong>蓝图</strong>。实例化一个对象时，就是使用一个类作为构建这个对象的基础。在ＯＯ软件中，应该先有类。如果没有类，对象就无法实例化。</p>
-
-<p>　　每个对象都有其自己的属性和行为。类定义用这个类创建的所有对象拥有的属性和行为。类是一些代码。有类实例化得到的对象可以单独分布，也可以作为库的一部分。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ANDROID命名规范]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/13/name/"/>
-    <updated>2012-12-13T16:51:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/13/name</id>
-    <content type="html"><![CDATA[<p>　　要时刻注意代码的规范性和可读性。</p>
-
-<!-- more -->
-
-
-<ul>
-    <li>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</li>
-    <li>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li>
-    <li>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li>
-    <li>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li>
-</ul>
-
-
-<p><a href=" http://source.android.com/source/code-style.html">android code style</a></p>
-
-<br/>
-
-
-<h2>Android命名规范</h2>
-
-
-<p class="laiyuan">[转载]<a href="http://www.cnblogs.com/xiongbo/archive/2011/08/15/2098130.html">文章出处</a></p>
-
-
-<h3>1.java代码中不出现中文，最多注释中可以出现中文</h3>
-
-
-<h3>2.局部变量命名、静态成员变量命名</h3>
-
-
-<p class="para">只能包含字母，单词首字母出第一个外，都为大写，其他字母都为小写</p>
-
-
-<h3>3.常量命名</h3>
-
-
-<p class="para">只能包含字母和_，字母全部大写，单词之间用_隔开</p>
-
-
-<h3>4.layout中的id命名</h3>
-
-
-<p class="para">命名模式为：view缩写_模块名称_view的逻辑名称</p>
-
-
-<p class="para">view的缩写详情如下</p>
-
-
-<p class="para">LayoutView：lv</p>
-
-
-<p class="para">RelativeView:rv</p>
-
-
-<p class="para">TextView:tv</p>
-
-
-<p class="para">ImageView:iv</p>
-
-
-<p class="para">ImageButton:im</p>
-
-
-<p class="para">Button:btn</p>
-
-
-<h3>5.activity中的view变量命名</h3>
-
-
-<p class="para">命名模式为：逻辑名称+view缩写</p>
-
-
-<p class="para">建议：如果layout文件很复杂，建议将layout分成多个模块，每个模块定义一个moduleViewHolder，其成员变量包含所属view</p>
-
-
-<h3>6.strings.xml中的id命名</h3>
-
-
-<p class="para">命名模式：activity名称_功能模块名称_逻辑名称/activity名称_逻辑名称/common_逻辑名称</p>
-
-
-<p class="para">strings.xml中，使用activity名称注释，将文件内容区分开来</p>
-
-
-<h3>7.drawable中的图片命名</h3>
-
-
-<p class="para">命名模式：activity名称_逻辑名称/common_逻辑名称</p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[修改代码时git的操作流程]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/13/github/"/>
-    <updated>2012-12-13T16:50:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/13/github</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<p class="laiyuan">[转载]　<a href="http://yuanhsh.iteye.com/blog/987705">文章出处</a></p>
-
-
-<ol>
-<li>修改任何代码前，请创建一个新的branch
-<pre class="wiki">git checkout -b &lt;branch_name&gt;
-</pre>
-</li>
-<li>执行完上述命令后会自动切换到&lt;branch_name&gt;分支，现在你就可以开始开发了。开发期间，你可能会多次执行
-<pre class="wiki">git add .
-git commit -m ""
-</pre>
-</li>
-<li>当你开发完毕，需要合并到master上时
-<pre class="wiki">git checkout master    #先切换回master
-git pull                       #这里不可能有任何冲突，因为master是不会本地修改的
-git checkout &lt;branch_name&gt;  #切换回开发分支
-git rebase master       #这时候可能会产生冲突，哪些文件冲突了，反馈信息里有明确显示
-如果发生了冲突：
-首先，编辑修复所有冲突的代码。然后：
-git add .
-git rebase --continue
-
-git checkout master   
-git merge &lt;branch_name&gt;
-git push                    #其实这个时候还是有可能有冲突
-git pull --rebase
-接着与上面处理冲突的方法一致</pre>
-</li>
-</ol>
-
 ]]></content>
   </entry>
   

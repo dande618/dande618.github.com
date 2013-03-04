@@ -4,7 +4,7 @@
   <title><![CDATA[Category: java | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-16T16:52:52+08:00</updated>
+  <updated>2013-03-04T23:07:00+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,210 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[【摘抄】JAVA多线程]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/01/Thread/"/>
+    <updated>2013-03-01T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/01/Thread</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。</p>
+
+<p>线程与进程相似，是一段完成某个特定功能的代码，是程序中单个顺序的流控制；但与进程不同的是，同类的多个线程是共享一块内存空间和一组系统资源，而线程本身的数据通常只有微处理器的寄存器数据，以及一个供程序执行时使用的堆栈。所以系统在产生一个线程，或者在各个线程之间切换时，负担要比进程小的多，正因如此，线程被称为轻负荷进程（light-weight process）。一个进程中可以包含多个线程。</p>
+
+<p>一个线程是一个程序内部的顺序控制流。</p>
+
+<ol>
+<li><p>进程：每个进程都有独立的代码和数据空间（进程上下文），进程切换的开销大。</p></li>
+<li><p>线程：轻量的进程，同一类线程共享代码和数据空间，每个线程有独立的运行栈和程序计数器（PC），线程切换的开销小。</p></li>
+<li><p>多进程：在操作系统中，能同时运行多个任务程序。</p></li>
+<li><p>多线程：在同一应用程序中，有多个顺序流同时执行。</p></li>
+</ol>
+
+
+<p>Java的线程是通过java.lang.Thread类来实现的。当我们生成一个Thread类的对象之后,一个新的线程就产生了。</p>
+
+<p>任何实现接口Runnable的对象都可以作为一个线程的目标对象，类Thread本身也实现了接口Runnable，因此我们可以通过两种方法实现线程体。</p>
+
+<p>（一）定义一个线程类，它继承线程类Thread并重写其中的方法 run（），这时在初始化这个类的实例时，目标target可为null，表示由这个实例对来执行线程体。由于Java只支持单重继承，用这种方法定义的类不能再继承其它父类。</p>
+
+<p>（二）提供一个实现接口Runnable的类作为一个线程的目标对象，在初始化一个Thread类或者Thread子类的线程对象时，把目标对象传递给这个线程实例，由该目标对象提供线程体 run（）。这时，实现接口Runnable的类仍然可以继承其它父类。</p>
+
+<p>每个线程都是通过某个特定Thread对象的方法run( )来完成其操作的，方法run( )称为线程体。</p>
+
+<ol>
+<li>创建状态(new Thread)</li>
+</ol>
+
+
+<p>执行下列语句时，线程就处于创建状态：</p>
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>当一个线程处于创建状态时，它仅仅是一个空的线程对象，系统不为它分配资源。</p>
+
+<ol>
+<li>可运行状态( Runnable )</li>
+</ol>
+
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>myThread.start( );</p>
+
+<p>当一个线程处于可运行状态时，系统为这个线程分配了它需的系统资源，安排其运行并调用线程运行方法，这样就使得该线程处于可运行( Runnable )状态。需要注意的是这一状态并不是运行中状态（Running )，因为线程也许实际上并未真正运行。由于很多计算机都是单处理器的，所以要在同一时刻运行所有的处于可运行状态的线程是不可能的，Java的运行系统必须实现调度来保证这些线程共享处理器。</p>
+
+<ol>
+<li>不可运行状态（Not Runnable）</li>
+</ol>
+
+
+<p>进入不可运行状态的原因有如下几条：</p>
+
+<p>1) 调用了sleep（）方法;</p>
+
+<p>2) 调用了suspend（）方法;</p>
+
+<p>3) 为等候一个条件变量，线程调用wait（）方法;</p>
+
+<p>4) 输入输出流中发生线程阻塞;</p>
+
+<p>不可运行状态也称为阻塞状态（Blocked）。因为某种原因（输入/输出、等待消息或其它阻塞情况），系统不能执行线程的状态。这时即使处理器空闲，也不能执行该线程。</p>
+
+<ol>
+<li>死亡状态（Dead）</li>
+</ol>
+
+
+<p>线程的终止一般可通过两种方法实现：自然撤消（线程执行完）或是被停止（调用stop()方法）。目前不推荐通过调用stop()来终止线程的执行，而是让线程执行完。</p>
+
+<ol>
+<li>使用Runnable接口　</li>
+</ol>
+
+
+<p>1) 可以将CPU，代码和数据分开，形成清晰的模型;</p>
+
+<p>2) 还可以从其他类继承;</p>
+
+<p>3) 保持程序风格的一致性。</p>
+
+<ol>
+<li>直接继承Thread类</li>
+</ol>
+
+
+<p>1) 不能再从其他类继承;</p>
+
+<p>2) 编写简单，可以直接操纵线程，无需使用Thread.currentThread()。</p>
+
+<h2>多线程的互斥与同步</h2>
+
+<h3>互斥锁</h3>
+
+<p>为解决操作的不完整性问题，在Java 语言中，引入了对象互斥锁的概念，来保证共享数据操作的完整性。每个对象都对应于一个可称为" 互斥锁" 的标记，这个标记用来保证在任一时刻，只能有一个线程访问该对象。 关键字synchronized 来与对象的互斥锁联系。当某个对象用synchronized 修饰时，表明该对象在任一时刻只能由一个线程访问。</p>
+
+<h3>多线程的同步</h3>
+
+<p>通过运用wait()和notify()方法来实现线程的同步，在同步中还会用到notifyAll()方法，一般来说，每个共享对象的互斥锁存在两个队列，一个是锁等待队列，另一个是锁申请队列，锁申请队列中的第一个线程可以对该共享对象进行操作，而锁等待队列中的线程在某些情况下将移入到锁申请队列。下面比较一下wait()、notify()和notifyAll()方法：</p>
+
+<p>(1) wait,nofity,notifyAll必须在已经持有锁的情况下执行,所以它们只能出现在synchronized作用的范围内，也就是出现在用synchronized修饰的方法或类中。</p>
+
+<p>(2) wait的作用:释放已持有的锁,进入等待队列.</p>
+
+<p>(3) notify的作用:唤醒wait队列中的第一个线程并把它移入锁申请队列.</p>
+
+<p>(4) notifyAll的作用:唤醒wait队列中的所有的线程并把它们移入锁申请队列.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[冒泡排序]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/27/BubbleSort/"/>
+    <updated>2013-02-27T13:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/27/BubbleSort</id>
+    <content type="html"><![CDATA[<h3>问题</h3>
+
+<p>　　有一数组a，长度为n，把数组中的元素从小到大重新排列</p>
+
+<h3>思路</h3>
+
+<p>　　从0到n-1，两两比较数组中的元素，如果前者大于后者，则交换之(如a[0]>a[1]，则交换a[0]和a[1])。作一趟冒泡排序后，最大值就在最后一个位置a[n-1]上了。然后对余下的0到n-2个元素作第二趟冒泡排序，次最大值就去到倒数第二个位置a[n-2]上了，如此类推。</p>
+
+<!-- more -->
+
+
+<h3>JAVA代码</h3>
+
+<p>　　传入参数：未排序的数组</p>
+
+<p>　　返回参数：排序后的数组</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span><span class="o">[]</span> <span class="n">sortedArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sortedArray</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">boolean</span> <span class="n">isSort</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">isSort</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">length</span> <span class="o">-</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">temp</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>                <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>                <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>                <span class="n">isSort</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">isSort</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span> <span class="c1">// 如果没有发生交换，则退出循环</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">sortedArray</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>　　由于JAVA数组是引用类型，为了保护原数组，开始时将原数组赋值给另一数组，对后者进行排序。</p>
+
+<p>　　复杂度是O(n<sup>2)。</sup></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[构造函数]]></title>
@@ -135,16 +339,19 @@
 
 <h3>静态绑定：</h3>
 
-<p>　　在程序执行前方法已经被绑定，此时由编译器或其它连接程序实现。例如：C。
-针对java简单的可以理解为程序编译期的绑定；这里特别说明一点，java当中的方法只有final，static，private和构造方法是前期绑定。</p>
+<p>　　在程序执行前方法已经被绑定，此时由编译器或其它连接程序实现。例如：C。</p>
+
+<p>　　针对java简单的可以理解为程序编译期的绑定；这里特别说明一点，java当中的方法只有final，static，private和构造方法是前期绑定。</p>
 
 <h3>动态绑定：</h3>
 
-<p>　　后期绑定：在运行时根据具体对象的类型进行绑定。
-　　若一种语言实现了后期绑定，同时必须提供一些机制，可在运行期间判断对象的类型，并分别调用适当的方法。也就是说，编译器此时依然不知道对象的类型，但方法调用机制能自己去调查，找到正确的方法主体。不同的语言对后期绑定的实现方法是有所区别的。但我们至少可以这样认为：它们都要在对象中安插某些特殊类型的信息。</p>
+<p>　　后期绑定：在运行时根据具体对象的类型进行绑定。</p>
+
+<p>　　若一种语言实现了后期绑定，同时必须提供一些机制，可在运行期间判断对象的类型，并分别调用适当的方法。也就是说，编译器此时依然不知道对象的类型，但方法调用机制能自己去调查，找到正确的方法主体。不同的语言对后期绑定的实现方法是有所区别的。但我们至少可以这样认为：它们都要在对象中安插某些特殊类型的信息。</p>
+
+<p><strong>动态绑定的过程：</strong></p>
 
 <ul>
-<li><p>动态绑定的过程：</p></li>
 <li><p>虚拟机提取对象的实际类型的方法表；</p></li>
 <li><p>虚拟机搜索方法签名；</p></li>
 <li><p>调用方法。</p></li>
@@ -220,7 +427,7 @@
 </span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
 </span><span class='line'><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
-　　由于子类重写了父类的method方法，根据上面的理论知道会去调用子类的method方法去执行，因为子类对象有method方法而没有向上转型去寻找</p>
+　　由于子类重写了父类的method方法，根据上面的理论知道会去调用子类的method方法去执行，因为子类对象有method方法而没有向上转型去寻找。</p>
 
 <p>　　前面的理论当中已经提到了java的绑定规则，由此可知，在处理java类中的成员变量时，并不是采用运行时绑定，而是一般意义上的静态绑定。所以在向上转型的情况下，对象的方法可以找到子类，而对象的属性还是父类的属性。
 代码如下：
@@ -380,149 +587,6 @@
 <p>　　从理论上讲，被认为是实现的任何部分可以改变而不影响类的用户接口。接口表示了用户如何看对象，而实现实际上是对象的具体内容。实现包含了表示对象状态的代码。</p>
 
 <p>摘自《写给大家看的面向对象编程书》</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何以对象方式思考（一）]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/26/haw_to1/"/>
-    <updated>2012-12-26T20:01:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/26/haw_to1</id>
-    <content type="html"><![CDATA[<p>　　ＯＯ设计的基本单元是类。ＯＯ设计所期望的最终结果是一个健壮、功能完备的对象模型，换句话说，也就是一个完备的系统。</p>
-
-<!-- more -->
-
-
-<p>　　解决一个问题没有纯粹的对与错，同一个问题往往可能有多种不同的处理方法。所以识图设计一个ＯＯ解决方案时，不要想着一上来就完成一个完美的设计（总会有需要改进的地方）。真正需要的是进行头脑风暴，让你能从不同方向展开你的思维过程。尝试解决一个问题时，不要试图遵照任何标准或约定，因为关键就是要有创造性。</p>
-
-<p>　　实际上，这个过程开始时，甚至不要考虑特定的编程语言。首要的是找出并解决业务问题。首先完成概念分析和设计。只有当特定技术对于解决业务问题至关重要时采取考虑它，例如，如果脱离无线技术可能无法设计一个无线网络。不过，通常有多种软件解决方案可以考虑。</p>
-
-<p>　　要培养善于完成ＯＯ思维过程的敏锐判断力，要注意3个重要的方面</p>
-
-<ol>
-<li><p>了解接口和实现之间的区别；</p></li>
-<li><p>以更抽象的方式思考；</p></li>
-<li><p>尽可能为用户提供最小接口。</p></li>
-</ol>
-
-
-<h2>了解接口与实现之间的区别</h2>
-
-<p>　　构建强大的ＯＯ设计时，关键是理解接口与实现之间的区别。因此，在设计类时，必须了解用户需要知道什么以及用户不需要知道什么，这些是至关重要的。可以利用封装所固有的数据隐藏机制将不重要的数据对用户隐藏。</p>
-
-<blockquote><p><strong>用户看什么：</strong></p>
-
-<p>接口也与类直接相关。最终用户通常不会看任何类，他们只看GUI或命令行界面。不过，程序员会看类接口。类重用意味着已经有人编写了一个类。因此程序员要使用一个类，就必须知道如何让这个类正确地工作。这个程序员要结合多个类来创造一个系统，他需要理解类的接口。因此，这一张谈到用户时，我们主要是指设计人员和开发人员，而不一定是最终用户。因此，在这个上下文中讨论接口时，也会死指类接口，而不是GUI。</p></blockquote>
-
-<h2>接口</h2>
-
-<p>　　为最终用户提供的服务构成了接口。最理想的情况下，应当只为最终用户提供他们所需要的服务。</p>
-
-<blockquote><p><strong>明确用户：</strong></p>
-
-<p>设计一个类时，也许最重要的就是要明确受众或用户。</p></blockquote>
-
-<h2>实现</h2>
-
-<p>　　实现细节对用户是隐藏的。一定要记住实现的一个目标：改变实现不需要同时改变用户的代码。这可能让人有些不太明白，不过，这个目标正是设计的核心问题。如果接口得到了正确的设计，对实现的改变就不会导致用户代码的改变。要记住，接口包含调用一个方法以及返回一个值的语法。如果这个接口没有改变，用户就不关心实现是否发生了改变。只要程序员可以使用同样的语法获取同样的值，怎样实现都无所谓。</p>
-
-<p>　　用户和实现都必须遵循接口规范。</p>
-
-<blockquote><p><strong>对象持久性：</strong></p>
-
-<p>对象持久性（Objiect persistence）是指保存对象的状态，从而可以在以后恢复并使用，没有持久存储的对象一旦出了作用域实际上就已经“死亡”。例如，可以把对象的状态保存在数据库中。</p></blockquote>
-
-<h2>设计接口时使用抽象思维</h2>
-
-<p>　　ＯＯ程序设计的主要优点之一是类可以重用。一般地，可重用类的接口往往更抽象而不是更具体。具体接口通常非常特定，而抽象接口更为一般。不过，如果说一个高度抽象的接口比一个想到具体的接口更有用，则不尽然（尽管通常都是如此）。</p>
-
-<p>　　我们的目标是设计抽象、高度可重用的类，为此，我们要设计高度抽象的用户接口。</p>
-
-<h2>尽可能为用户提供最小接口</h2>
-
-<p>　　设计类时，一般经验是总是为用户尽可能少地提供类的内部知识。为做到这一点，要遵循以下简单规则。</p>
-
-<ul>
-<li><p>只为用户提供他们确实需要的东西。实际上，这意味着类的接口要尽可能少。开始设计一个类时，首先只应有最小接口。类的设计是迭代性的，所以你很快会发现最小接口可能不能满足需求。这很正常。</p></li>
-<li><p>最好是当用户确实需要时才增加接口，而不要为用户提供他们不需要的接口。在很多情况下，为用户提供某些接口会带来问题。</p></li>
-<li><p>公共接口定义用户能访问的信息。如果开始时将接口置为私有，使整个类对用户隐藏，那么当程序员开始使用这个类时，会要求你将某些方法置为公共，这些方法就会成为公共接口。</p></li>
-</ul>
-
-
-<p>摘自《写给大家看的面向对象编程书》</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[继承与组合]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/24/is_a_has_a/"/>
-    <updated>2012-12-24T22:11:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/24/is_a_has_a</id>
-    <content type="html"><![CDATA[<p>　　is-a表示的是属于得关系。代表类之间或类与接口的继承关系。比如兔子属于一种动物（继承关系）。</p>
-
-<p>　　has-a表示组合，包含关系。代表对象和他成员的从属关系。比如兔子包含有腿，头等组件；就不能说兔子腿是属于一种兔子（不能说是继承关系）</p>
-
-<!-- more -->
-
-
-<p>　　对两个类之间"is a"或是"has a"关系的分析，有助于我们确定它们之间是否存在继承关系，避免设计上的错误，因而达到提高代码重用性的目的。</p>
-
-<p>　　在JAVA中，组合仅需将对象引用置于新类中即可。</p>
-
-<p>　　继承以关键字extends实现，即BaseClass extends SubClass{ }的形式实现导出类由BaseClass导出子类SubClass，子类可以在其接口中自动获取基类的方法而不论这些方法是否在子类中显示定义过；一方面，在子类中使用基类中的方法及对其进行修改都是可行的。需要特别说明的是，若要使用子类与基类中共有的属于基类方法时，则需要加关键字super表示当前类是从超类继承来的。</p>
-
-<p><strong>继承：</strong>
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">A</span><span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="c1">//.....</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span><span class='line'><span class="kd">class</span> <span class="nc">B</span> <span class="kd">extends</span> <span class="n">A</span><span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">//.....</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-<strong>组合：</strong>
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">A</span><span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">//.....</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span><span class='line'><span class="kd">class</span> <span class="nc">B</span><span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">A</span> <span class="n">a</span><span class="o">;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   

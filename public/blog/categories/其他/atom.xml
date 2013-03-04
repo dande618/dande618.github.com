@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 其他 | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-02-16T16:52:52+08:00</updated>
+  <updated>2013-03-04T23:07:00+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,31 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[goagent]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/04/goagent/"/>
+    <updated>2013-03-04T23:33:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/04/goagent</id>
+    <content type="html"><![CDATA[<p>goagent是国内很多朋友常用的免费代理工具，也是使用最广泛的谷歌应用之一，今天我们就来分享下goagent下载以及使用的相关事宜。 首先介绍一下goagent，它是使用Python和Google App EngineSDK编写的，可以在 Windows，Mac，Linux，Android，iPod Touch，iPhone，iPad，webOS，OpenWrt，Maemo 等平台上使用。</p>
+
+<!-- more -->
+
+
+<ol>
+<li><p>goagent 下载地址 <a href="https://code.google.com/p/goagent/">https://code.google.com/p/goagent/</a> （下载对应平台<strong>最新</strong>版本）</p></li>
+<li><p>申请 Google Appengine 并创建 appid <a href="https://code.google.com/p/goagent/wiki/InstallGuide">https://code.google.com/p/goagent/wiki/InstallGuide</a></p></li>
+<li><p>修改 local\proxy.ini 中的 gae 下的 appid = goagent 为你的appid</p></li>
+<li><p>运行 server\uploader.bat 上传</p></li>
+<li><p>运行 goagent.exe</p></li>
+<li><p>使用chrome浏览器，安装 SwitchySharp 插件，然后导入设置： <a href="https://goagent.googlecode.com/files/SwitchyOptions.bak">https://goagent.googlecode.com/files/SwitchyOptions.bak</a></p></li>
+<li><p>在右上图标出选择 goagent 即可</p></li>
+</ol>
+
+
+<blockquote><p>goagent对用户是有流量限制的，目前为每帐号每天1GB</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[markdown]]></title>
@@ -476,10 +501,10 @@ Markdown 会转为：</p>
 
 
 <ul>
-    <li>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</li>
-    <li>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li>
-    <li>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li>
-    <li>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li>
+<li><p>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</p></li>
+<li><p>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li></p></li>
+<li><p>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li></p></li>
+<li><p>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li></p></li>
 </ul>
 
 

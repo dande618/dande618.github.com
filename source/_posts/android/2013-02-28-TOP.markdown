@@ -1,0 +1,73 @@
+---
+layout: post
+title: "Android使用淘宝开放平台API"
+date: 2013-02-28 22:22
+comments: true
+categories: android
+---
+淘宝开放平台：<http://open.taobao.com/index.htm>
+<!-- more -->
+API在线文档：<http://open.taobao.com/doc/category_list.htm?spm=0.0.0.0.Zt7VwY&id=102>
+
+API在线测试工具：<http://api.taobao.com/apitools/apiTools.htm>
+
+android环境搭建：见安卓SDK内的文档
+
+###使用REST API
+
+{% codeblock lang:java %}
+TopParameters params = new TopParameters();
+params.setMethod("taobao.taobaoke.items.get");//调用的API
+params.addFields("pic_url", "title");//返回参数
+params.addParam("keyword", "android");//设定输入参数
+//API不必要userId时，userId可为NULL，必要时要先授权
+client.api(params, userId, new TopApiListener() {
+@Override
+public void onComplete(JSONObject json) {
+//do something
+}
+@Override
+public void onError(ApiError error) {
+//do something
+}
+@Override
+public void onException(Exception e) {
+//do something
+}
+}, true);//true表示异步
+{% endcodeblock %}
+
+onComplete()接受返回的JSONObject，然后可以对JSONObject进行处理，获得所需的数据。
+
+比如：
+
+{% codeblock lang:java %}
+JSONArray items = json
+.getJSONObject("taobaoke_items_get_response")
+.getJSONObject("taobaoke_items")
+.getJSONArray("taobaoke_item");
+setImage(items.getJSONObject(0).getString("pic_url"));
+{% endcodeblock %}
+
+Android中的JSON详细总结：<http://shazhuzhu1.iteye.com/blog/974758>
+
+###异步加载TextView
+
+{% codeblock lang:java %}
+private void setText(final TextView textView, final String ret) {
+runOnUiThread(new Runnable() {
+@Override
+public void run() {
+textView.setText(ret);
+}
+});
+}
+{% endcodeblock %}
+
+###异步加载网络图片资源
+
+使用的类来自
+
+<http://www.linuxidc.com/Linux/2011-12/48664.htm>
+
+AsyncImageLoader.java
