@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 其他 | 初心]]></title>
+  <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
+  <link href="http://dande618.github.com/"/>
+  <updated>2013-03-12T19:38:30+08:00</updated>
+  <id>http://dande618.github.com/</id>
+  <author>
+    <name><![CDATA[dande618]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[goagent]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/04/goagent/"/>
+    <updated>2013-03-04T23:33:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/04/goagent</id>
+    <content type="html"><![CDATA[<p>goagent是国内很多朋友常用的免费代理工具，也是使用最广泛的谷歌应用之一，今天我们就来分享下goagent下载以及使用的相关事宜。首先介绍一下goagent，它是使用Python和Google App EngineSDK编写的，可以在 Windows，Mac，Linux，Android，iPod Touch，iPhone，iPad，webOS，OpenWrt，Maemo 等平台上使用。</p>
+
+<!-- more -->
+
+
+<ol>
+<li><p>goagent 下载地址 <a href="https://code.google.com/p/goagent/">https://code.google.com/p/goagent/</a> （下载对应平台<strong>最新</strong>版本）</p></li>
+<li><p>申请 Google Appengine 并创建 appid <a href="https://code.google.com/p/goagent/wiki/InstallGuide">https://code.google.com/p/goagent/wiki/InstallGuide</a></p></li>
+<li><p>修改 local\proxy.ini 中的 gae 下的 appid = goagent 为你的appid</p></li>
+<li><p>运行 server\uploader.bat 上传</p></li>
+<li><p>运行 goagent.exe</p></li>
+<li><p>使用chrome浏览器，安装 SwitchySharp 插件，然后导入设置： <a href="https://goagent.googlecode.com/files/SwitchyOptions.bak">https://goagent.googlecode.com/files/SwitchyOptions.bak</a></p></li>
+<li><p>在右上图标出选择 goagent 即可</p></li>
+</ol>
+
+
+<blockquote><p>goagent对用户是有流量限制的，目前为每帐号每天1GB</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[markdown]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/15/markdown/"/>
+    <updated>2013-02-15T19:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/15/markdown</id>
+    <content type="html"><![CDATA[<div style="float:left;padding-right:20px"><img src="http://mouapp.com/Mou_128.png"/></div>
+
+
+<p>Markdown是什么？</p>
+
+
+<p>Markdown 是一种轻量级标记语言，创始人为John Gruber和Aaron Swartz。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”。</p>
+
+
+<p>摘自维基百科Markdown条。</p>
+
+
+<!-- more -->
+
+
+<p>Markdown有啥好处？</p>
+
+<p>正如上文所述，Markdown具有：</p>
+
+<ol>
+<li><p>易学易用；</p></li>
+<li><p>方便转换为HTML等其他格式；</p></li>
+<li><p>支持广泛，便于维护；</p></li>
+</ol>
+
+
+<p>等等特性。</p>
+
+<h2>以下摘自 Markdown 语法说明 (简体中文版)</h2>
+
+<p><a href="http://wowubuntu.com/markdown/index.html">源地址</a></p>
+
+<p>Markdown 语法:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>A First Level Header&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;h2>A Second Level Header&lt;/h2>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Now is the time for all good men to come to
+</span><span class='line'>the aid of their country. This is just a
+</span><span class='line'>regular paragraph.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>The quick brown fox jumped over the lazy
+</span><span class='line'>dog's back.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h3>Header 3&lt;/h3>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>&lt;p>This is a blockquote.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>This is the second paragraph in the blockquote.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h2>This is an H2 in a blockquote&lt;/h2>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
+输出 HTML 为：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>&lt;/blockquote>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>A First Level Header&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;h2>A Second Level Header&lt;/h2>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Now is the time for all good men to come to
+</span><span class='line'>the aid of their country. This is just a
+</span><span class='line'>regular paragraph.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>The quick brown fox jumped over the lazy
+</span><span class='line'>dog's back.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;h3>Header 3&lt;/h3>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>
+</span><span class='line'>&lt;p>This is a blockquote.&lt;/p>
+</span><span class='line'>&lt;p>This is the second paragraph in the blockquote.&lt;/p>
+</span><span class='line'>&lt;h2>This is an H2 in a blockquote&lt;/h2>
+</span><span class='line'>&lt;/blockquote>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>修辞和强调</h2>
+
+<p>Markdown 使用星号和底线来标记需要强调的区段。</p>
+
+<p>Markdown 语法:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Some of these words &lt;em>are emphasized&lt;/em>.
+</span><span class='line'>Some of these words &lt;em>are emphasized also&lt;/em>.
+</span><span class='line'>Use two asterisks for &lt;strong>strong emphasis&lt;/strong>.
+</span><span class='line'>Or, if you prefer, &lt;strong>use two underscores instead&lt;/strong>.</span></code></pre></td></tr></table></div></figure></notextile></div>
+输出 HTML 为:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Some of these words &lt;em>are emphasized&lt;/em>.
+</span><span class='line'>Some of these words &lt;em>are emphasized also&lt;/em>.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Use two asterisks for &lt;strong>strong emphasis&lt;/strong>.
+</span><span class='line'>Or, if you prefer, &lt;strong>use two underscores instead&lt;/strong>.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>列表</h2>
+
+<p>无序列表使用星号、加号和减号来做为列表的项目标记，这些符号是都可以使用的，使用星号：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>* Candy.
+</span><span class='line'>* Gum.
+</span><span class='line'>* Booze.</span></code></pre></td></tr></table></div></figure></notextile></div>
+有序的列表则是使用一般的数字接着一个英文句点作为项目标记：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1. Red
+</span><span class='line'>2. Green
+</span><span class='line'>3. Blue</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>链接</h2>
+
+<p>Markdown 支援两种形式的链接语法： 行内 和 参考 两种形式，两种都是使用角括号来把文字转成连结。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>This is an &lt;a href="http://example.com/" title="With a Title">example link&lt;/a>.</span></code></pre></td></tr></table></div></figure></notextile></div>
+参考形式的链接让你可以为链接定一个名称，之后你可以在文件的其他地方定义该链接的内容：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>I get 10 times more traffic from &lt;a href="http://google.com/" title="Google">Google&lt;/a> than from
+</span><span class='line'>&lt;a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo&lt;/a> or &lt;a href="http://search.msn.com/" title="MSN Search">MSN&lt;/a>.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>自动链接</h2>
+
+<p>Markdown 支持以比较简短的自动链接形式来处理网址和电子邮件信箱，只要是用方括号包起来， Markdown 就会自动把它转成链接。一般网址的链接文字就和链接地址一样，例如：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a href="http://example.com/">http://example.com/&lt;/a></span></code></pre></td></tr></table></div></figure></notextile></div>
+Markdown 会转为：</p>
+
+<h2>图片</h2>
+
+<p>图片的语法和链接很像。</p>
+
+<p>行内形式（title 是选择性的）：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;img src="/path/to/img.jpg" title="Title" alt="alt text" /></span></code></pre></td></tr></table></div></figure></notextile></div>
+参考形式：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;img src="/path/to/img.jpg" title="Title" alt="alt text" /></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>区块引用 Blockquotes</h2>
+
+<p>Markdown 标记区块引用是使用类似 email 中用 > 的引用方式。如果你还熟悉在 email 信件中的引言部分，你就知道怎么在 Markdown 文件中建立一个区块引用，那会看起来像是你自己先断好行，然后在每行的最前面加上 > ：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote>&lt;p>This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+</span><span class='line'>consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+</span><span class='line'>Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
+</span><span class='line'>id sem consectetuer libero luctus adipiscing.</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>分隔线</h2></blockquote>
+
+<p>你可以在一行中用三个以上的星号、减号、底线来建立一个分隔线，行内不能有其他东西。你也可以在星号或是减号中间插入空格。下面每种写法都可以建立分隔线：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;hr />
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[正则表达式]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/15/regex/"/>
+    <updated>2013-02-15T16:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/15/regex</id>
+    <content type="html"><![CDATA[<p>　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p></p>
+
+<br/>
+
+
+<!-- more -->
+
+
+<table class="mytable"><tr><td class="mytable">元字符 
+</td><td class="mytable">描述
+</td></tr><tr><td class="mytable">\
+</td><td class="mytableb">将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“\n”匹配字符“n”。“\\n”匹配一个换行符。序列“\\”匹配“\”而“\(”则匹配“(”。
+</td></tr><tr><td class="mytable">^
+</td><td class="mytableb">匹配输入字符串的开始位置。如果设置了RegExp对象的Multiline属性，^也匹配“\n”或“\r”之后的位置。
+</td></tr><tr><td class="mytable">$
+</td><td class="mytableb">匹配输入字符串的结束位置。如果设置了RegExp对象的Multiline属性，$也匹配“\n”或“\r”之前的位置。
+</td></tr><tr><td class="mytable">*
+</td><td class="mytableb">匹配前面的子表达式零次或多次。例如，zo*能匹配“z”以及“zoo”。*等价于{0,}。
+</td></tr><tr><td class="mytable">+
+</td><td class="mytableb">匹配前面的子表达式一次或多次。例如，“zo+”能匹配“zo”以及“zoo”，但不能匹配“z”。+等价于{1,}。
+</td></tr><tr><td class="mytable">?
+</td><td class="mytableb">匹配前面的子表达式零次或一次。例如，“do(es)?”可以匹配“does”或“does”中的“do”。?等价于{0,1}。
+</td></tr><tr><td class="mytable">{n}
+</td><td class="mytableb">n是一个非负整数。匹配确定的n次。例如，“o{2}”不能匹配“Bob”中的“o”，但是能匹配“food”中的两个o。
+</td></tr><tr><td class="mytable">{n,}
+</td><td class="mytableb">n是一个非负整数。至少匹配n次。例如，“o{2,}”不能匹配“Bob”中的“o”，但能匹配“foooood”中的所有o。“o{1,}”等价于“o+”。“o{0,}”则等价于“o*”。
+</td></tr><tr><td class="mytable">{n,m}
+</td><td class="mytableb">m和n均为非负整数，其中n&lt;=m。最少匹配n次且最多匹配m次。例如，“o{1,3}”将匹配“fooooood”中的前三个o。“o{0,1}”等价于“o?”。请注意在逗号和两个数之间不能有空格。
+</td></tr><tr><td class="mytable">?
+</td><td class="mytableb">当该字符紧跟在任何一个其他限制符（*,+,?，{n}，{n,}，{n,m}）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串“oooo”，“o+?”将匹配单个“o”，而“o+”将匹配所有“o”。
+</td></tr><tr><td class="mytable">.点
+</td><td class="mytableb">匹配除“\n”之外的任何单个字符。要匹配包括“\n”在内的任何字符，请使用像“&#91;\s\S&#93;”的模式。
+</td></tr><tr><td class="mytable">(pattern)
+</td><td class="mytableb">匹配pattern并获取这一匹配。所获取的匹配可以从产生的Matches集合得到，在VBScript中使用SubMatches集合，在JScript中则使用$0…$9属性。要匹配圆括号字符，请使用“\(”或“\)”。
+</td></tr><tr><td class="mytable">(?:pattern)
+</td><td class="mytableb">匹配pattern但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用或字符“(|)”来组合一个模式的各个部分是很有用。例如“industr(?:y|ies)”就是一个比“industry|industries”更简略的表达式。
+</td></tr><tr><td class="mytable">(?=pattern)
+</td><td class="mytableb">正向肯定预查，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，“Windows(?=95|98|NT|2000)”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
+</td></tr><tr><td class="mytable">(?!pattern)
+</td><td class="mytableb">正向否定预查，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如“Windows(?!95|98|NT|2000)”能匹配“Windows3.1”中的“Windows”，但不能匹配“Windows2000”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
+</td></tr><tr><td class="mytable">(?&lt;=pattern)
+</td><td class="mytableb">反向肯定预查，与正向肯定预查类似，只是方向相反。例如，“(?&lt;=95|98|NT|2000)Windows”能匹配“2000Windows”中的“Windows”，但不能匹配“3.1Windows”中的“Windows”。
+</td></tr><tr><td class="mytable">(?&lt;!pattern)
+</td><td class="mytableb">反向否定预查，与正向否定预查类似，只是方向相反。例如“(?&lt;!95|98|NT|2000)Windows”能匹配“3.1Windows”中的“Windows”，但不能匹配“2000Windows”中的“Windows”。
+</td></tr><tr><td class="mytable">x|y
+</td><td class="mytableb">匹配x或y。例如，“z|food”能匹配“z”或“food”。“(z|f)ood”则匹配“zood”或“food”。
+</td></tr><tr><td class="mytable">&#91;xyz&#93;
+</td><td class="mytableb">字符集合。匹配所包含的任意一个字符。例如，“&#91;abc&#93;”可以匹配“plain”中的“a”。
+</td></tr><tr><td class="mytable">&#91;^xyz&#93;
+</td><td class="mytableb">负值字符集合。匹配未包含的任意字符。例如，“&#91;^abc&#93;”可以匹配“plain”中的“plin”。
+</td></tr><tr><td class="mytable">&#91;a-z&#93;
+</td><td class="mytableb">字符范围。匹配指定范围内的任意字符。例如，“&#91;a-z&#93;”可以匹配“a”到“z”范围内的任意小写字母字符。
+</td></tr><tr><td class="mytable">&#91;^a-z&#93;
+</td><td class="mytableb">负值字符范围。匹配任何不在指定范围内的任意字符。例如，“&#91;^a-z&#93;”可以匹配任何不在“a”到“z”范围内的任意字符。
+</td></tr><tr><td class="mytable">\b
+</td><td class="mytableb">匹配一个单词边界，也就是指单词和空格间的位置。例如，“er\b”可以匹配“never”中的“er”，但不能匹配“verb”中的“er”。
+</td></tr><tr><td class="mytable">\B
+</td><td class="mytableb">匹配非单词边界。“er\B”能匹配“verb”中的“er”，但不能匹配“never”中的“er”。
+</td></tr><tr><td class="mytable">\cx
+</td><td class="mytableb">匹配由x指明的控制字符。例如，\cM匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的“c”字符。
+</td></tr><tr><td class="mytable">\d
+</td><td class="mytableb">匹配一个数字字符。等价于&#91;0-9&#93;。
+</td></tr><tr><td class="mytable">\D
+</td><td class="mytableb">匹配一个非数字字符。等价于&#91;^0-9&#93;。
+</td></tr><tr><td class="mytable">\f
+</td><td class="mytableb">匹配一个换页符。等价于\x0c和\cL。
+</td></tr><tr><td class="mytable">\n
+</td><td class="mytableb">匹配一个换行符。等价于\x0a和\cJ。
+</td></tr><tr><td class="mytable">\r
+</td><td class="mytableb">匹配一个回车符。等价于\x0d和\cM。
+</td></tr><tr><td class="mytable">\s
+</td><td class="mytableb">匹配任何空白字符，包括空格、制表符、换页符等等。等价于&#91; \f\n\r\t\v&#93;。
+</td></tr><tr><td class="mytable">\S
+</td><td class="mytableb">匹配任何非空白字符。等价于&#91;^ \f\n\r\t\v&#93;。
+</td></tr><tr><td class="mytable">\t
+</td><td class="mytableb">匹配一个制表符。等价于\x09和\cI。
+</td></tr><tr><td class="mytable">\v
+</td><td class="mytableb">匹配一个垂直制表符。等价于\x0b和\cK。
+</td></tr><tr><td class="mytable">\w
+</td><td class="mytableb">匹配包括下划线的任何单词字符。等价于“&#91;A-Za-z0-9_&#93;”。
+</td></tr><tr><td class="mytable">\W
+</td><td class="mytableb">匹配任何非单词字符。等价于“&#91;^A-Za-z0-9_&#93;”。
+</td></tr><tr><td class="mytable">\xn
+</td><td class="mytableb">匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，“\x41”匹配“A”。“\x041”则等价于“\x04&amp;1”。正则表达式中可以使用ASCII编码。
+</td></tr><tr><td class="mytable">\num
+</td><td class="mytableb">匹配num，其中num是一个正整数。对所获取的匹配的引用。例如，“(.)\1”匹配两个连续的相同字符。
+</td></tr><tr><td class="mytable">\n
+</td><td class="mytableb">标识一个八进制转义值或一个向后引用。如果\n之前至少n个获取的子表达式，则n为向后引用。否则，如果n为八进制数字（0-7），则n为一个八进制转义值。
+</td></tr><tr><td class="mytable">\nm
+</td><td class="mytableb">标识一个八进制转义值或一个向后引用。如果\nm之前至少有nm个获得子表达式，则nm为向后引用。如果\nm之前至少有n个获取，则n为一个后跟文字m的向后引用。如果前面的条件都不满足，若n和m均为八进制数字（0-7），则\nm将匹配八进制转义值nm。
+</td></tr><tr><td class="mytable">\nml
+</td><td class="mytableb">如果n为八进制数字（0-3），且m和l均为八进制数字（0-7），则匹配八进制转义值nml。
+</td></tr><tr><td class="mytable">\un
+</td><td class="mytableb">匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\u00A9匹配版权符号（&copy;）。
+</td></tr></table>
+
+
+<h2>使用emeditor宏批处理</h2>
+
+<p>例
+1. 添加菜单项
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if (document.selection.isempty)&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>else&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>nFlags=eeFindNext | eeReplaceSelOnly | eeReplaceAll | eeFindReplaceRegExp;
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>menu= CreatePopupMenu();&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>menu.Add("使用正则表达式提取字符串",1);&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>result = menu.Track( 0 );&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>if (result>40) nFlags=nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>switch(result){&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>case 1: //内容&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>    break;
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>default:&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>2.删除段首尾空格
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>document.selection.Replace("&lt;sup>\s*","",eeFindNext&lt;/sup> | eeReplaceAll | eeFindReplaceRegExp);&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>document.selection.Replace("\s*$","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ANDROID命名规范]]></title>
+    <link href="http://dande618.github.com/blog/2012/12/13/name/"/>
+    <updated>2012-12-13T16:51:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2012/12/13/name</id>
+    <content type="html"><![CDATA[<p>　　要时刻注意代码的规范性和可读性。</p>
+
+<!-- more -->
+
+
+<ul>
+<li><p>类命名，需要清晰的命名，首字母大写，不包括数字与下划线。正确的方式：MyClass 错误的方式：Myclass, My_Class, myClass, my_class</p></li>
+<li><p>成员变量命名，需要清晰命名，首字母小写，私有以及保护成员变量首字母以 m 开始, 表示 member, 以方便别人阅读代码。正确的方式：mPrivateData，一般容易犯的错误是不写 m, 和临时变量命名一致，这样使得代码阅读时候容易混淆。</li></p></li>
+<li><p>临时变量命名，需要清晰命名，首字母小写，比如： int tempDataCount;</li></p></li>
+<li><p>成员函数命名，命名清晰，首字母小写，比如： functionForWhat();</li></p></li>
+</ul>
+
+
+<p><a href=" http://source.android.com/source/code-style.html">android code style</a></p>
+
+<br/>
+
+
+<h2>Android命名规范</h2>
+
+
+<p class="laiyuan">[转载]<a href="http://www.cnblogs.com/xiongbo/archive/2011/08/15/2098130.html">文章出处</a></p>
+
+
+<h3>1.java代码中不出现中文，最多注释中可以出现中文</h3>
+
+
+<h3>2.局部变量命名、静态成员变量命名</h3>
+
+
+<p class="para">只能包含字母，单词首字母出第一个外，都为大写，其他字母都为小写</p>
+
+
+<h3>3.常量命名</h3>
+
+
+<p class="para">只能包含字母和_，字母全部大写，单词之间用_隔开</p>
+
+
+<h3>4.layout中的id命名</h3>
+
+
+<p class="para">命名模式为：view缩写_模块名称_view的逻辑名称</p>
+
+
+<p class="para">view的缩写详情如下</p>
+
+
+<p class="para">LayoutView：lv</p>
+
+
+<p class="para">RelativeView:rv</p>
+
+
+<p class="para">TextView:tv</p>
+
+
+<p class="para">ImageView:iv</p>
+
+
+<p class="para">ImageButton:im</p>
+
+
+<p class="para">Button:btn</p>
+
+
+<h3>5.activity中的view变量命名</h3>
+
+
+<p class="para">命名模式为：逻辑名称+view缩写</p>
+
+
+<p class="para">建议：如果layout文件很复杂，建议将layout分成多个模块，每个模块定义一个moduleViewHolder，其成员变量包含所属view</p>
+
+
+<h3>6.strings.xml中的id命名</h3>
+
+
+<p class="para">命名模式：activity名称_功能模块名称_逻辑名称/activity名称_逻辑名称/common_逻辑名称</p>
+
+
+<p class="para">strings.xml中，使用activity名称注释，将文件内容区分开来</p>
+
+
+<h3>7.drawable中的图片命名</h3>
+
+
+<p class="para">命名模式：activity名称_逻辑名称/common_逻辑名称</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[修改代码时git的操作流程]]></title>
+    <link href="http://dande618.github.com/blog/2012/12/13/github/"/>
+    <updated>2012-12-13T16:50:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2012/12/13/github</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p class="laiyuan">[转载]　<a href="http://yuanhsh.iteye.com/blog/987705">文章出处</a></p>
+
+
+<ol>
+<li>修改任何代码前，请创建一个新的branch
+<pre class="wiki">git checkout -b &lt;branch_name&gt;
+</pre>
+</li>
+<li>执行完上述命令后会自动切换到&lt;branch_name&gt;分支，现在你就可以开始开发了。开发期间，你可能会多次执行
+<pre class="wiki">git add .
+git commit -m ""
+</pre>
+</li>
+<li>当你开发完毕，需要合并到master上时
+<pre class="wiki">git checkout master    #先切换回master
+git pull                       #这里不可能有任何冲突，因为master是不会本地修改的
+git checkout &lt;branch_name&gt;  #切换回开发分支
+git rebase master       #这时候可能会产生冲突，哪些文件冲突了，反馈信息里有明确显示
+如果发生了冲突：
+首先，编辑修复所有冲突的代码。然后：
+git add .
+git rebase --continue
+
+git checkout master   
+git merge &lt;branch_name&gt;
+git push                    #其实这个时候还是有可能有冲突
+git pull --rebase
+接着与上面处理冲突的方法一致</pre>
+</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

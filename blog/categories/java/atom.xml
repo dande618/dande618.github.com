@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: java | 初心]]></title>
+  <link href="http://dande618.github.com/blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://dande618.github.com/"/>
+  <updated>2013-03-12T19:38:30+08:00</updated>
+  <id>http://dande618.github.com/</id>
+  <author>
+    <name><![CDATA[dande618]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[【摘抄】JAVA多线程]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/01/Thread/"/>
+    <updated>2013-03-01T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/01/Thread</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。</p>
+
+<p>线程与进程相似，是一段完成某个特定功能的代码，是程序中单个顺序的流控制；但与进程不同的是，同类的多个线程是共享一块内存空间和一组系统资源，而线程本身的数据通常只有微处理器的寄存器数据，以及一个供程序执行时使用的堆栈。所以系统在产生一个线程，或者在各个线程之间切换时，负担要比进程小的多，正因如此，线程被称为轻负荷进程（light-weight process）。一个进程中可以包含多个线程。</p>
+
+<p>一个线程是一个程序内部的顺序控制流。</p>
+
+<ol>
+<li><p>进程：每个进程都有独立的代码和数据空间（进程上下文），进程切换的开销大。</p></li>
+<li><p>线程：轻量的进程，同一类线程共享代码和数据空间，每个线程有独立的运行栈和程序计数器（PC），线程切换的开销小。</p></li>
+<li><p>多进程：在操作系统中，能同时运行多个任务程序。</p></li>
+<li><p>多线程：在同一应用程序中，有多个顺序流同时执行。</p></li>
+</ol>
+
+
+<p>Java的线程是通过java.lang.Thread类来实现的。当我们生成一个Thread类的对象之后,一个新的线程就产生了。</p>
+
+<p>任何实现接口Runnable的对象都可以作为一个线程的目标对象，类Thread本身也实现了接口Runnable，因此我们可以通过两种方法实现线程体。</p>
+
+<p>（一）定义一个线程类，它继承线程类Thread并重写其中的方法 run（），这时在初始化这个类的实例时，目标target可为null，表示由这个实例对来执行线程体。由于Java只支持单重继承，用这种方法定义的类不能再继承其它父类。</p>
+
+<p>（二）提供一个实现接口Runnable的类作为一个线程的目标对象，在初始化一个Thread类或者Thread子类的线程对象时，把目标对象传递给这个线程实例，由该目标对象提供线程体 run（）。这时，实现接口Runnable的类仍然可以继承其它父类。</p>
+
+<p>每个线程都是通过某个特定Thread对象的方法run( )来完成其操作的，方法run( )称为线程体。</p>
+
+<ol>
+<li>创建状态(new Thread)</li>
+</ol>
+
+
+<p>执行下列语句时，线程就处于创建状态：</p>
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>当一个线程处于创建状态时，它仅仅是一个空的线程对象，系统不为它分配资源。</p>
+
+<ol>
+<li>可运行状态( Runnable )</li>
+</ol>
+
+
+<p>Thread myThread = new MyThreadClass( );</p>
+
+<p>myThread.start( );</p>
+
+<p>当一个线程处于可运行状态时，系统为这个线程分配了它需的系统资源，安排其运行并调用线程运行方法，这样就使得该线程处于可运行( Runnable )状态。需要注意的是这一状态并不是运行中状态（Running )，因为线程也许实际上并未真正运行。由于很多计算机都是单处理器的，所以要在同一时刻运行所有的处于可运行状态的线程是不可能的，Java的运行系统必须实现调度来保证这些线程共享处理器。</p>
+
+<ol>
+<li>不可运行状态（Not Runnable）</li>
+</ol>
+
+
+<p>进入不可运行状态的原因有如下几条：</p>
+
+<p>1) 调用了sleep（）方法;</p>
+
+<p>2) 调用了suspend（）方法;</p>
+
+<p>3) 为等候一个条件变量，线程调用wait（）方法;</p>
+
+<p>4) 输入输出流中发生线程阻塞;</p>
+
+<p>不可运行状态也称为阻塞状态（Blocked）。因为某种原因（输入/输出、等待消息或其它阻塞情况），系统不能执行线程的状态。这时即使处理器空闲，也不能执行该线程。</p>
+
+<ol>
+<li>死亡状态（Dead）</li>
+</ol>
+
+
+<p>线程的终止一般可通过两种方法实现：自然撤消（线程执行完）或是被停止（调用stop()方法）。目前不推荐通过调用stop()来终止线程的执行，而是让线程执行完。</p>
+
+<ol>
+<li>使用Runnable接口　</li>
+</ol>
+
+
+<p>1) 可以将CPU，代码和数据分开，形成清晰的模型;</p>
+
+<p>2) 还可以从其他类继承;</p>
+
+<p>3) 保持程序风格的一致性。</p>
+
+<ol>
+<li>直接继承Thread类</li>
+</ol>
+
+
+<p>1) 不能再从其他类继承;</p>
+
+<p>2) 编写简单，可以直接操纵线程，无需使用Thread.currentThread()。</p>
+
+<h2>多线程的互斥与同步</h2>
+
+<h3>互斥锁</h3>
+
+<p>为解决操作的不完整性问题，在Java 语言中，引入了对象互斥锁的概念，来保证共享数据操作的完整性。每个对象都对应于一个可称为" 互斥锁" 的标记，这个标记用来保证在任一时刻，只能有一个线程访问该对象。 关键字synchronized 来与对象的互斥锁联系。当某个对象用synchronized 修饰时，表明该对象在任一时刻只能由一个线程访问。</p>
+
+<h3>多线程的同步</h3>
+
+<p>通过运用wait()和notify()方法来实现线程的同步，在同步中还会用到notifyAll()方法，一般来说，每个共享对象的互斥锁存在两个队列，一个是锁等待队列，另一个是锁申请队列，锁申请队列中的第一个线程可以对该共享对象进行操作，而锁等待队列中的线程在某些情况下将移入到锁申请队列。下面比较一下wait()、notify()和notifyAll()方法：</p>
+
+<p>(1) wait,nofity,notifyAll必须在已经持有锁的情况下执行,所以它们只能出现在synchronized作用的范围内，也就是出现在用synchronized修饰的方法或类中。</p>
+
+<p>(2) wait的作用:释放已持有的锁,进入等待队列.</p>
+
+<p>(3) notify的作用:唤醒wait队列中的第一个线程并把它移入锁申请队列.</p>
+
+<p>(4) notifyAll的作用:唤醒wait队列中的所有的线程并把它们移入锁申请队列.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[冒泡排序]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/27/BubbleSort/"/>
+    <updated>2013-02-27T13:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/27/BubbleSort</id>
+    <content type="html"><![CDATA[<h3>问题</h3>
+
+<p>　　有一数组a，长度为n，把数组中的元素从小到大重新排列</p>
+
+<h3>思路</h3>
+
+<p>　　从0到n-1，两两比较数组中的元素，如果前者大于后者，则交换之(如a[0]>a[1]，则交换a[0]和a[1])。作一趟冒泡排序后，最大值就在最后一个位置a[n-1]上了。然后对余下的0到n-2个元素作第二趟冒泡排序，次最大值就去到倒数第二个位置a[n-2]上了，如此类推。</p>
+
+<!-- more -->
+
+
+<h3>JAVA代码</h3>
+
+<p>　　传入参数：未排序的数组</p>
+
+<p>　　返回参数：排序后的数组</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">sort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">array</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span><span class="o">[]</span> <span class="n">sortedArray</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">length</span><span class="o">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sortedArray</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">array</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">boolean</span> <span class="n">isSort</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">isSort</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">length</span> <span class="o">-</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">temp</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>                <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>                <span class="n">sortedArray</span><span class="o">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+</span><span class='line'>                <span class="n">isSort</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">isSort</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span> <span class="c1">// 如果没有发生交换，则退出循环</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">sortedArray</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>　　由于JAVA数组是引用类型，为了保护原数组，开始时将原数组赋值给另一数组，对后者进行排序。</p>
+
+<p>　　复杂度是O(n<sup>2)。</sup></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[构造函数]]></title>
+    <link href="http://dande618.github.com/blog/2012/12/31/gouzao/"/>
+    <updated>2012-12-31T17:33:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2012/12/31/gouzao</id>
+    <content type="html"><![CDATA[<p>　　构造函数（constructor）是人们完成结构化程序设计的一个新概念。在OO设计语言中，构造函数就是与类名同名而且没有返回类型的方法。</p>
+
+<!-- more -->
+
+
+<p>　　例如，Cabbie类的构造函数大致是：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">Cabbie</span><span class="o">(){</span>
+</span><span class='line'><span class="err">　　</span><span class="c1">//</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>　　编译器会识别出这个方法名与类名相同，从而认为这个方法是一个构造函数。</p>
+
+<blockquote><p>构造函数没有返回值。如果为方法提供了一个返回值，编译器就不会把它作为一个构造函数。</p></blockquote>
+
+<h2>何时调用构造函数</h2>
+
+<p>　　创建一个新对象时，首先要做到事情之一就是调用构造函数。
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Cabbie</span> <span class="n">myCabbie</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Cabbie</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+　　会实例化一个Cabbie对象，并调用Cabbie方法。</p>
+
+<h2>构造函数中有什么</h2>
+
+<p>　　构造函数中的代码应当将新创建的对象设置为其稳定、安全的初始状态。</p>
+
+<p>　　初始化属性是构造函数完成的一个常见功能。</p>
+
+<h2>默认构造函数</h2>
+
+<p>　　至少存在一个构造函数，不论你自己是否编写了构造函数。如果你没有提供构造函数，系统也会为你提供一个默认的构造函数。例如，如果没有为Cabbie类提供一个构造函数，就会插入一下默认构造函数：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">Cabbie</span><span class="o">(){</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">super</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+　　如果没有显式地继承另一个类，Object类就会成为父类。如果类中有属性，好的实践往往是初始化这些属性。</p>
+
+<blockquote><p>提供一个构造函数</p>
+
+<p>一般经验是，总是应该提供一个构造函数，即使你不打算在其中做任何事情。可以先提供一个构造函数，其中不包含任何内容，等以后再补充，使用编译器提供的默认构造函数尽管从技术上讲没什么问题，但是最好能清楚地知道你的代码到底是怎样的。</p></blockquote>
+
+<h2>重载构造函数</h2>
+
+<p>　　有时可能希望传入一个初始化参数，这成为重载一个方法。</p>
+
+<p>　　重载适用于所有方法。重载允许程序员多次使用同一个方法名，只要每次方法的签名不同。签名由方法名和一个参数列表组成。
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Count</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Count</span><span class="o">(){</span>
+</span><span class='line'><span class="err">　　　　</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Count</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">){</span>
+</span><span class='line'><span class="err">　　　　</span><span class="n">count</span> <span class="o">=</span> <span class="n">number</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+　　在JAVA和C#，返回类型不是签名的一部分。只是返回类型不同的方法会冲突。</p>
+
+<h2>超类如何构造</h2>
+
+<p>　　使用继承时，必须知道父类如何构造。要记住，使用继承时，会从父类继承一切。因此，必须非常清楚父类的所有数据和行为。不过，构造函数如何继承就不那么明显了。</p>
+
+<p>　　遇到new关键字并且分配了对象后，会完成以下几个步骤。</p>
+
+<ol>
+<li><p>构造函数中首先要做的是调用该类的超类的构造函数。如果没有显式地调用超类构造函数，就会自动调用超类默认构造函数；不过可以从字节码查看这个代码。</p></li>
+<li><p>然后初始化对象的各个类属性。这些属性都是类定义的属性（实例变量），而不是构造函数或其他方法中的属性（局部变量）。</p></li>
+<li><p>然后执行构造函数中的其余代码。</p></li>
+</ol>
+
+
+<h2>构造函数的设计</h2>
+
+<p>　　设计一个类时，好的时间是初始化所有属性。不要指望编译器来初始化属性。构造函数可以用来确保应用处于一种稳定的状态。例如，若将一个属性初始化为0，那么当想把它用作一个除法运算的除数时，可能会导致一个不稳定的应用。初始化为0并不总是最好的策略。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[java动态绑定静态绑定 [转载]]]></title>
+    <link href="http://dande618.github.com/blog/2012/12/29/bangding/"/>
+    <updated>2012-12-29T10:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2012/12/29/bangding</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>　　首先是方法的参数是父类对象，传入子类对象是否可行。</p>
+
+<p>　　然后引出Parent p = new Children();</p>
+
+<p>　　这句代码不是很理解，google的过程中引出向上转型。</p>
+
+<p>　　要理解向上转型又引出了动态绑定。</p>
+
+<p>　　从动态绑定又引出了静态绑定。</p>
+
+<h2>程序绑定的概念：</h2>
+
+<p>　　绑定指的是一个方法的调用与方法所在的类(方法主体)关联起来。对java来说，绑定分为静态绑定和动态绑定；或者叫做前期绑定和后期绑定。</p>
+
+<h3>静态绑定：</h3>
+
+<p>　　在程序执行前方法已经被绑定，此时由编译器或其它连接程序实现。例如：C。</p>
+
+<p>　　针对java简单的可以理解为程序编译期的绑定；这里特别说明一点，java当中的方法只有final，static，private和构造方法是前期绑定。</p>
+
+<h3>动态绑定：</h3>
+
+<p>　　后期绑定：在运行时根据具体对象的类型进行绑定。</p>
+
+<p>　　若一种语言实现了后期绑定，同时必须提供一些机制，可在运行期间判断对象的类型，并分别调用适当的方法。也就是说，编译器此时依然不知道对象的类型，但方法调用机制能自己去调查，找到正确的方法主体。不同的语言对后期绑定的实现方法是有所区别的。但我们至少可以这样认为：它们都要在对象中安插某些特殊类型的信息。</p>
+
+<p><strong>动态绑定的过程：</strong></p>
+
+<ul>
+<li><p>虚拟机提取对象的实际类型的方法表；</p></li>
+<li><p>虚拟机搜索方法签名；</p></li>
+<li><p>调用方法。</p></li>
+</ul>
+
+
+<h2>关于绑定相关的总结：</h2>
+
+<p>　　在了解了三者的概念之后，很明显我们发现java属于后期绑定。在java中，几乎所有的方法都是后期绑定的，在运行时动态绑定方法属于子类还是基类。但是也有特殊，针对static方法和final方法由于不能被继承，因此在编译时就可以确定他们的值，他们是属于前期绑定的。特别说明的一点是，private声明的方法和成员变量不能被子类继承，所有的private方法都被隐式的指定为final的(由此我们也可以知道：将方法声明为final类型的一是为了防止方法被覆盖，二是为了有效的关闭java中的动态绑定)。java中的后期绑定是有JVM来实现的，我们不用去显式的声明它，而C++则不同,必须明确的声明某个方法具备后期绑定。</p>
+
+<p>　　java当中的向上转型或者说多态是借助于动态绑定实现的，所以理解了动态绑定，也就搞定了向上转型和多态。
+前面已经说了对于java当中的方法而言，除了final，static，private和构造方法是前期绑定外，其他的方法全部为动态绑定。而动态绑定的典型发生在父类和子类的转换声明之下：</p>
+
+<p>　　比如：Parent p = new Children();</p>
+
+<p>其具体过程细节如下：</p>
+
+<ol>
+<li><p>编译器检查对象的声明类型和方法名。假设我们调用x.f(args)方法，并且x已经被声明为C类的对象，那么编译器会列举出C类中所有的名称为f的方法和从C类的超类继承过来的f方法。</p></li>
+<li><p>接下来编译器检查方法调用中提供的参数类型。如果在所有名称为f 的方法中有一个参数类型和调用提供的参数类型最为匹配，那么就调用这个方法，这个过程叫做“重载解析”。</p></li>
+<li><p>当程序运行并且使用动态绑定调用方法时，虚拟机必须调用同x所指向的对象的实际类型相匹配的方法版本。假设实际类型为D(C的子类)，如果D类定义了f(String)那么该方法被调用，否则就在D的超类中搜寻方法f(String),依次类推。</p></li>
+</ol>
+
+
+<p>　　上面是理论，下面看几个示例（示例来自网络）：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">view</span> <span class="n">plaincopy</span> <span class="n">to</span> <span class="n">clipboardprint</span><span class="o">?&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Father</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;父类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型  &lt;br/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">sample</span><span class="o">.</span><span class="na">method</span><span class="o">();</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+　　声明的是父类的引用，但是执行的过程中调用的是子类的对象，程序首先寻找子类对象的method方法，但是没有找到，于是向上转型去父类寻找。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;子类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型  &lt;br/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">sample</span><span class="o">.</span><span class="na">method</span><span class="o">();</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+　　由于子类重写了父类的method方法，根据上面的理论知道会去调用子类的method方法去执行，因为子类对象有method方法而没有向上转型去寻找。</p>
+
+<p>　　前面的理论当中已经提到了java的绑定规则，由此可知，在处理java类中的成员变量时，并不是采用运行时绑定，而是一般意义上的静态绑定。所以在向上转型的情况下，对象的方法可以找到子类，而对象的属性还是父类的属性。
+代码如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Father</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;父亲属性&quot;</span><span class="o">;</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;父类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;儿子属性&quot;</span><span class="o">;</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;子类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型  &lt;br/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;调用的成员：&quot;</span><span class="o">+</span><span class="n">sample</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+结论，调用的成员为父亲的属性。
+　　这个结果表明，子类的对象(由父类的引用handle)调用到的是父类的成员变量。所以必须明确，运行时（动态）绑定针对的范畴只是对象的方法。
+　　现在试图调用子类的成员变量name，该怎么做？最简单的办法是将该成员变量封装成方法getter形式。
+代码如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Father</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;父亲属性&quot;</span><span class="o">;</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="k">return</span> <span class="n">name</span><span class="o">;</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;父类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;儿子属性&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　　</span> <span class="k">return</span> <span class="n">name</span><span class="o">;</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;子类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型  &lt;br/&gt;</span>
+</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;调用的成员：&quot;</span><span class="o">+</span><span class="n">sample</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+结果：调用的是儿子的属性</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[如何以对象方式思考（二）]]></title>
+    <link href="http://dande618.github.com/blog/2012/12/26/haw_to2/"/>
+    <updated>2012-12-26T20:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2012/12/26/haw_to2</id>
+    <content type="html"><![CDATA[<p>　　ＯＯ设计的基本单元是类。ＯＯ设计所期望的最终结果是一个健壮、功能完备的对象模型，换句话说，也就是一个完备的系统。</p>
+
+<!-- more -->
+
+
+<h2>确定用户</h2>
+
+<p>　　用户是那些真正使用系统的人。设想一个出租车的例子，压迫构建一个现实而可用的接口，要把顾客和出租司机双方都认为是用户。</p>
+
+<h2>对象行为</h2>
+
+<p>　　明确用户只是工作的一部分。明确用户后，必须确定对象的行为。要从所有用户的角度考虑，明确每个对象的作用以及必须要做什么才能执行。</p>
+
+<h2>环境约束</h2>
+
+<p>　　环境通常会限制对象能够做什么。</p>
+
+<h2>明确公共接口</h2>
+
+<p>　　收集到有关用户、对象行为和环境的所有信息后，需要确定每个用户的公共接口。</p>
+
+<p><strong>考虑如何使用出租车对象：</strong></p>
+
+<ol>
+<li><p>坐进出租车。</p></li>
+<li><p>告诉出租司机你要去哪里。</p></li>
+<li><p>给出租司机付车费。</p></li>
+<li><p>下车。</p></li>
+</ol>
+
+
+<p><strong>使用出租车对象需要做：</strong></p>
+
+<ol>
+<li><p>明确要去一个地方。</p></li>
+<li><p>叫一辆出租车。</p></li>
+<li><p>给出租司机付钱。</p></li>
+</ol>
+
+
+<p>　　开始时，要考虑对象如何使用，而不是它如何构建。确定最终的接口是一个迭代的过程。对于每个接口，必须确定这个接口有助于对象的操作。如果没有，就可能是不必要的。</p>
+
+<h2>明确实现</h2>
+
+<p>　　选择了公共接口之后，就需要明确实现。考虑类工作的具体细节。</p>
+
+<p>　　不属于公共接口的所有部分都认为是实现。用户不会看到作为实现的任何方法，包括方法的签名（其中包括方法名和参数列表）以及方法中的具体代码。</p>
+
+<p>　　可以有一个私有方法，由类在内部使用。所有私有方法都认为是实现的一部分，用户不会看到它，从而也无法访问私有方法。实现对用户是完全隐藏的。</p>
+
+<p>　　从理论上讲，被认为是实现的任何部分可以改变而不影响类的用户接口。接口表示了用户如何看对象，而实现实际上是对象的具体内容。实现包含了表示对象状态的代码。</p>
+
+<p>摘自《写给大家看的面向对象编程书》</p>
+]]></content>
+  </entry>
+  
+</feed>
