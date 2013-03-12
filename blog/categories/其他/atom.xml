@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 其他 | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-03-12T19:37:05+08:00</updated>
+  <updated>2013-03-12T19:38:30+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -18,9 +18,7 @@
     <link href="http://dande618.github.com/blog/2013/03/04/goagent/"/>
     <updated>2013-03-04T23:33:00+08:00</updated>
     <id>http://dande618.github.com/blog/2013/03/04/goagent</id>
-    <content type="html"><![CDATA[<blockquote><p>goagent是国内很多朋友常用的免费代理工具，也是使用最广泛的谷歌应用之一，今天我们就来分享下goagent下载以及使用的相关事宜。</p>
-
-<p>首先介绍一下goagent，它是使用Python和Google App EngineSDK编写的，可以在 Windows，Mac，Linux，Android，iPod Touch，iPhone，iPad，webOS，OpenWrt，Maemo 等平台上使用。</p></blockquote>
+    <content type="html"><![CDATA[<p>goagent是国内很多朋友常用的免费代理工具，也是使用最广泛的谷歌应用之一，今天我们就来分享下goagent下载以及使用的相关事宜。首先介绍一下goagent，它是使用Python和Google App EngineSDK编写的，可以在 Windows，Mac，Linux，Android，iPod Touch，iPhone，iPad，webOS，OpenWrt，Maemo 等平台上使用。</p>
 
 <!-- more -->
 
