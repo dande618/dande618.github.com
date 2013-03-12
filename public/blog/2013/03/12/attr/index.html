@@ -1,0 +1,815 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>【转载】Android组合控件  - 初心</title>
+	<meta name="author" content="dande618">
+
+	
+	<meta name="description" content="来源地址：http://blog.csdn.net/lincyang/article/details/7421734 组合控件是自定义控件的一种，只不过它是由其他几个原生控件组合而成，故名组合控件。 在实际项目中，GUI会遇到一些可以提取出来做成自定义控件情况。 &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">初心</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:dande618.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:dande618.github.com">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">【转载】Android组合控件</h2>
+	<div class="entry-content"><p>来源地址：<a href="http://blog.csdn.net/lincyang/article/details/7421734">http://blog.csdn.net/lincyang/article/details/7421734</a></p>
+
+<!-- more -->
+
+
+<p>组合控件是自定义控件的一种，只不过它是由其他几个原生控件组合而成，故名组合控件。</p>
+
+<p>在实际项目中，GUI会遇到一些可以提取出来做成自定义控件情况。</p>
+
+<p>一个自定义控件的好处就是把一些需要模块化的UI和逻辑放在一起，做到了高内聚，向其他模块提供接口并很少
+ 依赖外界，这样就是低耦合。一个自定义控件就是一个封闭的王国，这里由你掌控。</p>
+
+<p>上述是我自己的一个体会，想必大家也会常做自定义控件吧，就像逻辑部分的模块化一样。</p>
+
+<p>下面我要做一个例子，请看完成图。</p>
+
+<p>!(示例图)[http://my.csdn.net/uploads/201204/02/1333352187_6116.png]</p>
+
+<p>下面一排图片加文字就是组合控件了，我是怎么做的呢？</p>
+
+<p>其实这里用到了两个组合控件，一个是图片+文字，我把它叫一个Item，而三个在一起就是另一个控件了。</p>
+
+<p>重点看这个Item，它有自己的属性如图片、文字、图片大小、文字大小、不透明度等等。这些把它定义在attr文件中，然后在xml文件中</p>
+
+<p>配置，就像我们用原生控件一样。</p>
+
+<p>先看attr文件。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?xml version="1.0" encoding="utf-8"?>  
+</span><span class='line'>    &lt;resources>  
+</span><span class='line'>            &lt;declare-styleable name="LevelMenuItem">  
+</span><span class='line'>            &lt;attr name="text" format="string" />  
+</span><span class='line'>            &lt;attr name="text_color" format="color"/>  
+</span><span class='line'>            &lt;attr name="text_size" format="dimension" />          
+</span><span class='line'>            &lt;attr name="image_src" format="reference"/>  
+</span><span class='line'>            &lt;attr name="image_bg" format="reference"/>  
+</span><span class='line'>            &lt;attr name="image_alpha" format="integer" />  
+</span><span class='line'>            &lt;attr name="image_height" format="dimension">&lt;/attr>  
+</span><span class='line'>            &lt;attr name="image_width" format="dimension" />  
+</span><span class='line'>        &lt;/declare-styleable>  
+</span><span class='line'>    &lt;/resources></span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个文件在values下，和string文件同级。把你自己要定义的属性都写在这里吧。format是属性的“单位”，如果你要问有多少中format呀？答案在这里。
+有了属性了，下面看看布局文件level_menu_item.xml。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?xml version="1.0" encoding="utf-8"?>  
+</span><span class='line'>    &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+</span><span class='line'>        android:layout_width="fill_parent"  
+</span><span class='line'>        android:layout_height="fill_parent"  
+</span><span class='line'>        android:orientation="vertical" >  
+</span><span class='line'>            &lt;ImageView  
+</span><span class='line'>                android:id="@+id/image_item"  
+</span><span class='line'>                android:layout_width="fill_parent"  
+</span><span class='line'>                android:layout_height="fill_parent"  
+</span><span class='line'>                android:scaleType="fitCenter"  
+</span><span class='line'>                />  
+</span><span class='line'>             &lt;TextView  
+</span><span class='line'>                android:id="@+id/tv_item"  
+</span><span class='line'>                android:layout_width="fill_parent"  
+</span><span class='line'>                android:layout_height="wrap_content"  
+</span><span class='line'>                android:gravity="center_horizontal"  
+</span><span class='line'>                android:textColor="#23ffffff"  
+</span><span class='line'>                android:textSize="25sp"   
+</span><span class='line'>             />      
+</span><span class='line'>    &lt;/LinearLayout></span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里唯一值得一说的是文本的颜色。大家看见他是8位的，前两位是表示不透明度的，后六位是表示颜色的，三色，范围都是00～ff。</p>
+
+<p>如果在java中设置颜色，需要这样。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>setTextColor(0x23ffffff);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>关于不透明度，一般美工会定义。有些要求不透明如30%这样的，可以用整型换算一下。00～ff对应十进制为0～255，那么30%就是255x0.3=76.5，用科学计算机换算为4c。
+更多颜色相关请看《Android中设置文本颜色的三种办法》</p>
+
+<p>然后我们就要写一个类，我这继承子线性布局。有两个构造函数，我们主要在两个参数的函数中工作。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class LevelMenuItem extends LinearLayout {  
+</span><span class='line'>          
+</span><span class='line'>        public LevelMenuItem(Context context, AttributeSet attrs) {  
+</span><span class='line'>            super(context, attrs);  
+</span><span class='line'>              
+</span><span class='line'>        }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个类中我们要完成的工作是，初始化控件属性、提供外部修改属性的接口、控件点击的回调接口。</p>
+
+<p>此类完整代码：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>package com.linc.game;  
+</span><span class='line'>      
+</span><span class='line'>    import android.content.Context;  
+</span><span class='line'>    import android.content.res.TypedArray;  
+</span><span class='line'>    import android.util.AttributeSet;  
+</span><span class='line'>    import android.view.LayoutInflater;  
+</span><span class='line'>    import android.view.View;  
+</span><span class='line'>    import android.widget.ImageView;  
+</span><span class='line'>    import android.widget.LinearLayout;  
+</span><span class='line'>    import android.widget.TextView;  
+</span><span class='line'>    /** 
+</span><span class='line'>     * 自定义一个关卡 
+</span><span class='line'>     * 共有7个属性，看attr文件 
+</span><span class='line'>     * 在程序中提供修改这7个属性的接口， 
+</span><span class='line'>     * 一个自定义控件的任务就算完成。 
+</span><span class='line'>     * 一个自定义控件的好处就是把一些需要模块化的 
+</span><span class='line'>     * UI和逻辑放在一起，做到了高内聚，向其他模块提供接口并很少 
+</span><span class='line'>     * 依赖外界，这样就是低耦合。一个自定义控件就是一个封闭的王国， 
+</span><span class='line'>     * 这里由你掌控。 
+</span><span class='line'>     *  
+</span><span class='line'>     * 编写时，如果遇到在attr里写好属性，但是在这里认不出来， 
+</span><span class='line'>     * 就clean一下项目。切记。 
+</span><span class='line'>     *  
+</span><span class='line'>     * @author linc 
+</span><span class='line'>     * 
+</span><span class='line'>     */  
+</span><span class='line'>    public class LevelMenuItem extends LinearLayout {  
+</span><span class='line'>        private TextView mTextView = null;  
+</span><span class='line'>        private ImageView mImageView = null;  
+</span><span class='line'>          
+</span><span class='line'>        public LevelMenuItem(Context context) {  
+</span><span class='line'>            super(context);  
+</span><span class='line'>        }  
+</span><span class='line'>        public LevelMenuItem(Context context, AttributeSet attrs) {  
+</span><span class='line'>            super(context, attrs);  
+</span><span class='line'>              
+</span><span class='line'>            LayoutInflater layoutInflater = (LayoutInflater) context.  
+</span><span class='line'>                            getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
+</span><span class='line'>            layoutInflater.inflate(R.layout.level_menu_item, this);  
+</span><span class='line'>              
+</span><span class='line'>            TypedArray typedArray = context.obtainStyledAttributes(attrs  
+</span><span class='line'>                    ,R.styleable.LevelMenuItem);  
+</span><span class='line'>              
+</span><span class='line'>            initWidget(typedArray);  
+</span><span class='line'>        }  
+</span><span class='line'>        private void initWidget(TypedArray typedArray)  
+</span><span class='line'>        {  
+</span><span class='line'>            mTextView = (TextView)findViewById(R.id.tv_item);  
+</span><span class='line'>            String textString = typedArray.getString(R.styleable.LevelMenuItem_text);  
+</span><span class='line'>            int textColor = typedArray.getColor(R.styleable.LevelMenuItem_text_color,  
+</span><span class='line'>                    0xffffffff);  
+</span><span class='line'>            float textSize = typedArray.getDimension(R.styleable.LevelMenuItem_text_size,  
+</span><span class='line'>                    20);  
+</span><span class='line'>            mTextView.setText(textString);  
+</span><span class='line'>            mTextView.setTextColor(textColor);  
+</span><span class='line'>            mTextView.setTextSize(textSize);  
+</span><span class='line'>              
+</span><span class='line'>            mImageView = (ImageView)findViewById(R.id.image_item);  
+</span><span class='line'>            int imageHeight = (int) typedArray.getDimension(R.styleable.LevelMenuItem_image_height, 25);  
+</span><span class='line'>            int imageWidth = (int) typedArray.getDimension(R.styleable.LevelMenuItem_image_width, 25);  
+</span><span class='line'>            int imageSrc = typedArray.getResourceId(R.styleable.LevelMenuItem_image_src, 0);  
+</span><span class='line'>            int imageBg = typedArray.getResourceId(R.styleable.LevelMenuItem_image_bg, 0);  
+</span><span class='line'>            int imageAlpha = typedArray.getInt(R.styleable.LevelMenuItem_image_alpha, 255);  
+</span><span class='line'>            mImageView.setAlpha(imageAlpha);  
+</span><span class='line'>            mImageView.setImageResource(imageSrc);  
+</span><span class='line'>            mImageView.setBackgroundResource(imageBg);  
+</span><span class='line'>            LayoutParams layoutParams = new LayoutParams(imageWidth, imageHeight);  
+</span><span class='line'>            mImageView.setLayoutParams(layoutParams);  
+</span><span class='line'>              
+</span><span class='line'>            typedArray.recycle();  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置此控件的文本 
+</span><span class='line'>         * @param text 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setText(String text)  
+</span><span class='line'>        {  
+</span><span class='line'>            mTextView.setText(text);  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置文字颜色 
+</span><span class='line'>         * @param textColor 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setTextColor(int textColor)  
+</span><span class='line'>        {  
+</span><span class='line'>            mTextView.setTextColor(textColor);  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置字体大小 
+</span><span class='line'>         * @param textSize 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setTextSize(int textSize)  
+</span><span class='line'>        {  
+</span><span class='line'>            mTextView.setTextSize(textSize);  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置图片 
+</span><span class='line'>         * @param resId 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setImageResource(int resId)  
+</span><span class='line'>        {  
+</span><span class='line'>            mImageView.setImageResource(resId);  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置图片背景 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setBackgroundResource(int resId)  
+</span><span class='line'>        {  
+</span><span class='line'>            mImageView.setBackgroundResource(resId);  
+</span><span class='line'>        }     
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置图片的不透名度 
+</span><span class='line'>         * @param alpha 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setImageAlpha(int alpha)  
+</span><span class='line'>        {  
+</span><span class='line'>            mImageView.setAlpha(alpha);  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 设置图片的大小 
+</span><span class='line'>         * 这里面需要使用LayoutParams这个布局参数来设置 
+</span><span class='line'>         * @param width 
+</span><span class='line'>         * @param height 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setImageSize(int width,int height)  
+</span><span class='line'>        {  
+</span><span class='line'>            LayoutParams layoutParams = new LayoutParams(width, height);  
+</span><span class='line'>            mImageView.setLayoutParams(layoutParams);  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * image点击事件的回调 
+</span><span class='line'>         * @param listener 
+</span><span class='line'>         */  
+</span><span class='line'>        public void setOnClickListener(OnItemClickListener listener)  
+</span><span class='line'>        {  
+</span><span class='line'>            mImageView.setOnClickListener(new View.OnClickListener() {  
+</span><span class='line'>                @Override  
+</span><span class='line'>                public void onClick(View v) {  
+</span><span class='line'>                    listener.onImageClick();  
+</span><span class='line'>                }  
+</span><span class='line'>            });  
+</span><span class='line'>        }  
+</span><span class='line'>        /** 
+</span><span class='line'>         * 点击事件接口 
+</span><span class='line'>         * @author linc 
+</span><span class='line'>         * 
+</span><span class='line'>         */  
+</span><span class='line'>        public interface OnItemClickListener  
+</span><span class='line'>        {  
+</span><span class='line'>            public void onImageClick();  
+</span><span class='line'>        }  
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好，一个完整的组合控件就做好了，那么，我们如何使用呢？</p>
+
+<p>我要在LevelMenu中用它。xml文件如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?xml version="1.0" encoding="utf-8"?>  
+</span><span class='line'>    &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+</span><span class='line'>        xmlns:linc="http://schemas.android.com/apk/res/com.linc.game"  
+</span><span class='line'>        android:layout_width="fill_parent"  
+</span><span class='line'>        android:layout_height="fill_parent"  
+</span><span class='line'>        android:orientation="horizontal">      
+</span><span class='line'>        &lt;com.linc.game.LevelMenuItem  
+</span><span class='line'>            android:id="@+id/item1"  
+</span><span class='line'>            android:layout_width="70dp"  
+</span><span class='line'>            android:layout_height="80dp"  
+</span><span class='line'>            linc:text="@string/item1"  
+</span><span class='line'>            linc:text_size="14sp"  
+</span><span class='line'>            linc:text_color="#80fa8072"  
+</span><span class='line'>            linc:image_src="@drawable/orange_button_selector"  
+</span><span class='line'>            linc:image_alpha="128"  
+</span><span class='line'>            linc:image_height="48dp"  
+</span><span class='line'>            linc:image_width="48dp"  
+</span><span class='line'>            />  
+</span><span class='line'>        &lt;com.linc.game.LevelMenuItem  
+</span><span class='line'>            android:id="@+id/item2"  
+</span><span class='line'>            android:layout_marginLeft="20dp"  
+</span><span class='line'>            android:layout_width="70dp"  
+</span><span class='line'>            android:layout_height="80dp"  
+</span><span class='line'>            linc:text="@string/item2"  
+</span><span class='line'>            linc:text_size="14sp"  
+</span><span class='line'>            linc:text_color="#ffeee8aa"  
+</span><span class='line'>            linc:image_src="@drawable/red_button_selector"  
+</span><span class='line'>            linc:image_alpha="255"  
+</span><span class='line'>            linc:image_height="48dp"  
+</span><span class='line'>            linc:image_width="48dp"  
+</span><span class='line'>            />     
+</span><span class='line'>        &lt;com.linc.game.LevelMenuItem  
+</span><span class='line'>            android:id="@+id/item3"  
+</span><span class='line'>            android:layout_marginLeft="20dp"  
+</span><span class='line'>            android:layout_width="70dp"  
+</span><span class='line'>            android:layout_height="80dp"  
+</span><span class='line'>            linc:text="@string/item3"  
+</span><span class='line'>            linc:text_size="14sp"  
+</span><span class='line'>            linc:text_color="#80cd853f"  
+</span><span class='line'>            linc:image_src="@drawable/yellow_button_selector"  
+</span><span class='line'>            linc:image_alpha="128"  
+</span><span class='line'>            linc:image_height="48dp"  
+</span><span class='line'>            linc:image_width="48dp"  
+</span><span class='line'>            />         
+</span><span class='line'>    &lt;/LinearLayout></span></code></pre></td></tr></table></div></figure>
+
+
+<p>加入自己包名的索引</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>xmlns:linc="http://schemas.android.com/apk/res/com.linc.game"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>剩下的就一目了然了。</p>
+
+<p>LevelMenu.java</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>package com.linc.game;  
+</span><span class='line'>      
+</span><span class='line'>    import com.linc.game.LevelMenuItem.OnItemClickListener;  
+</span><span class='line'>    import android.content.Context;  
+</span><span class='line'>    import android.util.AttributeSet;  
+</span><span class='line'>    import android.util.Log;  
+</span><span class='line'>    import android.view.LayoutInflater;  
+</span><span class='line'>    import android.widget.LinearLayout;  
+</span><span class='line'>      
+</span><span class='line'>    public class LevelMenu extends LinearLayout {  
+</span><span class='line'>        private LevelMenuItem item1,item2,item3;  
+</span><span class='line'>          
+</span><span class='line'>        public LevelMenu(Context context) {  
+</span><span class='line'>            super(context);  
+</span><span class='line'>              
+</span><span class='line'>        }  
+</span><span class='line'>      
+</span><span class='line'>          
+</span><span class='line'>        public LevelMenu(Context context, AttributeSet attrs) {  
+</span><span class='line'>            super(context, attrs);  
+</span><span class='line'>            LayoutInflater layoutInflater = (LayoutInflater) context.  
+</span><span class='line'>                getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
+</span><span class='line'>            layoutInflater.inflate(R.layout.level_menu, this);  
+</span><span class='line'>            initWidget();  
+</span><span class='line'>        }  
+</span><span class='line'>        private void initWidget()  
+</span><span class='line'>        {  
+</span><span class='line'>            item1 = (LevelMenuItem)findViewById(R.id.item1);  
+</span><span class='line'>            item2 = (LevelMenuItem)findViewById(R.id.item2);  
+</span><span class='line'>            item3 = (LevelMenuItem)findViewById(R.id.item3);  
+</span><span class='line'>              
+</span><span class='line'>            item1.setOnClickListener(new OnItemClickListener() {  
+</span><span class='line'>                @Override  
+</span><span class='line'>                public void onImageClick() {  
+</span><span class='line'>                    Log.e("dfjdkfjd","dfdfd");  
+</span><span class='line'>                }  
+</span><span class='line'>            });  
+</span><span class='line'>        }  
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在处理图片点击事件的时候，我用到了选择器（selector），这是我们实际开发中最常用的小技巧了。它能描述的状态很多，各位看官可以去查查。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?xml version="1.0" encoding="utf-8"?>  
+</span><span class='line'>    &lt;selector xmlns:android="http://schemas.android.com/apk/res/android" >  
+</span><span class='line'>        &lt;item android:state_pressed="true"  
+</span><span class='line'>            android:drawable="@drawable/button_push"/>  
+</span><span class='line'>        &lt;item android:drawable="@drawable/orange_button"/>  
+</span><span class='line'>    &lt;/selector></span></code></pre></td></tr></table></div></figure>
+
+
+<p>好，组合控件的例子先到这里，实际功能在下一个实战技巧中演练。</p>
+
+<p>大家在做自定义控件时需要注意的是：</p>
+
+<p>1、自定义控件类不能是是抽象类</p>
+
+<p>2、要用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(Context context, AttributeSet attrs)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个构造函数</p>
+
+<p>否则报错：android.view.InflateException: Binary XML file line #15: Error inflating cla。。。</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-12T19:22:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2013</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/android/'>android</a>
+
+
+</div>
+	
+		<div class="comments"><a href="/blog/2013/03/12/attr/#disqus_thread">Comments</a></div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    dande618
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/03/12/attr/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/03/12/attr/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+</body>
+</html>
