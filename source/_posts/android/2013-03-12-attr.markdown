@@ -18,7 +18,7 @@ categories: android
 
 下面我要做一个例子，请看完成图。
 
-!(示例图)[http://my.csdn.net/uploads/201204/02/1333352187_6116.png]
+![示例图](http://my.csdn.net/uploads/201204/02/1333352187_6116.png)
 
 下面一排图片加文字就是组合控件了，我是怎么做的呢？
 

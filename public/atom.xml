@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-03-12T19:38:30+08:00</updated>
+  <updated>2013-04-07T10:56:57+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,593 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ShareAction在AVD失效的问题]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork/"/>
+    <updated>2013-04-07T11:11:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork</id>
+    <content type="html"><![CDATA[<p>　　在虚拟机（AVD，Android Virtual Device）使用ActionBar／ActionBarSherlock）上的ShareAction分享按键，怎么点也点不出程式列表，但在手机上没有问题。</p>
+
+<!-- more -->
+
+
+<br />
+
+
+<p><img src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093427048.jpg" /></p>
+
+<br />
+
+
+<p>　　在网路上查找，确有人反映过这个问题，应该是一个BUG。</p>
+
+<p>　　参见 <a href="http://code.google.com/p/android/issues/detail?id=25467">android.widget.ShareActionProvider does not work on the emulator</a></p>
+
+<br />
+
+
+
+
+<div style="float:right;width:38.2%;margin-left: 0.6em;margin-top: 0.6em;"><img src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093549098.jpg" /></div>
+
+
+<p>　　据分析，当只有一个（或零个）程式接受Intent.ACTION_SEND（或其他）的某个类型（如text/plain）时，就无法点出分享。而AVD初始时可能只有SMS（简讯息）可接受此Intent。如果再装载一个程式（如微博客户端），就可以正常使用ShareAction打开分享程式列表了。由于ShareAction会记住使用最多的程式，并显示在ActionBar上，所以使用过一次分享到SMS后卸载掉“微博”也是会显示SMS。但这并不解决问题。</p>
+
+<p>　　亦可参见 <a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">ShareActionProvider does not work if only one intent</a></p>
+
+<br />
+
+
+<p>附ShareAction实现的部分代码（在SherlockFragment内，覆盖onCreateOptionsMenu方法）</p>
+
+<br />
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">ShareActionProvider</span> <span class="n">mShareActionProvider</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">,</span> <span class="n">MenuInflater</span> <span class="n">inflater</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">MenuItem</span> <span class="n">menuItem</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="na">findItem</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">share</span><span class="o">);</span>
+</span><span class='line'><span class="c1">// Get the provider and hold onto it to set/change the share intent. </span>
+</span><span class='line'><span class="n">mShareActionProvider</span> <span class="o">=</span> <span class="o">(</span><span class="n">ShareActionProvider</span><span class="o">)</span> <span class="n">menuItem</span><span class="o">.</span><span class="na">getActionProvider</span><span class="o">();</span>
+</span><span class='line'><span class="n">GoodsItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">GoodsItemManager</span><span class="o">.</span><span class="na">instance</span><span class="o">().</span><span class="na">getGoodsItems</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">mPosition</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Intent</span> <span class="n">shareIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_SEND</span><span class="o">);</span>
+</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_SUBJECT</span><span class="o">,</span> <span class="n">getResources</span><span class="o">().</span><span class="na">getString</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">share_subject</span><span class="o">));</span>
+</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_TEXT</span><span class="o">,</span> <span class="n">Html</span><span class="o">.</span><span class="na">fromHtml</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">getTitle</span><span class="o">()));</span>
+</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">mShareActionProvider</span><span class="o">.</span><span class="na">setShareIntent</span><span class="o">(</span><span class="n">shareIntent</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br />
+
+
+<p>menu下的xml文件中定义</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;item</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/share&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/ic_action_share&quot;</span>
+</span><span class='line'>        <span class="na">android:showAsAction=</span><span class="s">&quot;ifRoom&quot;</span>
+</span><span class='line'>        <span class="na">android:actionProviderClass=</span><span class="s">&quot;com.actionbarsherlock.widget.ShareActionProvider&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;@string/action_share&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/item&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br />
+
+
+<p>　　ActionBarSherlock似乎在最近修复了这个问题，详见<a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">上文链接</a>。有兴趣的朋友可以一试，或者在调试时装载其他支持分享的程式！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【转载】convertView&setTag方法的一点理解  ]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/22/convertView/"/>
+    <updated>2013-03-22T22:02:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/22/convertView</id>
+    <content type="html"><![CDATA[<p>convertView&amp;setTag方法的一点理解</p>
+
+<p>转载来源 <a href="http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/">http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/</a></p>
+
+<!-- more -->
+
+
+<h2>前言</h2>
+
+<p>　　首先我们要知道setTag方法是干什么的，SDK解释为</p>
+
+<p>Tags</p>
+
+<blockquote><p>Unlike IDs, tags are not used to identify views. Tags are essentially an extra piece of information that can be associated with a view. They are most often used as a convenience to store data related to views in the views themselves rather than by putting them in a separate structure.</p></blockquote>
+
+<p>　　Tag不像ID是用标示view的。Tag从本质上来讲是就是相关联的view的额外的信息。它们经常用来存储一些view的数据，这样做非常方便而不用存入另外的单独结构。</p>
+
+<h2>convertView中的TAG</h2>
+
+<p>1.对于使用了LayoutInflater对象进行View扩充的Tag的使用</p>
+
+<p>　　在之前，在adapter中，我们在getView中是这么些的代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">ViewHolder</span> <span class="n">holder</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">holder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ViewHolder</span><span class="o">();</span>
+</span><span class='line'><span class="n">convertView</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">vlist2</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'><span class="n">holder</span><span class="o">.</span><span class="na">img</span> <span class="o">=</span> <span class="o">(</span><span class="n">ImageView</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">img</span><span class="o">);</span>
+</span><span class='line'><span class="n">holder</span><span class="o">.</span><span class="na">title</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">title</span><span class="o">);</span>
+</span><span class='line'><span class="n">holder</span><span class="o">.</span><span class="na">info</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span>
+</span><span class='line'><span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">info</span><span class="o">);</span>
+</span><span class='line'><span class="c1">// setTag的妙用</span>
+</span><span class='line'><span class="n">convertView</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="n">holder</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// setTag的妙用</span>
+</span><span class='line'><span class="n">holder</span> <span class="o">=</span> <span class="o">(</span><span class="n">ViewHolder</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c1">//……略</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　注意标红的地方，他们是使用了Tag的。</p>
+
+<p>　　首先我们要知道setTag方法是干什么的，他是给View对象的一个标签，标签可以是任何内容，我们这里把他设置成了一个对象，因为我们是把vlist2.xml的元素抽象出来成为一个类ViewHolder，用了setTag，这个标签就是ViewHolder实例化后对象的一个属性。我们之后对于ViewHolder实例化的对象holder的操作，都会因为java的引用机制而一直存活并改变convertView的内容，而不是每次都是去new一个。我们就这样达到的重用——我希望我说清楚了。如果有更简单的解释，请指教。</p>
+
+<p>　　这是我们在Adapter中的使用，那么我们在这里不使用Tag标签会怎么样呢？</p>
+
+<p>　　我们试想，如果我们不用Tag标签，那么我们的对象如何与convertView缓存结合并达到合理的效率利用？貌似答案并不明朗——所以使用Tag是比较明智的做法。</p>
+
+<p>2.对于没有使用LayoutInflater对象进行View扩充的Tag的使用。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">view</span> <span class="o">=</span> <span class="n">convertView</span><span class="o">;</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'><span class="n">view</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Xxx</span><span class="o">(...);</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　这是我们的程序，我们看到，貌似没有用Tag——是的，当没有使用LayoutInflater进行View的扩充的时候，是没有必要用的，虽然也可以用。</p>
+
+<p>3.对于其他View的Tag使用</p>
+
+<p>　　我们可以对所有的View对象进行操作，至于怎么用，就看作者怎么想的了，下面举例说一个View的子类button对于tag的一个使用。</p>
+
+<p>　　直接贴代码了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ButtonTagTestActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="kd">implements</span> <span class="n">OnClickListener</span> <span class="o">{</span>
+</span><span class='line'><span class="cm">/** Called when the activity is first created. */</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button1</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button1</span><span class="o">);</span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button2</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button2</span><span class="o">);</span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button3</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button3</span><span class="o">);</span>
+</span><span class='line'><span class="n">button1</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="n">button2</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'><span class="n">button3</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+</span><span class='line'><span class="n">button1</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// TODO Auto-generated method stub</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">tag</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">arg0</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+</span><span class='line'><span class="k">switch</span> <span class="o">(</span><span class="n">tag</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button1&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">case</span> <span class="mi">2</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button2&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">case</span> <span class="mi">3</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button3&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="k">default</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'><span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　Xml页面代码就不贴了。这个例子是点击界面上的3个button然后会显示用户点击的按钮。我们的程序是实现了页面全局监听，在监听前设置了每个button的tag，之后我们在switch的时候，使用getTag取出的标签来看是什么操作。</p>
+
+<p>　　这样做的好处是可以将监听集中管理，提高代码的易读性——当然，这是我的自我理解。</p>
+
+<h2>后记</h2>
+
+<p>　　看了这么多的实例，我想已经明白了Tag以及convertView。</p>
+
+<p>　　对我们知道了Tag的作用就是设置标签，标签可以是任意玩意。</p>
+
+<p>　　以及convertView是如何在程序中使代码运行变的效率的：利用缓存convertView尽可能少实例化同样结构体的对象；</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[SQL基础知识]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/19/SQL/"/>
+    <updated>2013-03-19T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/19/SQL</id>
+    <content type="html"><![CDATA[<p>DDL、DML和DCL的理解</p>
+
+<p>【转载】<a href="http://www.2cto.com/database/201208/146501.html">http://www.2cto.com/database/201208/146501.html</a></p>
+
+<!-- more -->
+
+
+<h2>1、DDL</h2>
+
+<h3>1-1、DDL的概述</h3>
+
+<p>DDL（Data Definition Language 数据定义语言）用于操作对象和对象的属性，这种对象包括数据库本身，以及数据库对象，像：表、视图等等，DDL对这些对象和属性的管理和定义具体表现在Create、Drop和Alter上。特别注意：DDL操作的“对象”的概念，”对象“包括对象及对象的属性，而且对象最小也比记录大个层次。以表举例：Create创建数据表，Alter可以更改该表的字段，Drop可以删除这个表，从这里我们可以看到，DDL所站的高度，他不会对具体的数据进行操作。</p>
+
+<h3>1-2、DDL的主要语句（操作）</h3>
+
+<p>Create语句：可以创建数据库和数据库的一些对象。</p>
+
+<p>Drop语句：可以删除数据表、索引、触发程序、条件约束以及数据表的权限等。</p>
+
+<p>Alter语句：修改数据表定义及属性。</p>
+
+<h3>1-3、DDL的操作对象（表）</h3>
+
+<h4>1-3-1、表的概念</h4>
+
+<p>表的创建就是用来存放数据用的，由于我们存放的数据的不通，所以我们需要定义些数据类型，以方便管理。</p>
+
+<h4>1-3-2、表的属性</h4>
+
+<p>主键属性：主键就是主键约束，只不过起的名字不同了，主键的起名偏向于虚的（就是描述描述这件事），主键约束起名偏向于实得（就是描述操作的实施），描述的都是同一件事，主键约束就是表中的一个属性；在一个表中最多可以有一个主键；一个主键可以定义在一个或多个字段；主键使一个或多个字段的值必须唯一且不为空，这样做可以通过该字段或该组字段中的值唯一的代表一条记录。</p>
+
+<p>唯一属性：一个表中只能有一个主键属性，为了方表用户，提出唯一约束；唯一约束可以定义在一个或多个字段上；唯一约束使该字段或该组字段中的值唯一，可以为空，但是，不能重复。</p>
+
+<p>外键属性：又叫外键，又叫外键约束，跟主键和主键约束的关系是一样的；外键约束针对的两个表，如果表A的主关键字是表B中的字段，则该字段称为表B的外键，表A称为主表，表B称为从表，但要注意，必须要计算机要知道你是这种关系。</p>
+
+<p>核查、Null和缺省属性：核查属性又叫核查约束，Null属性又叫Null约束，缺省属性又叫缺省约束；这些名称是描述一件事，描述一种情况，这件事或这张情况我们当然可以人为的那样特意做（输入数据是注意就行），但是，他们的本意是实现自动化，也就是让计算机做这件事。</p>
+
+<p>（你知道为什么建立主键和唯一约束的时候，会自动的创建索引吗？而且是唯一索引，想一想索引大多在那些字段上用，以及索引的作用就会知道了。像主键约束、唯一约束、非空约束、外键约束、核查约束和缺省约束这些操作都是使表具有某些特性，所以在这里我认为他们都是表的属性。）</p>
+
+<h2>2、DML</h2>
+
+<h3>2-1、DML的概述</h3>
+
+<p>DML（Data Manipulation Language 数据操控语言）用于操作数据库对象中包含的数据，也就是说操作的单位是记录。</p>
+
+<h3>2-2、DML的主要语句（操作）</h3>
+
+<p>Insert语句：向数据表张插入一条记录。</p>
+
+<p>Delete语句：删除数据表中的一条或多条记录，也可以删除数据表中的所有记录，但是，它的操作对象仍是记录。</p>
+
+<p>Update语句：用于修改已存在表中的记录的内容。</p>
+
+<h3>2-3、DML的操作对象——记录</h3>
+
+<h4>2-3-1、注意</h4>
+
+<p>当我们对记录进行Insert、Delete和Update操作的时候，一定要注意，一定要清楚DDL对其的一些操作。</p>
+
+<h2>3、DCL</h2>
+
+<h3>3-1、DCL的概述</h3>
+
+<p>DCL（Data Control Language 数据控制语句）的操作是数据库对象的权限，这些操作的确定使数据更加的安全。</p>
+
+<h3>3-2、DCL的主要语句（操作）</h3>
+
+<p>Grant语句：允许对象的创建者给某用户或某组或所有用户（PUBLIC）某些特定的权限。</p>
+
+<p>Revoke语句：可以废除某用户或某组或所有用户访问权限</p>
+
+<h3>3-3、DCL的操作对象（用户）</h3>
+
+<p>此时的用户指的是数据库用户。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【转载】android多种方式实现异步加载图片 ]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/14/threadpool/"/>
+    <updated>2013-03-14T14:12:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/14/threadpool</id>
+    <content type="html"><![CDATA[<p>转载来源 <a href="http://www.cnblogs.com/Jaylong/archive/2012/08/08/handler.html">http://www.cnblogs.com/Jaylong/archive/2012/08/08/handler.html</a></p>
+
+<!-- more -->
+
+
+<p>如果异步加载网络图片，要在非UI线程中进行。通常有以下四种方式：</p>
+
+<p>1.handler+runnable方式：</p>
+
+<p>在activity中定义handler,然后用handler.post（Runnable）方法，此时会在主线程中执行，如果是sdk3.0以上会阻塞UI线程，报异常</p>
+
+<p>2.handler+thread+message模式：</p>
+
+<p>在handler中重写handMessage方法，加载网络图片的操作在thread中执行，通过handler发送消息，在handlerMessage中更新UI</p>
+
+<p>3.handler+threadpool(线程池)+message</p>
+
+<p>定义一个线程池，存放5个线程，然后使用handler的post方法执行UI更新操作</p>
+
+<p>4.handler+threadpool+message+softreference缓存</p>
+
+<p>先从缓存中加载图片，如果没有，就从网络中加载，然后保存到缓存，其他步骤同3</p>
+
+<p>获取网络图片的相关代码如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>package com.allen.utils;
+</span><span class='line'>
+</span><span class='line'>import java.io.IOException;
+</span><span class='line'>import java.io.InputStream;
+</span><span class='line'>import java.lang.ref.SoftReference;
+</span><span class='line'>import java.net.HttpURLConnection;
+</span><span class='line'>import java.net.MalformedURLException;
+</span><span class='line'>import java.net.URL;
+</span><span class='line'>import java.util.Map;
+</span><span class='line'>
+</span><span class='line'>import android.graphics.Bitmap;
+</span><span class='line'>import android.graphics.BitmapFactory;
+</span><span class='line'>import android.graphics.drawable.Drawable;
+</span><span class='line'>import android.util.Log;
+</span><span class='line'>
+</span><span class='line'>public class Utils {    
+</span><span class='line'>    /**
+</span><span class='line'>     * 获取网络中图片资源
+</span><span class='line'>     * @param src 图片地址
+</span><span class='line'>     * @return drawable对象
+</span><span class='line'>     */
+</span><span class='line'>    public static Drawable loadImage(String src){
+</span><span class='line'>        URL url=null;
+</span><span class='line'>        try {
+</span><span class='line'>            url = new URL(src);
+</span><span class='line'>        } catch (MalformedURLException e) {
+</span><span class='line'>            Log.e("-Utils-->MalformedURLExcetion--", e.toString());
+</span><span class='line'>        }
+</span><span class='line'>        InputStream is=null;
+</span><span class='line'>        try {
+</span><span class='line'>            is = url.openStream();
+</span><span class='line'>        } catch (IOException e) {
+</span><span class='line'>            Log.e("-Utils-->IOException--", e.toString());
+</span><span class='line'>        }
+</span><span class='line'>        Drawable drawable=Drawable.createFromStream(is, "img");
+</span><span class='line'>        return drawable;
+</span><span class='line'>    }
+</span><span class='line'>    /**  
+</span><span class='line'>     * 从网络上下载  
+</span><span class='line'>     * @param url  
+</span><span class='line'>     * @return  
+</span><span class='line'>     */  
+</span><span class='line'>    public static Bitmap getBitMapFromUrl(String url) {   
+</span><span class='line'>        Bitmap bitmap = null;   
+</span><span class='line'>        URL u =null;   
+</span><span class='line'>        HttpURLConnection conn = null;   
+</span><span class='line'>        InputStream is = null;   
+</span><span class='line'>        try {   
+</span><span class='line'>            u = new URL(url);   
+</span><span class='line'>            conn = (HttpURLConnection)u.openConnection();   
+</span><span class='line'>            is = conn.getInputStream();   
+</span><span class='line'>            bitmap = BitmapFactory.decodeStream(is);   
+</span><span class='line'>        } catch (Exception e) {   
+</span><span class='line'>            e.printStackTrace();   
+</span><span class='line'>        }   
+</span><span class='line'>        return bitmap;   
+</span><span class='line'>    }   
+</span><span class='line'>
+</span><span class='line'>    /**  
+</span><span class='line'>     * 从缓存中读取  
+</span><span class='line'>     * @param url  
+</span><span class='line'>     * @return  
+</span><span class='line'>     * @throws Exception   
+</span><span class='line'>     */  
+</span><span class='line'>    public static Bitmap getImgFromCache(String url,Map&lt;String,SoftReference&lt;Bitmap>> imgCache) throws Exception {   
+</span><span class='line'>        Bitmap bitmap = null;   
+</span><span class='line'>        //从内存中读取   
+</span><span class='line'>        if(imgCache.containsKey(url)) {   
+</span><span class='line'>            synchronized (imgCache) {   
+</span><span class='line'>                SoftReference&lt;Bitmap> bitmapReference = imgCache.get(url);   
+</span><span class='line'>                if(null != bitmapReference) {   
+</span><span class='line'>                    bitmap = bitmapReference.get();                                  
+</span><span class='line'>                }   
+</span><span class='line'>            }   
+</span><span class='line'>        } else {//從網絡中下載  
+</span><span class='line'>            bitmap = getBitMapFromUrl(url);   
+</span><span class='line'>            //将图片保存进内存中   
+</span><span class='line'>            imgCache.put(url, new SoftReference&lt;Bitmap>(bitmap));             
+</span><span class='line'>        }   
+</span><span class='line'>        return bitmap;   
+</span><span class='line'>    }   
+</span><span class='line'>   
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有源码下载：<a href="http://files.cnblogs.com/Jaylong/loadImage.zip">http://files.cnblogs.com/Jaylong/loadImage.zip</a>；</p>
+
+<p>当然还有其他的方式，比如使用anysctask，或者timer，timertask……</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[【转载】Android组合控件 ]]></title>
@@ -34,7 +621,7 @@
 
 <p>下面我要做一个例子，请看完成图。</p>
 
-<p>!(示例图)[http://my.csdn.net/uploads/201204/02/1333352187_6116.png]</p>
+<p><img src="http://my.csdn.net/uploads/201204/02/1333352187_6116.png" alt="示例图" /></p>
 
 <p>下面一排图片加文字就是组合控件了，我是怎么做的呢？</p>
 
@@ -677,6 +1264,156 @@
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[SideNavigation＆ActionBarSherlock]]></title>
+    <link href="http://dande618.github.com/blog/2013/03/12/SideNavigation/"/>
+    <updated>2013-03-12T19:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/03/12/SideNavigation</id>
+    <content type="html"><![CDATA[<p>两个有用的开源项目</p>
+
+<!-- more -->
+
+
+<h2>ActionBarSherlock　<span style="font-size:small"><a href="http://actionbarsherlock.com/">http://actionbarsherlock.com/</a></span></h2>
+
+<p>ActionBarSherlock可以让2.x的系统也能使用actionbar。</p>
+
+<p>如果你在3.0以上的机子上使用，那么它会调用系统原生的actionbar。另外它的使用方法和系统自身的方法相当相似。</p>
+
+<h2>SideNavigation　<span style="font-size:small"><a href="https://github.com/johnkil/SideNavigation">https://github.com/johnkil/SideNavigation</a></span></h2>
+
+<p>一个侧边栏导航组件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class MainActivity implements ISideNavigationCallback</span></code></pre></td></tr></table></div></figure>
+
+
+<p>1.添加组件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;com.devspark.sidenavigation.SideNavigationView
+</span><span class='line'>        android:id="@+id/side_navigation_view"
+</span><span class='line'>        android:layout_width="match_parent"
+</span><span class='line'>        android:layout_height="match_parent" /></span></code></pre></td></tr></table></div></figure>
+
+
+<p>要在RelativeLayout的最后添加，使得该组件最后加载，而在其他组件的上面，不会被覆盖。</p>
+
+<p>2.创建定义侧边栏的menu文件，例</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?xml version="1.0" encoding="utf-8"?>
+</span><span class='line'>&lt;menu xmlns:android="http://schemas.android.com/apk/res/android" >
+</span><span class='line'>
+</span><span class='line'>    &lt;item
+</span><span class='line'>        android:id="@+id/side_navigation_menu_item1"
+</span><span class='line'>        android:icon="@drawable/ic_android1"
+</span><span class='line'>        android:title="@string/title1"/>
+</span><span class='line'>    &lt;item
+</span><span class='line'>        android:id="@+id/side_navigation_menu_item2"
+</span><span class='line'>        android:icon="@drawable/ic_android2"
+</span><span class='line'>        android:title="@string/title2"/>
+</span><span class='line'>    &lt;item
+</span><span class='line'>        android:id="@+id/side_navigation_menu_item3"
+</span><span class='line'>        android:icon="@drawable/ic_android3"
+</span><span class='line'>        android:title="@string/title3"/>
+</span><span class='line'>    &lt;item
+</span><span class='line'>        android:id="@+id/side_navigation_menu_item4"
+</span><span class='line'>        android:icon="@drawable/ic_android4"
+</span><span class='line'>        android:title="@string/title4"/>
+</span><span class='line'>    &lt;item
+</span><span class='line'>        android:id="@+id/side_navigation_menu_item5"
+</span><span class='line'>        android:icon="@drawable/ic_android5"
+</span><span class='line'>        android:title="@string/title5"/>
+</span><span class='line'>&lt;/menu></span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.在onCreate加入</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
+</span><span class='line'>protected void onCreate(Bundle savedInstanceState) {
+</span><span class='line'>    super.onCreate(savedInstanceState);
+</span><span class='line'>    setContentView(R.layout.activity_main);
+</span><span class='line'>    // other code
+</span><span class='line'>
+</span><span class='line'>    sideNavigationView = (SideNavigationView) findViewById(R.id.side_navigation_view);
+</span><span class='line'>    sideNavigationView.setMenuItems(R.menu.side_navigation_menu);
+</span><span class='line'>    sideNavigationView.setMenuClickCallback(this);
+</span><span class='line'>    sideNavigationView.setMode(Mode.LEFT);
+</span><span class='line'>
+</span><span class='line'>    getActionBar().setDisplayHomeAsUpEnabled(true);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>4.重写onOptionsItemSelected()</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>@Override
+</span><span class='line'>public boolean onOptionsItemSelected(MenuItem item) {
+</span><span class='line'>    switch (item.getItemId()) {
+</span><span class='line'>    case android.R.id.home:
+</span><span class='line'>        sideNavigationView.toggleMenu();
+</span><span class='line'>        break;
+</span><span class='line'>    default:
+</span><span class='line'>        return super.onOptionsItemSelected(item);
+</span><span class='line'>    }
+</span><span class='line'>    return true;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>具体例子可以看SideNavigation和ActionBarSherlock的simple。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[goagent]]></title>
     <link href="http://dande618.github.com/blog/2013/03/04/goagent/"/>
     <updated>2013-03-04T23:33:00+08:00</updated>
@@ -706,14 +1443,14 @@
     <link href="http://dande618.github.com/blog/2013/03/01/Thread/"/>
     <updated>2013-03-01T22:22:00+08:00</updated>
     <id>http://dande618.github.com/blog/2013/03/01/Thread</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<p>一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。</p>
+    <content type="html"><![CDATA[<p>一个进程就是一个执行中的程序，而每一个进程都有自己独立的一块内存空间、一组系统资源。在进程概念中，每一个进程的内部数据和状态都是完全独立的。</p>
 
 <p>线程与进程相似，是一段完成某个特定功能的代码，是程序中单个顺序的流控制；但与进程不同的是，同类的多个线程是共享一块内存空间和一组系统资源，而线程本身的数据通常只有微处理器的寄存器数据，以及一个供程序执行时使用的堆栈。所以系统在产生一个线程，或者在各个线程之间切换时，负担要比进程小的多，正因如此，线程被称为轻负荷进程（light-weight process）。一个进程中可以包含多个线程。</p>
 
 <p>一个线程是一个程序内部的顺序控制流。</p>
+
+<!-- more -->
+
 
 <ol>
 <li><p>进程：每个进程都有独立的代码和数据空间（进程上下文），进程切换的开销大。</p></li>
@@ -2469,595 +3206,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 <h2>构造函数的设计</h2>
 
 <p>　　设计一个类时，好的时间是初始化所有属性。不要指望编译器来初始化属性。构造函数可以用来确保应用处于一种稳定的状态。例如，若将一个属性初始化为0，那么当想把它用作一个除法运算的除数时，可能会导致一个不稳定的应用。初始化为0并不总是最好的策略。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[java动态绑定静态绑定 [转载]]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/29/bangding/"/>
-    <updated>2012-12-29T10:01:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/29/bangding</id>
-    <content type="html"><![CDATA[<!-- more -->
-
-
-<p>　　首先是方法的参数是父类对象，传入子类对象是否可行。</p>
-
-<p>　　然后引出Parent p = new Children();</p>
-
-<p>　　这句代码不是很理解，google的过程中引出向上转型。</p>
-
-<p>　　要理解向上转型又引出了动态绑定。</p>
-
-<p>　　从动态绑定又引出了静态绑定。</p>
-
-<h2>程序绑定的概念：</h2>
-
-<p>　　绑定指的是一个方法的调用与方法所在的类(方法主体)关联起来。对java来说，绑定分为静态绑定和动态绑定；或者叫做前期绑定和后期绑定。</p>
-
-<h3>静态绑定：</h3>
-
-<p>　　在程序执行前方法已经被绑定，此时由编译器或其它连接程序实现。例如：C。</p>
-
-<p>　　针对java简单的可以理解为程序编译期的绑定；这里特别说明一点，java当中的方法只有final，static，private和构造方法是前期绑定。</p>
-
-<h3>动态绑定：</h3>
-
-<p>　　后期绑定：在运行时根据具体对象的类型进行绑定。</p>
-
-<p>　　若一种语言实现了后期绑定，同时必须提供一些机制，可在运行期间判断对象的类型，并分别调用适当的方法。也就是说，编译器此时依然不知道对象的类型，但方法调用机制能自己去调查，找到正确的方法主体。不同的语言对后期绑定的实现方法是有所区别的。但我们至少可以这样认为：它们都要在对象中安插某些特殊类型的信息。</p>
-
-<p><strong>动态绑定的过程：</strong></p>
-
-<ul>
-<li><p>虚拟机提取对象的实际类型的方法表；</p></li>
-<li><p>虚拟机搜索方法签名；</p></li>
-<li><p>调用方法。</p></li>
-</ul>
-
-
-<h2>关于绑定相关的总结：</h2>
-
-<p>　　在了解了三者的概念之后，很明显我们发现java属于后期绑定。在java中，几乎所有的方法都是后期绑定的，在运行时动态绑定方法属于子类还是基类。但是也有特殊，针对static方法和final方法由于不能被继承，因此在编译时就可以确定他们的值，他们是属于前期绑定的。特别说明的一点是，private声明的方法和成员变量不能被子类继承，所有的private方法都被隐式的指定为final的(由此我们也可以知道：将方法声明为final类型的一是为了防止方法被覆盖，二是为了有效的关闭java中的动态绑定)。java中的后期绑定是有JVM来实现的，我们不用去显式的声明它，而C++则不同,必须明确的声明某个方法具备后期绑定。</p>
-
-<p>　　java当中的向上转型或者说多态是借助于动态绑定实现的，所以理解了动态绑定，也就搞定了向上转型和多态。
-前面已经说了对于java当中的方法而言，除了final，static，private和构造方法是前期绑定外，其他的方法全部为动态绑定。而动态绑定的典型发生在父类和子类的转换声明之下：</p>
-
-<p>　　比如：Parent p = new Children();</p>
-
-<p>其具体过程细节如下：</p>
-
-<ol>
-<li><p>编译器检查对象的声明类型和方法名。假设我们调用x.f(args)方法，并且x已经被声明为C类的对象，那么编译器会列举出C类中所有的名称为f的方法和从C类的超类继承过来的f方法。</p></li>
-<li><p>接下来编译器检查方法调用中提供的参数类型。如果在所有名称为f 的方法中有一个参数类型和调用提供的参数类型最为匹配，那么就调用这个方法，这个过程叫做“重载解析”。</p></li>
-<li><p>当程序运行并且使用动态绑定调用方法时，虚拟机必须调用同x所指向的对象的实际类型相匹配的方法版本。假设实际类型为D(C的子类)，如果D类定义了f(String)那么该方法被调用，否则就在D的超类中搜寻方法f(String),依次类推。</p></li>
-</ol>
-
-
-<p>　　上面是理论，下面看几个示例（示例来自网络）：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'>
-</span><span class='line'><span class="n">view</span> <span class="n">plaincopy</span> <span class="n">to</span> <span class="n">clipboardprint</span><span class="o">?</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Father</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;父类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型    </span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">sample</span><span class="o">.</span><span class="na">method</span><span class="o">();</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　声明的是父类的引用，但是执行的过程中调用的是子类的对象，程序首先寻找子类对象的method方法，但是没有找到，于是向上转型去父类寻找。</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;子类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型    </span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">sample</span><span class="o">.</span><span class="na">method</span><span class="o">();</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　由于子类重写了父类的method方法，根据上面的理论知道会去调用子类的method方法去执行，因为子类对象有method方法而没有向上转型去寻找。</p>
-
-<p>　　前面的理论当中已经提到了java的绑定规则，由此可知，在处理java类中的成员变量时，并不是采用运行时绑定，而是一般意义上的静态绑定。所以在向上转型的情况下，对象的方法可以找到子类，而对象的属性还是父类的属性。
-代码如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Father</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;父亲属性&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;父类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;儿子属性&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;子类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型    </span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;调用的成员：&quot;</span><span class="o">+</span><span class="n">sample</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>结论，调用的成员为父亲的属性。
-　　这个结果表明，子类的对象(由父类的引用handle)调用到的是父类的成员变量。所以必须明确，运行时（动态）绑定针对的范畴只是对象的方法。
-　　现在试图调用子类的成员变量name，该怎么做？最简单的办法是将该成员变量封装成方法getter形式。
-代码如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Father</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;父亲属性&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;父类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Son</span> <span class="kd">extends</span> <span class="n">Father</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">protected</span> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;儿子属性&quot;</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">method</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;子类方法，对象类型：&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">Father</span> <span class="n">sample</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Son</span><span class="o">();</span><span class="c1">//向上转型    </span>
-</span><span class='line'><span class="err">　　　</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;调用的成员：&quot;</span><span class="o">+</span><span class="n">sample</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>结果：调用的是儿子的属性</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何以对象方式思考（二）]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/26/haw_to2/"/>
-    <updated>2012-12-26T20:01:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/26/haw_to2</id>
-    <content type="html"><![CDATA[<p>　　ＯＯ设计的基本单元是类。ＯＯ设计所期望的最终结果是一个健壮、功能完备的对象模型，换句话说，也就是一个完备的系统。</p>
-
-<!-- more -->
-
-
-<h2>确定用户</h2>
-
-<p>　　用户是那些真正使用系统的人。设想一个出租车的例子，压迫构建一个现实而可用的接口，要把顾客和出租司机双方都认为是用户。</p>
-
-<h2>对象行为</h2>
-
-<p>　　明确用户只是工作的一部分。明确用户后，必须确定对象的行为。要从所有用户的角度考虑，明确每个对象的作用以及必须要做什么才能执行。</p>
-
-<h2>环境约束</h2>
-
-<p>　　环境通常会限制对象能够做什么。</p>
-
-<h2>明确公共接口</h2>
-
-<p>　　收集到有关用户、对象行为和环境的所有信息后，需要确定每个用户的公共接口。</p>
-
-<p><strong>考虑如何使用出租车对象：</strong></p>
-
-<ol>
-<li><p>坐进出租车。</p></li>
-<li><p>告诉出租司机你要去哪里。</p></li>
-<li><p>给出租司机付车费。</p></li>
-<li><p>下车。</p></li>
-</ol>
-
-
-<p><strong>使用出租车对象需要做：</strong></p>
-
-<ol>
-<li><p>明确要去一个地方。</p></li>
-<li><p>叫一辆出租车。</p></li>
-<li><p>给出租司机付钱。</p></li>
-</ol>
-
-
-<p>　　开始时，要考虑对象如何使用，而不是它如何构建。确定最终的接口是一个迭代的过程。对于每个接口，必须确定这个接口有助于对象的操作。如果没有，就可能是不必要的。</p>
-
-<h2>明确实现</h2>
-
-<p>　　选择了公共接口之后，就需要明确实现。考虑类工作的具体细节。</p>
-
-<p>　　不属于公共接口的所有部分都认为是实现。用户不会看到作为实现的任何方法，包括方法的签名（其中包括方法名和参数列表）以及方法中的具体代码。</p>
-
-<p>　　可以有一个私有方法，由类在内部使用。所有私有方法都认为是实现的一部分，用户不会看到它，从而也无法访问私有方法。实现对用户是完全隐藏的。</p>
-
-<p>　　从理论上讲，被认为是实现的任何部分可以改变而不影响类的用户接口。接口表示了用户如何看对象，而实现实际上是对象的具体内容。实现包含了表示对象状态的代码。</p>
-
-<p>摘自《写给大家看的面向对象编程书》</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何以对象方式思考（一）]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/26/haw_to1/"/>
-    <updated>2012-12-26T20:01:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/26/haw_to1</id>
-    <content type="html"><![CDATA[<p>　　ＯＯ设计的基本单元是类。ＯＯ设计所期望的最终结果是一个健壮、功能完备的对象模型，换句话说，也就是一个完备的系统。</p>
-
-<!-- more -->
-
-
-<p>　　解决一个问题没有纯粹的对与错，同一个问题往往可能有多种不同的处理方法。所以识图设计一个ＯＯ解决方案时，不要想着一上来就完成一个完美的设计（总会有需要改进的地方）。真正需要的是进行头脑风暴，让你能从不同方向展开你的思维过程。尝试解决一个问题时，不要试图遵照任何标准或约定，因为关键就是要有创造性。</p>
-
-<p>　　实际上，这个过程开始时，甚至不要考虑特定的编程语言。首要的是找出并解决业务问题。首先完成概念分析和设计。只有当特定技术对于解决业务问题至关重要时采取考虑它，例如，如果脱离无线技术可能无法设计一个无线网络。不过，通常有多种软件解决方案可以考虑。</p>
-
-<p>　　要培养善于完成ＯＯ思维过程的敏锐判断力，要注意3个重要的方面</p>
-
-<ol>
-<li><p>了解接口和实现之间的区别；</p></li>
-<li><p>以更抽象的方式思考；</p></li>
-<li><p>尽可能为用户提供最小接口。</p></li>
-</ol>
-
-
-<h2>了解接口与实现之间的区别</h2>
-
-<p>　　构建强大的ＯＯ设计时，关键是理解接口与实现之间的区别。因此，在设计类时，必须了解用户需要知道什么以及用户不需要知道什么，这些是至关重要的。可以利用封装所固有的数据隐藏机制将不重要的数据对用户隐藏。</p>
-
-<blockquote><p><strong>用户看什么：</strong></p>
-
-<p>接口也与类直接相关。最终用户通常不会看任何类，他们只看GUI或命令行界面。不过，程序员会看类接口。类重用意味着已经有人编写了一个类。因此程序员要使用一个类，就必须知道如何让这个类正确地工作。这个程序员要结合多个类来创造一个系统，他需要理解类的接口。因此，这一张谈到用户时，我们主要是指设计人员和开发人员，而不一定是最终用户。因此，在这个上下文中讨论接口时，也会死指类接口，而不是GUI。</p></blockquote>
-
-<h2>接口</h2>
-
-<p>　　为最终用户提供的服务构成了接口。最理想的情况下，应当只为最终用户提供他们所需要的服务。</p>
-
-<blockquote><p><strong>明确用户：</strong></p>
-
-<p>设计一个类时，也许最重要的就是要明确受众或用户。</p></blockquote>
-
-<h2>实现</h2>
-
-<p>　　实现细节对用户是隐藏的。一定要记住实现的一个目标：改变实现不需要同时改变用户的代码。这可能让人有些不太明白，不过，这个目标正是设计的核心问题。如果接口得到了正确的设计，对实现的改变就不会导致用户代码的改变。要记住，接口包含调用一个方法以及返回一个值的语法。如果这个接口没有改变，用户就不关心实现是否发生了改变。只要程序员可以使用同样的语法获取同样的值，怎样实现都无所谓。</p>
-
-<p>　　用户和实现都必须遵循接口规范。</p>
-
-<blockquote><p><strong>对象持久性：</strong></p>
-
-<p>对象持久性（Objiect persistence）是指保存对象的状态，从而可以在以后恢复并使用，没有持久存储的对象一旦出了作用域实际上就已经“死亡”。例如，可以把对象的状态保存在数据库中。</p></blockquote>
-
-<h2>设计接口时使用抽象思维</h2>
-
-<p>　　ＯＯ程序设计的主要优点之一是类可以重用。一般地，可重用类的接口往往更抽象而不是更具体。具体接口通常非常特定，而抽象接口更为一般。不过，如果说一个高度抽象的接口比一个想到具体的接口更有用，则不尽然（尽管通常都是如此）。</p>
-
-<p>　　我们的目标是设计抽象、高度可重用的类，为此，我们要设计高度抽象的用户接口。</p>
-
-<h2>尽可能为用户提供最小接口</h2>
-
-<p>　　设计类时，一般经验是总是为用户尽可能少地提供类的内部知识。为做到这一点，要遵循以下简单规则。</p>
-
-<ul>
-<li><p>只为用户提供他们确实需要的东西。实际上，这意味着类的接口要尽可能少。开始设计一个类时，首先只应有最小接口。类的设计是迭代性的，所以你很快会发现最小接口可能不能满足需求。这很正常。</p></li>
-<li><p>最好是当用户确实需要时才增加接口，而不要为用户提供他们不需要的接口。在很多情况下，为用户提供某些接口会带来问题。</p></li>
-<li><p>公共接口定义用户能访问的信息。如果开始时将接口置为私有，使整个类对用户隐藏，那么当程序员开始使用这个类时，会要求你将某些方法置为公共，这些方法就会成为公共接口。</p></li>
-</ul>
-
-
-<p>摘自《写给大家看的面向对象编程书》</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[继承与组合]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/24/is_a_has_a/"/>
-    <updated>2012-12-24T22:11:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/24/is_a_has_a</id>
-    <content type="html"><![CDATA[<p>　　is-a表示的是属于得关系。代表类之间或类与接口的继承关系。比如兔子属于一种动物（继承关系）。</p>
-
-<p>　　has-a表示组合，包含关系。代表对象和他成员的从属关系。比如兔子包含有腿，头等组件；就不能说兔子腿是属于一种兔子（不能说是继承关系）</p>
-
-<!-- more -->
-
-
-<p>　　对两个类之间&#8221;is a&#8221;或是&#8221;has a&#8221;关系的分析，有助于我们确定它们之间是否存在继承关系，避免设计上的错误，因而达到提高代码重用性的目的。</p>
-
-<p>　　在JAVA中，组合仅需将对象引用置于新类中即可。</p>
-
-<p>　　继承以关键字extends实现，即BaseClass extends SubClass{ }的形式实现导出类由BaseClass导出子类SubClass，子类可以在其接口中自动获取基类的方法而不论这些方法是否在子类中显示定义过；一方面，在子类中使用基类中的方法及对其进行修改都是可行的。需要特别说明的是，若要使用子类与基类中共有的属于基类方法时，则需要加关键字super表示当前类是从超类继承来的。</p>
-
-<p><strong>继承：</strong></p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">A</span><span class="o">{</span>
-</span><span class='line'>     <span class="c1">//.....</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="kd">class</span> <span class="nc">B</span> <span class="kd">extends</span> <span class="n">A</span><span class="o">{</span>
-</span><span class='line'>    <span class="c1">//.....</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>组合：</strong></p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">A</span><span class="o">{</span>
-</span><span class='line'>    <span class="c1">//.....</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="kd">class</span> <span class="nc">B</span><span class="o">{</span>
-</span><span class='line'>     <span class="n">A</span> <span class="n">a</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Java中的封装]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/21/Encapsulation/"/>
-    <updated>2012-12-21T16:10:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/21/Encapsulation</id>
-    <content type="html"><![CDATA[<p>　　对象只公开了用户与之交互所需的接口，而与对象使用无关的细节能对其他对象隐藏。</p>
-
-<!-- more -->
-
-
-<p>　　封装（Encapsulation）是面向对象的三大特征之一（还有继承和多态），它指的是将对象的状态信息隐藏在对象内部，不允许外部程序直接访问对象内部信息，而是通过该类所提供的方法来实现对内部信息的操作和访问。封装是面向对象编程语言对客观世界的模拟。</p>
-
-<hr />
-
-<p><strong>对一个类或对象实现良好的封装，可以实现以下目的：</strong></p>
-
-<ul>
-<li><p>隐藏类的细节。</p></li>
-<li><p>让使用者只能通过事先预定的方法来访问数据，从而可以在该方法里加入控制逻辑。</p></li>
-<li><p>可进行数据检查，从而有利于保证对象信息的完整性。</p></li>
-<li><p>便于修改，提高代码的可维护性。</p></li>
-</ul>
-
-
-<p>　　封装实际上有两个方面的含义：把该隐藏的隐藏起来，把该暴露的暴露出来。这两个方面需要通过使用Java提供的访问控制符来实现。</p>
-
-<hr />
-
-<p>　　Java提供了三个访问修饰符：private、protected和public。分别代表了三个访问控制级别，另外还有一个不加任何访问控制符的访问控制级别，提供了四个访问控制级别。</p>
-
-<p><strong>由小到大是：</strong></p>
-
-<p>　　private&#8211;>default&#8211;>protected&#8211;>public</p>
-
-<ul>
-<li><p>private（当前类访问权限）：如果一个类里的一个成员（包括Field、方法、构造器等）使用private来修饰，则这个成员只能在当前类的内部被访问。很显然，这个访问修饰符用于修饰Field最合适，使用它来修饰Field就可以把Field隐藏在该类的内部。</p></li>
-<li><p>default（包访问权限）：如果类里的一个成员（包括Field、方法、构造器等）或者一个外部类不使用任何访问控制符修饰，我们就称它为包访问权限。default访问控制的成员或外部类可以被相同包下的其他类访问。</p></li>
-<li><p>protected（子类访问权限）：如果一个成员（包括Field、方法、构造器等）使用protected控制符修饰，那么这个成员既可以被同一个包中的其他类访问，也可以被不同包中的子类访问。在通常情况下，如果使用protected来修饰一个方法，通常是希望其子类来重写这个方法。</p></li>
-<li><p>public（公共访问权限）：这是一个最宽松的访问控制级别，如果一个成员（包括Field、方法、构造器等）或者一个外部类用public访问控制符修饰，那么这个成员或外部类就可以被所有类访问，不管访问类和被访问类是否处于同一个包中，是否具有父子继承关系。</p></li>
-</ul>
-
-
-<table>
-    <tr>
-        <td></td>
-        <td>　private　</td>
-        <td>　default　</td>
-        <td>　protected　</td>
-        <td>　public　</td>
-    </tr>
-    <tr>
-        <td>　同一个类中　</td>
-        <td>√</td>
-        <td>√</td>
-        <td>√</td>
-        <td>√</td>
-    </tr>
-    <tr>
-        <td>　同一个包中　</td>
-        <td></td>
-        <td>√</td>
-        <td>√</td>
-        <td>√</td>
-    </tr>
-    <tr>
-        <td>　子类中　</td>
-        <td></td>
-        <td></td>
-        <td>√</td>
-        <td>√</td>
-    </tr>
-    <tr>
-        <td>　全局范围内　</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>√</td>
-    </tr>
-</table>
-
-
-<p>　　访问控制符用于控制一个类的成员是否可以被其他类访问，对于局部变量而言，其作用域就是它所在的方法，不可能被其他类访问，因此不能使用访问控制符来修饰。</p>
-
-<p>　　对于外部类而言，它也可以使用访问控制符修饰，但外部类只能有两种访问控制级别：public和默认，外部类不能使用private和protected修饰，因为外部类没有处于任何类的内部，也就没有其所在类的内部、所在类的子类两个范围，因此private和protected访问控制修饰符对外部类没有意义。</p>
-
-<p>　　如果一个Java源文件里定义的所有类都没有使用public修饰，则这个Java源文件的文件名可以是一切合法的文件名；但如果一个Java源文件里定义了一个public修饰的类，则这个源文件的文件名必须与public修饰的类的类名相同。</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span>
-</span><span class='line'><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　</span><span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　</span><span class="kd">private</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">6</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　　　　　</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;您输入的名字不符合要求&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="err">　　　　　　　　　　　　</span><span class="k">return</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="k">else</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　　　　　</span><span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　</span><span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">name</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">setAge</span><span class="o">(</span><span class="kt">int</span> <span class="n">age</span><span class="o">)</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="k">if</span> <span class="o">(</span><span class="n">age</span> <span class="o">&gt;</span> <span class="mi">105</span> <span class="o">||</span> <span class="n">age</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　　　　　</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="err">“您设置的年龄不合法”</span><span class="o">);</span>
-</span><span class='line'><span class="err">　　　　　　　　　　　　</span><span class="k">return</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="k">else</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　　　　　</span><span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　　　</span><span class="kd">public</span> <span class="kt">int</span> <span class="n">getAge</span><span class="o">()</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">{</span>
-</span><span class='line'><span class="err">　　　　　　　　</span><span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">age</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　定义了上面的person类之后，该类的name和age两个Field只有在Person类内才可以操作和访问，在Person类之外只能通过各自对应的setter和getter方法来操作和访问它们。</p>
-
-<p><strong>关于访问控制符的使用，存在如下几条基本原则：</strong></p>
-
-<ul>
-<li><p>类的绝大部分Field都应该使用private修饰，只有一些static修饰的、类似全局变量的Field才可能考虑使用public修饰。除此之外，有些方法只是用于辅助实现该类的其他方法，这些方法被称为工具方法，工具方法也应该使用private修饰。</p></li>
-<li><p>如果某个类主要做其他类的父类，该类里包含的大部分方法可能仅希望被其子类重写，而不想被外界直接调用，则应该使用protected修饰这些方法。</p></li>
-<li><p>希望暴露出来给其他类自由调用的方法应该使用public修饰。因此，类的构造器通过使用public修饰，从而允许在其他地方创建类的实例。因为外部类通常希望被其他类自由使用，所以大部分外部类都使用public修饰。</p></li>
-</ul>
-
 ]]></content>
   </entry>
   
