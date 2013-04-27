@@ -4,7 +4,7 @@
   <title><![CDATA[Category: java | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/java/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-04-07T10:56:57+08:00</updated>
+  <updated>2013-04-27T20:12:21+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[SQL基础知识]]></title>
-    <link href="http://dande618.github.com/blog/2013/03/19/SQL/"/>
-    <updated>2013-03-19T22:22:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/03/19/SQL</id>
+    <link href="http://dande618.github.com/blog/2013/04/26/SQL/"/>
+    <updated>2013-04-26T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/26/SQL</id>
     <content type="html"><![CDATA[<p>DDL、DML和DCL的理解</p>
 
 <p>【转载】<a href="http://www.2cto.com/database/201208/146501.html">http://www.2cto.com/database/201208/146501.html</a></p>

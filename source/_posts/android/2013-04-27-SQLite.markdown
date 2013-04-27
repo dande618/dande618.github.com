@@ -1,0 +1,235 @@
+---
+layout: post
+title: "Android SQLite"
+date: 2013-04-27 21:11
+comments: true
+categories: android
+---
+SQLite是android内置的一个很小的关系型数据库。
+<!-- more -->
+{% codeblock lang:java %}
+SQLiteDatabase db;
+//新建或打开数据库，使用绝对路径
+db = SQLiteDatabase.openOrCreateDatabase(this.getFilesDir().toString() + "/my.db" , null);		
+{% endcodeblock %}
+获得SQLiteDatabase对象后，就可以通过SQLiteDatabase对象操作、管理数据库。
+{% codeblock lang:java %}
+db.execSQL(sql); //sql为SQL语句
+{% endcodeblock %}
+或者使用SQLiteDatabase的insert、update、delete、query语句来操作数据库。
+
+
+##SQLiteOpenHelper
+
+SQLiteOpenHelper是一个辅助类来管理数据库的创建和版本。 
+
+可以通过继承这个类，实现它的一些方法来对数据库进行一些操作。
+所有继承了这个类的类都必须实现下面这样的一个构造方法： 
+public DatabaseHelper(Context context, String name, CursorFactory factory, int version) 
+第一个参数：Context类型，上下文对象。 
+第二个参数：String类型，数据库的名称 
+第三个参数：CursorFactory类型 
+第四个参数：int类型，数据库版本 
+下面是这个类的几个方法： 
+
+方法名 返回类型 描述 备注 
+getReadableDatabase() synchronized SQLiteDatabase 创建或打开一个数据库 可以通过这两个方法返回的SQLiteDatabase对象对数据库进行一系列的操作，如新建一个表，插入一条数据等 
+getWritableDatabase() synchronized SQLiteDatabase 创建或打开一个可以读写的数据库 
+onCreate(SQLiteDatabase db) abstract void 第一次创建的时候调用 
+onOpen(SQLiteDatabase db) void 打开数据库 
+onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) abstract void 升级数据库 
+close() synchronized void 关闭所有打开的数据库对象
+
+###MyDataBaseAdapter.java
+
+<br />
+{% codeblock lang:java %}
+package com.example.sqltest;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class MyDataBaseAdapter {
+	// 用于打印log
+	private static final String TAG = "MyDataBaseAdapter";
+
+	// 表中一条数据的名称
+	public static final String KEY_ID = "_id";
+
+	// 表中一条数据的内容
+	public static final String KEY_NUM = "num";
+	// 表中一条数据的id
+	public static final String KEY_DATA = "data";
+
+	// 数据库名称为data
+	private static final String DB_NAME = "Examples1.db";
+
+	// 数据库表名
+	private static final String DB_TABLE = "table1";
+
+	// 数据库版本
+	private static final int DB_VERSION = 1;
+
+	// 本地Context对象
+	private Context mContext = null;
+
+	// 创建一个表
+	private static final String DB_CREATE = "CREATE TABLE " + DB_TABLE + " ("
+			+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_NUM + " INTERGER,"
+			+ KEY_DATA + " TEXT)";
+
+	// 执行open（）打开数据库时，保存返回的数据库对象
+	private SQLiteDatabase mSQLiteDatabase = null;
+
+	// 由SQLiteOpenHelper继承过来
+	private DatabaseHelper mDatabaseHelper = null;
+
+	private static class DatabaseHelper extends SQLiteOpenHelper {
+
+		/* 构造函数-创建一个数据库 */
+		DatabaseHelper(Context context) {
+
+			// 当调用getWritableDatabase()
+			// 或 getReadableDatabase()方法时
+			// 则创建一个数据库
+			super(context, DB_NAME, null, DB_VERSION);
+		}
+
+		/* 创建一个表 */
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+
+			// 数据库没有表时创建一个
+			db.execSQL(DB_CREATE);
+		}
+
+		/* 升级数据库 */
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+			db.execSQL("DROP TABLE IF EXISTS notes");
+			onCreate(db);
+		}
+	}
+
+	/* 构造函数-取得Context */
+	public MyDataBaseAdapter(Context context) {
+
+		mContext = context;
+	}
+
+	// 打开数据库，返回数据库对象
+	public void open() throws SQLException {
+
+		mDatabaseHelper = new DatabaseHelper(mContext);
+		mSQLiteDatabase = mDatabaseHelper.getWritableDatabase();
+	}
+
+	// 关闭数据库
+	public void close() {
+
+		mDatabaseHelper.close();
+	}
+
+	/* 插入一条数据 */
+	public long insertData(int num, String data) {
+
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_NUM, num);
+		initialValues.put(KEY_DATA, data);
+
+		return mSQLiteDatabase.insert(DB_TABLE, KEY_ID, initialValues);
+	}
+
+	/* 删除一条数据 */
+	public boolean deleteData(long rowId) {
+
+		return mSQLiteDatabase.delete(DB_TABLE, KEY_ID + "=" + rowId, null) > 0;
+	}
+
+	/* 通过Cursor查询所有数据 */
+	public Cursor fetchAllData() {
+
+		return mSQLiteDatabase.query(DB_TABLE, new String[] { KEY_ID, KEY_NUM,
+				KEY_DATA }, null, null, null, null, null);
+	}
+
+	/* 查询指定数据 */
+	public Cursor fetchData(long rowId) throws SQLException {
+
+		Cursor mCursor = mSQLiteDatabase.query(true, DB_TABLE, new String[] {
+				KEY_ID, KEY_NUM, KEY_DATA }, KEY_ID + "=" + rowId, null, null,
+				null, null, null);
+
+		if (mCursor != null) {
+
+			mCursor.moveToFirst();
+		}
+		return mCursor;
+
+	}
+
+	/* 更新一条数据 */
+	public boolean updateData(long rowId, int num, String data) {
+
+		ContentValues args = new ContentValues();
+		args.put(KEY_NUM, num);
+		args.put(KEY_DATA, data);
+
+		return mSQLiteDatabase.update(DB_TABLE, args, KEY_ID + "=" + rowId,
+				null) > 0;
+	}
+
+}
+{% endcodeblock %}
+
+###MainAcitivity.java
+{% codeblock lang:java %}
+package com.example.sqltest;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.Menu;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+public class MainActivity extends Activity {
+	private MyDataBaseAdapter mdba = null;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		mdba = new MyDataBaseAdapter(this);
+		mdba.open();
+		mdba.insertData(1, "test1");
+		this.show();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void show() {
+		Cursor cursor = mdba.fetchAllData();
+		if (cursor != null) {
+			ListAdapter adapter = new SimpleCursorAdapter(this,
+					android.R.layout.simple_list_item_2, cursor, new String[] {
+							MyDataBaseAdapter.KEY_ID,
+							MyDataBaseAdapter.KEY_DATA }, new int[] {
+							android.R.id.text1, android.R.id.text2 });
+			ListView listView=(ListView)findViewById(R.id.list);
+			listView.setAdapter(adapter);
+		}
+	}
+}
+{% endcodeblock %}

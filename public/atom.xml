@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-04-07T10:56:57+08:00</updated>
+  <updated>2013-04-27T20:12:21+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,526 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android SQLite]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/27/SQLite/"/>
+    <updated>2013-04-27T21:11:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/27/SQLite</id>
+    <content type="html"><![CDATA[<p>SQLite是android内置的一个很小的关系型数据库。</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">;</span>
+</span><span class='line'><span class="c1">//新建或打开数据库，使用绝对路径</span>
+</span><span class='line'><span class="n">db</span> <span class="o">=</span> <span class="n">SQLiteDatabase</span><span class="o">.</span><span class="na">openOrCreateDatabase</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getFilesDir</span><span class="o">().</span><span class="na">toString</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;/my.db&quot;</span> <span class="o">,</span> <span class="kc">null</span><span class="o">);</span>       
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>获得SQLiteDatabase对象后，就可以通过SQLiteDatabase对象操作、管理数据库。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span> <span class="c1">//sql为SQL语句</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者使用SQLiteDatabase的insert、update、delete、query语句来操作数据库。</p>
+
+<h2>SQLiteOpenHelper</h2>
+
+<p>SQLiteOpenHelper是一个辅助类来管理数据库的创建和版本。</p>
+
+<p>可以通过继承这个类，实现它的一些方法来对数据库进行一些操作。
+所有继承了这个类的类都必须实现下面这样的一个构造方法：
+public DatabaseHelper(Context context, String name, CursorFactory factory, int version)
+第一个参数：Context类型，上下文对象。
+第二个参数：String类型，数据库的名称
+第三个参数：CursorFactory类型
+第四个参数：int类型，数据库版本
+下面是这个类的几个方法：</p>
+
+<p>方法名 返回类型 描述 备注
+getReadableDatabase() synchronized SQLiteDatabase 创建或打开一个数据库 可以通过这两个方法返回的SQLiteDatabase对象对数据库进行一系列的操作，如新建一个表，插入一条数据等
+getWritableDatabase() synchronized SQLiteDatabase 创建或打开一个可以读写的数据库
+onCreate(SQLiteDatabase db) abstract void 第一次创建的时候调用
+onOpen(SQLiteDatabase db) void 打开数据库
+onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion) abstract void 升级数据库
+close() synchronized void 关闭所有打开的数据库对象</p>
+
+<h3>MyDataBaseAdapter.java</h3>
+
+<br />
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">sqltest</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.ContentValues</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.Cursor</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.SQLException</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteDatabase</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteOpenHelper</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyDataBaseAdapter</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// 用于打印log</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;MyDataBaseAdapter&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 表中一条数据的名称</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_ID</span> <span class="o">=</span> <span class="s">&quot;_id&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 表中一条数据的内容</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_NUM</span> <span class="o">=</span> <span class="s">&quot;num&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="c1">// 表中一条数据的id</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">KEY_DATA</span> <span class="o">=</span> <span class="s">&quot;data&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 数据库名称为data</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">DB_NAME</span> <span class="o">=</span> <span class="s">&quot;Examples1.db&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 数据库表名</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">DB_TABLE</span> <span class="o">=</span> <span class="s">&quot;table1&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 数据库版本</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">DB_VERSION</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 本地Context对象</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Context</span> <span class="n">mContext</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 创建一个表</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">DB_CREATE</span> <span class="o">=</span> <span class="s">&quot;CREATE TABLE &quot;</span> <span class="o">+</span> <span class="n">DB_TABLE</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span>
+</span><span class='line'>          <span class="o">+</span> <span class="n">KEY_ID</span> <span class="o">+</span> <span class="s">&quot; INTEGER PRIMARY KEY,&quot;</span> <span class="o">+</span> <span class="n">KEY_NUM</span> <span class="o">+</span> <span class="s">&quot; INTERGER,&quot;</span>
+</span><span class='line'>          <span class="o">+</span> <span class="n">KEY_DATA</span> <span class="o">+</span> <span class="s">&quot; TEXT)&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 执行open（）打开数据库时，保存返回的数据库对象</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">SQLiteDatabase</span> <span class="n">mSQLiteDatabase</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 由SQLiteOpenHelper继承过来</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">DatabaseHelper</span> <span class="n">mDatabaseHelper</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">DatabaseHelper</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="cm">/* 构造函数-创建一个数据库 */</span>
+</span><span class='line'>      <span class="n">DatabaseHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">// 当调用getWritableDatabase()</span>
+</span><span class='line'>          <span class="c1">// 或 getReadableDatabase()方法时</span>
+</span><span class='line'>          <span class="c1">// 则创建一个数据库</span>
+</span><span class='line'>          <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">DB_NAME</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">DB_VERSION</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="cm">/* 创建一个表 */</span>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="c1">// 数据库没有表时创建一个</span>
+</span><span class='line'>          <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="n">DB_CREATE</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="cm">/* 升级数据库 */</span>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onUpgrade</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">,</span> <span class="kt">int</span> <span class="n">oldVersion</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newVersion</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS notes&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">onCreate</span><span class="o">(</span><span class="n">db</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* 构造函数-取得Context */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">MyDataBaseAdapter</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">mContext</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 打开数据库，返回数据库对象</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">open</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">mDatabaseHelper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DatabaseHelper</span><span class="o">(</span><span class="n">mContext</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">mSQLiteDatabase</span> <span class="o">=</span> <span class="n">mDatabaseHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 关闭数据库</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">mDatabaseHelper</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* 插入一条数据 */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">long</span> <span class="nf">insertData</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">,</span> <span class="n">String</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">ContentValues</span> <span class="n">initialValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">initialValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">KEY_NUM</span><span class="o">,</span> <span class="n">num</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">initialValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">KEY_DATA</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="n">mSQLiteDatabase</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">DB_TABLE</span><span class="o">,</span> <span class="n">KEY_ID</span><span class="o">,</span> <span class="n">initialValues</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* 删除一条数据 */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">deleteData</span><span class="o">(</span><span class="kt">long</span> <span class="n">rowId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="n">mSQLiteDatabase</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">DB_TABLE</span><span class="o">,</span> <span class="n">KEY_ID</span> <span class="o">+</span> <span class="s">&quot;=&quot;</span> <span class="o">+</span> <span class="n">rowId</span><span class="o">,</span> <span class="kc">null</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* 通过Cursor查询所有数据 */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Cursor</span> <span class="nf">fetchAllData</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="n">mSQLiteDatabase</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="n">DB_TABLE</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">KEY_ID</span><span class="o">,</span> <span class="n">KEY_NUM</span><span class="o">,</span>
+</span><span class='line'>              <span class="n">KEY_DATA</span> <span class="o">},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* 查询指定数据 */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Cursor</span> <span class="nf">fetchData</span><span class="o">(</span><span class="kt">long</span> <span class="n">rowId</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Cursor</span> <span class="n">mCursor</span> <span class="o">=</span> <span class="n">mSQLiteDatabase</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="n">DB_TABLE</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">KEY_ID</span><span class="o">,</span> <span class="n">KEY_NUM</span><span class="o">,</span> <span class="n">KEY_DATA</span> <span class="o">},</span> <span class="n">KEY_ID</span> <span class="o">+</span> <span class="s">&quot;=&quot;</span> <span class="o">+</span> <span class="n">rowId</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span>
+</span><span class='line'>              <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">mCursor</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">mCursor</span><span class="o">.</span><span class="na">moveToFirst</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">mCursor</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* 更新一条数据 */</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">updateData</span><span class="o">(</span><span class="kt">long</span> <span class="n">rowId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">num</span><span class="o">,</span> <span class="n">String</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">ContentValues</span> <span class="n">args</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">args</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">KEY_NUM</span><span class="o">,</span> <span class="n">num</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">args</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">KEY_DATA</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="n">mSQLiteDatabase</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">DB_TABLE</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">KEY_ID</span> <span class="o">+</span> <span class="s">&quot;=&quot;</span> <span class="o">+</span> <span class="n">rowId</span><span class="o">,</span>
+</span><span class='line'>              <span class="kc">null</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>MainAcitivity.java</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">.</span><span class="na">sqltest</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.Cursor</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.support.v4.widget.SimpleCursorAdapter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.view.Menu</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.ListAdapter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.ListView</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">MyDataBaseAdapter</span> <span class="n">mdba</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_main</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">mdba</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyDataBaseAdapter</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">mdba</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">mdba</span><span class="o">.</span><span class="na">insertData</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="s">&quot;test1&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// Inflate the menu; this adds items to the action bar if it is present.</span>
+</span><span class='line'>      <span class="n">getMenuInflater</span><span class="o">().</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">menu</span><span class="o">.</span><span class="na">main</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">show</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">mdba</span><span class="o">.</span><span class="na">fetchAllData</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">ListAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleCursorAdapter</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
+</span><span class='line'>                  <span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">simple_list_item_2</span><span class="o">,</span> <span class="n">cursor</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span>
+</span><span class='line'>                          <span class="n">MyDataBaseAdapter</span><span class="o">.</span><span class="na">KEY_ID</span><span class="o">,</span>
+</span><span class='line'>                          <span class="n">MyDataBaseAdapter</span><span class="o">.</span><span class="na">KEY_DATA</span> <span class="o">},</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span>
+</span><span class='line'>                          <span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">text1</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">text2</span> <span class="o">});</span>
+</span><span class='line'>          <span class="n">ListView</span> <span class="n">listView</span><span class="o">=(</span><span class="n">ListView</span><span class="o">)</span><span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">listView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[SQL基础知识]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/26/SQL/"/>
+    <updated>2013-04-26T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/26/SQL</id>
+    <content type="html"><![CDATA[<p>DDL、DML和DCL的理解</p>
+
+<p>【转载】<a href="http://www.2cto.com/database/201208/146501.html">http://www.2cto.com/database/201208/146501.html</a></p>
+
+<!-- more -->
+
+
+<h2>1、DDL</h2>
+
+<h3>1-1、DDL的概述</h3>
+
+<p>DDL（Data Definition Language 数据定义语言）用于操作对象和对象的属性，这种对象包括数据库本身，以及数据库对象，像：表、视图等等，DDL对这些对象和属性的管理和定义具体表现在Create、Drop和Alter上。特别注意：DDL操作的“对象”的概念，”对象“包括对象及对象的属性，而且对象最小也比记录大个层次。以表举例：Create创建数据表，Alter可以更改该表的字段，Drop可以删除这个表，从这里我们可以看到，DDL所站的高度，他不会对具体的数据进行操作。</p>
+
+<h3>1-2、DDL的主要语句（操作）</h3>
+
+<p>Create语句：可以创建数据库和数据库的一些对象。</p>
+
+<p>Drop语句：可以删除数据表、索引、触发程序、条件约束以及数据表的权限等。</p>
+
+<p>Alter语句：修改数据表定义及属性。</p>
+
+<h3>1-3、DDL的操作对象（表）</h3>
+
+<h4>1-3-1、表的概念</h4>
+
+<p>表的创建就是用来存放数据用的，由于我们存放的数据的不通，所以我们需要定义些数据类型，以方便管理。</p>
+
+<h4>1-3-2、表的属性</h4>
+
+<p>主键属性：主键就是主键约束，只不过起的名字不同了，主键的起名偏向于虚的（就是描述描述这件事），主键约束起名偏向于实得（就是描述操作的实施），描述的都是同一件事，主键约束就是表中的一个属性；在一个表中最多可以有一个主键；一个主键可以定义在一个或多个字段；主键使一个或多个字段的值必须唯一且不为空，这样做可以通过该字段或该组字段中的值唯一的代表一条记录。</p>
+
+<p>唯一属性：一个表中只能有一个主键属性，为了方表用户，提出唯一约束；唯一约束可以定义在一个或多个字段上；唯一约束使该字段或该组字段中的值唯一，可以为空，但是，不能重复。</p>
+
+<p>外键属性：又叫外键，又叫外键约束，跟主键和主键约束的关系是一样的；外键约束针对的两个表，如果表A的主关键字是表B中的字段，则该字段称为表B的外键，表A称为主表，表B称为从表，但要注意，必须要计算机要知道你是这种关系。</p>
+
+<p>核查、Null和缺省属性：核查属性又叫核查约束，Null属性又叫Null约束，缺省属性又叫缺省约束；这些名称是描述一件事，描述一种情况，这件事或这张情况我们当然可以人为的那样特意做（输入数据是注意就行），但是，他们的本意是实现自动化，也就是让计算机做这件事。</p>
+
+<p>（你知道为什么建立主键和唯一约束的时候，会自动的创建索引吗？而且是唯一索引，想一想索引大多在那些字段上用，以及索引的作用就会知道了。像主键约束、唯一约束、非空约束、外键约束、核查约束和缺省约束这些操作都是使表具有某些特性，所以在这里我认为他们都是表的属性。）</p>
+
+<h2>2、DML</h2>
+
+<h3>2-1、DML的概述</h3>
+
+<p>DML（Data Manipulation Language 数据操控语言）用于操作数据库对象中包含的数据，也就是说操作的单位是记录。</p>
+
+<h3>2-2、DML的主要语句（操作）</h3>
+
+<p>Insert语句：向数据表张插入一条记录。</p>
+
+<p>Delete语句：删除数据表中的一条或多条记录，也可以删除数据表中的所有记录，但是，它的操作对象仍是记录。</p>
+
+<p>Update语句：用于修改已存在表中的记录的内容。</p>
+
+<h3>2-3、DML的操作对象——记录</h3>
+
+<h4>2-3-1、注意</h4>
+
+<p>当我们对记录进行Insert、Delete和Update操作的时候，一定要注意，一定要清楚DDL对其的一些操作。</p>
+
+<h2>3、DCL</h2>
+
+<h3>3-1、DCL的概述</h3>
+
+<p>DCL（Data Control Language 数据控制语句）的操作是数据库对象的权限，这些操作的确定使数据更加的安全。</p>
+
+<h3>3-2、DCL的主要语句（操作）</h3>
+
+<p>Grant语句：允许对象的创建者给某用户或某组或所有用户（PUBLIC）某些特定的权限。</p>
+
+<p>Revoke语句：可以废除某用户或某组或所有用户访问权限</p>
+
+<h3>3-3、DCL的操作对象（用户）</h3>
+
+<p>此时的用户指的是数据库用户。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ShareAction在AVD失效的问题]]></title>
@@ -26,7 +546,7 @@
 <br />
 
 
-<p><img src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093427048.jpg" /></p>
+<p><img class="center" src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093427048.jpg" title="ShareAction" ></p>
 
 <br />
 
@@ -38,6 +558,99 @@
 <br />
 
 
+<p><img class="center" src="http://img14.poco.cn/mypoco/myphoto/20130409/10/4309479020130409101555091.jpg" title="ShareActionProvider" ></p>
+
+<p>　　此图是系统提供的ShareActionProvider类及相关对象，提供快速存取提供共享服务的Action。</p>
+
+<p>　　整个类图主要包括ShareActionProvider、ActivityChooserModel、ActivityChooserView、ActivityChooserViewAdapter等对象。</p>
+
+<p>　　派生自ActionProvider的具体类ShareActionProvider，用来实例化ActivityChooserModel、ActivityChooserView对象，并为ActivityChooserView对象设置数据模式，生成视图，操作和获取Model信息，根据Model信息创建活动菜单。</p>
+
+<p>　　ActivityChooserModel、ActivityChooserView、ActivityChooserViewAdapter三者构成MVC模式，分别对应Model、View及采用Adapter模式的Control，ActivityChooserView通过ActivityChooserViewAdapter获取ActivityChooserModel中的活动信息，ActivityChooserModel本身派生自DataSetObservable，可以在ActivityChooserView对象中为ActivityChooserModel对象登记一个DataSetObserver类型的对象，ActivityChooserModel对象通过该对象向ActivityChooserView对象发送ActivityChooserModel对象中的数据变化通知。</p>
+
+<p>　　ActivityChooserModel对于通过intent从包管理器中获得的符合intent条件的活动记录（以ActivityResolveInfo类型保存在数组列表中mActivites）的排序方法采用了策略模式，排序方法被封装成对象，在没有通过setActivitySorter方法设置排序方法时，采用默认排序方法，由DefaultSorter对象封装。DefaultSorter对象提供的排序方法是依据活动记录中的weight值进行排序，被排序的活动记录的weight值还依据记录在HistoricalRecord（HistoricalRecord中的活动通过读私有的XML类型的共享历史文件获得）列表中的活动顺序进行修改，依据HistoricalRecord列表的从后往前的顺序为mActivites数组中对应的对象增加weight值，活动历史记录中越往后的记录在mActivites列表中对应活动增加的权值越小，最新的相应记录增加的权值越大。</p>
+
+<p>　　HistoryPersister线程对象用于把HistoricalRecord列表中的记录保存到历史文件中。HistoryLoader线程对象用于读取历史文件到HistoricalRecord列表中。DataModelPackageMonitor对象用于监视数据包，在数据包更新时同步活动记录列表mActivites。ActivityChooserMode对象还通过Map类型的HashMap保证一个相同的历史文件只能实例化一个ActivityChooserModel对象，是单例模式的具体应用。</p>
+
+<br />
+
+
+<br />
+
+
+<p>在ActivityChooserView.java内的ActivityChooserViewAdapter类</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">mShowDefaultActivity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">(!</span><span class="n">mShowDefaultActivity</span> <span class="o">&amp;&amp;</span> <span class="n">mDataModel</span><span class="o">.</span><span class="na">getDefaultActivity</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">activityCount</span><span class="o">--;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br />
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="k">if</span> <span class="o">(</span><span class="n">activityCount</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">historySize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="n">VISIBLE</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">ResolveInfo</span> <span class="n">activity</span> <span class="o">=</span> <span class="n">mAdapter</span><span class="o">.</span><span class="na">getDefaultActivity</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">PackageManager</span> <span class="n">packageManager</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getPackageManager</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">mDefaultActivityButtonImage</span><span class="o">.</span><span class="na">setImageDrawable</span><span class="o">(</span><span class="n">activity</span><span class="o">.</span><span class="na">loadIcon</span><span class="o">(</span><span class="n">packageManager</span><span class="o">));</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">mDefaultActionButtonContentDescription</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">CharSequence</span> <span class="n">label</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="na">loadLabel</span><span class="o">(</span><span class="n">packageManager</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">String</span> <span class="n">contentDescription</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span>
+</span><span class='line'>                        <span class="n">mDefaultActionButtonContentDescription</span><span class="o">,</span> <span class="n">label</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setContentDescription</span><span class="o">(</span><span class="n">contentDescription</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Work-around for #415.</span>
+</span><span class='line'>            <span class="n">mAdapter</span><span class="o">.</span><span class="na">setShowDefaultActivity</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">GONE</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　当打开程式时，如果只有一个响应intent的程式，activityCount成为0，button因而不能使用。</p>
+
+<br />
+
+
+<br />
+
+
+<br />
+
+
+<br />
+
+
 
 
 <div style="float:right;width:38.2%;margin-left: 0.6em;margin-top: 0.6em;"><img src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093549098.jpg" /></div>
@@ -45,17 +658,12 @@
 
 <p>　　据分析，当只有一个（或零个）程式接受Intent.ACTION_SEND（或其他）的某个类型（如text/plain）时，就无法点出分享。而AVD初始时可能只有SMS（简讯息）可接受此Intent。如果再装载一个程式（如微博客户端），就可以正常使用ShareAction打开分享程式列表了。由于ShareAction会记住使用最多的程式，并显示在ActionBar上，所以使用过一次分享到SMS后卸载掉“微博”也是会显示SMS。但这并不解决问题。</p>
 
-<p>　　亦可参见 <a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">ShareActionProvider does not work if only one intent</a></p>
+<p>　　参见 <a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">ShareActionProvider does not work if only one intent</a></p>
 
 <br />
 
 
-<p>附ShareAction实现的部分代码（在SherlockFragment内，覆盖onCreateOptionsMenu方法）</p>
-
-<br />
-
-
-
+<p>　　附ShareAction实现的部分代码（在SherlockFragment内，覆盖onCreateOptionsMenu方法）</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -95,7 +703,7 @@
 <br />
 
 
-<p>menu下的xml文件中定义</p>
+<p>　　menu下的xml文件中定义</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -119,7 +727,7 @@
 <br />
 
 
-<p>　　ActionBarSherlock似乎在最近修复了这个问题，详见<a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">上文链接</a>。有兴趣的朋友可以一试，或者在调试时装载其他支持分享的程式！</p>
+<p>　　ActionBarSherlock在最近修复了这个问题，详见<a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">上文链接</a>。有兴趣的朋友可以下载最新代码，或者在调试时装载其他支持分享的程式！</p>
 ]]></content>
   </entry>
   
@@ -311,88 +919,6 @@
 <p>　　对我们知道了Tag的作用就是设置标签，标签可以是任意玩意。</p>
 
 <p>　　以及convertView是如何在程序中使代码运行变的效率的：利用缓存convertView尽可能少实例化同样结构体的对象；</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SQL基础知识]]></title>
-    <link href="http://dande618.github.com/blog/2013/03/19/SQL/"/>
-    <updated>2013-03-19T22:22:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/03/19/SQL</id>
-    <content type="html"><![CDATA[<p>DDL、DML和DCL的理解</p>
-
-<p>【转载】<a href="http://www.2cto.com/database/201208/146501.html">http://www.2cto.com/database/201208/146501.html</a></p>
-
-<!-- more -->
-
-
-<h2>1、DDL</h2>
-
-<h3>1-1、DDL的概述</h3>
-
-<p>DDL（Data Definition Language 数据定义语言）用于操作对象和对象的属性，这种对象包括数据库本身，以及数据库对象，像：表、视图等等，DDL对这些对象和属性的管理和定义具体表现在Create、Drop和Alter上。特别注意：DDL操作的“对象”的概念，”对象“包括对象及对象的属性，而且对象最小也比记录大个层次。以表举例：Create创建数据表，Alter可以更改该表的字段，Drop可以删除这个表，从这里我们可以看到，DDL所站的高度，他不会对具体的数据进行操作。</p>
-
-<h3>1-2、DDL的主要语句（操作）</h3>
-
-<p>Create语句：可以创建数据库和数据库的一些对象。</p>
-
-<p>Drop语句：可以删除数据表、索引、触发程序、条件约束以及数据表的权限等。</p>
-
-<p>Alter语句：修改数据表定义及属性。</p>
-
-<h3>1-3、DDL的操作对象（表）</h3>
-
-<h4>1-3-1、表的概念</h4>
-
-<p>表的创建就是用来存放数据用的，由于我们存放的数据的不通，所以我们需要定义些数据类型，以方便管理。</p>
-
-<h4>1-3-2、表的属性</h4>
-
-<p>主键属性：主键就是主键约束，只不过起的名字不同了，主键的起名偏向于虚的（就是描述描述这件事），主键约束起名偏向于实得（就是描述操作的实施），描述的都是同一件事，主键约束就是表中的一个属性；在一个表中最多可以有一个主键；一个主键可以定义在一个或多个字段；主键使一个或多个字段的值必须唯一且不为空，这样做可以通过该字段或该组字段中的值唯一的代表一条记录。</p>
-
-<p>唯一属性：一个表中只能有一个主键属性，为了方表用户，提出唯一约束；唯一约束可以定义在一个或多个字段上；唯一约束使该字段或该组字段中的值唯一，可以为空，但是，不能重复。</p>
-
-<p>外键属性：又叫外键，又叫外键约束，跟主键和主键约束的关系是一样的；外键约束针对的两个表，如果表A的主关键字是表B中的字段，则该字段称为表B的外键，表A称为主表，表B称为从表，但要注意，必须要计算机要知道你是这种关系。</p>
-
-<p>核查、Null和缺省属性：核查属性又叫核查约束，Null属性又叫Null约束，缺省属性又叫缺省约束；这些名称是描述一件事，描述一种情况，这件事或这张情况我们当然可以人为的那样特意做（输入数据是注意就行），但是，他们的本意是实现自动化，也就是让计算机做这件事。</p>
-
-<p>（你知道为什么建立主键和唯一约束的时候，会自动的创建索引吗？而且是唯一索引，想一想索引大多在那些字段上用，以及索引的作用就会知道了。像主键约束、唯一约束、非空约束、外键约束、核查约束和缺省约束这些操作都是使表具有某些特性，所以在这里我认为他们都是表的属性。）</p>
-
-<h2>2、DML</h2>
-
-<h3>2-1、DML的概述</h3>
-
-<p>DML（Data Manipulation Language 数据操控语言）用于操作数据库对象中包含的数据，也就是说操作的单位是记录。</p>
-
-<h3>2-2、DML的主要语句（操作）</h3>
-
-<p>Insert语句：向数据表张插入一条记录。</p>
-
-<p>Delete语句：删除数据表中的一条或多条记录，也可以删除数据表中的所有记录，但是，它的操作对象仍是记录。</p>
-
-<p>Update语句：用于修改已存在表中的记录的内容。</p>
-
-<h3>2-3、DML的操作对象——记录</h3>
-
-<h4>2-3-1、注意</h4>
-
-<p>当我们对记录进行Insert、Delete和Update操作的时候，一定要注意，一定要清楚DDL对其的一些操作。</p>
-
-<h2>3、DCL</h2>
-
-<h3>3-1、DCL的概述</h3>
-
-<p>DCL（Data Control Language 数据控制语句）的操作是数据库对象的权限，这些操作的确定使数据更加的安全。</p>
-
-<h3>3-2、DCL的主要语句（操作）</h3>
-
-<p>Grant语句：允许对象的创建者给某用户或某组或所有用户（PUBLIC）某些特定的权限。</p>
-
-<p>Revoke语句：可以废除某用户或某组或所有用户访问权限</p>
-
-<h3>3-3、DCL的操作对象（用户）</h3>
-
-<p>此时的用户指的是数据库用户。</p>
 ]]></content>
   </entry>
   
@@ -3097,115 +3623,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 
 <p class="para">Android.R.layout_simple_list_item_single_choice, 每一项有一个TextView，但是这一项可以被选择。</p>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[构造函数]]></title>
-    <link href="http://dande618.github.com/blog/2012/12/31/gouzao/"/>
-    <updated>2012-12-31T17:33:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2012/12/31/gouzao</id>
-    <content type="html"><![CDATA[<p>　　构造函数（constructor）是人们完成结构化程序设计的一个新概念。在OO设计语言中，构造函数就是与类名同名而且没有返回类型的方法。</p>
-
-<!-- more -->
-
-
-<p>　　例如，Cabbie类的构造函数大致是：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">Cabbie</span><span class="o">(){</span>
-</span><span class='line'><span class="err">　　</span><span class="c1">//</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　编译器会识别出这个方法名与类名相同，从而认为这个方法是一个构造函数。</p>
-
-<blockquote><p>构造函数没有返回值。如果为方法提供了一个返回值，编译器就不会把它作为一个构造函数。</p></blockquote>
-
-<h2>何时调用构造函数</h2>
-
-<p>　　创建一个新对象时，首先要做到事情之一就是调用构造函数。</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Cabbie</span> <span class="n">myCabbie</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Cabbie</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　会实例化一个Cabbie对象，并调用Cabbie方法。</p>
-
-<h2>构造函数中有什么</h2>
-
-<p>　　构造函数中的代码应当将新创建的对象设置为其稳定、安全的初始状态。</p>
-
-<p>　　初始化属性是构造函数完成的一个常见功能。</p>
-
-<h2>默认构造函数</h2>
-
-<p>　　至少存在一个构造函数，不论你自己是否编写了构造函数。如果你没有提供构造函数，系统也会为你提供一个默认的构造函数。例如，如果没有为Cabbie类提供一个构造函数，就会插入一下默认构造函数：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">Cabbie</span><span class="o">(){</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">super</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　如果没有显式地继承另一个类，Object类就会成为父类。如果类中有属性，好的实践往往是初始化这些属性。</p>
-
-<blockquote><p>提供一个构造函数</p>
-
-<p>一般经验是，总是应该提供一个构造函数，即使你不打算在其中做任何事情。可以先提供一个构造函数，其中不包含任何内容，等以后再补充，使用编译器提供的默认构造函数尽管从技术上讲没什么问题，但是最好能清楚地知道你的代码到底是怎样的。</p></blockquote>
-
-<h2>重载构造函数</h2>
-
-<p>　　有时可能希望传入一个初始化参数，这成为重载一个方法。</p>
-
-<p>　　重载适用于所有方法。重载允许程序员多次使用同一个方法名，只要每次方法的签名不同。签名由方法名和一个参数列表组成。</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Count</span> <span class="o">{</span>
-</span><span class='line'><span class="err">　　</span><span class="kt">int</span> <span class="n">count</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Count</span><span class="o">(){</span>
-</span><span class='line'><span class="err">　　　　</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Count</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">){</span>
-</span><span class='line'><span class="err">　　　　</span><span class="n">count</span> <span class="o">=</span> <span class="n">number</span><span class="o">;</span>
-</span><span class='line'><span class="err">　　</span><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>　　在JAVA和C#，返回类型不是签名的一部分。只是返回类型不同的方法会冲突。</p>
-
-<h2>超类如何构造</h2>
-
-<p>　　使用继承时，必须知道父类如何构造。要记住，使用继承时，会从父类继承一切。因此，必须非常清楚父类的所有数据和行为。不过，构造函数如何继承就不那么明显了。</p>
-
-<p>　　遇到new关键字并且分配了对象后，会完成以下几个步骤。</p>
-
-<ol>
-<li><p>构造函数中首先要做的是调用该类的超类的构造函数。如果没有显式地调用超类构造函数，就会自动调用超类默认构造函数；不过可以从字节码查看这个代码。</p></li>
-<li><p>然后初始化对象的各个类属性。这些属性都是类定义的属性（实例变量），而不是构造函数或其他方法中的属性（局部变量）。</p></li>
-<li><p>然后执行构造函数中的其余代码。</p></li>
-</ol>
-
-
-<h2>构造函数的设计</h2>
-
-<p>　　设计一个类时，好的时间是初始化所有属性。不要指望编译器来初始化属性。构造函数可以用来确保应用处于一种稳定的状态。例如，若将一个属性初始化为0，那么当想把它用作一个除法运算的除数时，可能会导致一个不稳定的应用。初始化为0并不总是最好的策略。</p>
 ]]></content>
   </entry>
   
