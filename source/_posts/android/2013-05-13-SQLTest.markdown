@@ -1,0 +1,157 @@
+---
+layout: post
+title: "Service写入数据库并更新UI"
+date: 2013-05-13 22:22
+comments: true
+categories: android
+---
+目的是使用Service写入SQLite数据库，然后通知UI更新。
+
+<!-- more -->
+
+首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。
+
+### ItemContentProvider.java
+
+重写方法提供对数据库的操作（插入、修改、删除等），设置好Uri
+
+这里主要重写了bulkInsert，由于一次插入的数据太多，如果每次都读写一次文件会导致速度很慢，所以添加事务处理。
+
+如果使用ContentObserver，需要在更改数据库后调用getContext().getContentResolver().notifyChange(uri, null);通知所有使用Uri的地方更新数据。
+
+基于需要，每次bulkInsert时清空表，并重新开始计号。
+
+{% codeblock lang:java %}
+	//...
+	@Override
+	public Uri insert(Uri uri, ContentValues contentValues) {
+		mDatabase.insert("items", null, contentValues);
+		return null;
+	}
+
+	@Override
+	public int bulkInsert(Uri uri, ContentValues[] values) {
+		int numInserted = 0;
+		mDatabase = mHelper.getWritableDatabase();
+		mDatabase.beginTransaction();
+		try {
+			mDatabase.execSQL("delete from items ; ");
+			mDatabase.execSQL("update sqlite_sequence set seq=0 where name='items'");
+			for (int i = 0; i < values.length; i++) {
+				insert(uri, values[i]);
+			}
+			mDatabase.setTransactionSuccessful();
+			numInserted = values.length;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			mDatabase.endTransaction();
+		}
+//		sendNotify(uri);
+		return numInserted;
+	}
+
+	private void sendNotify(Uri uri) {
+		String notify = uri.getQueryParameter("notify");
+		if (notify == null || notify.equals("true")) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+	}
+	//...
+{% endcodeblock %}
+
+在AndroidManifest里注册provider
+
+{% codeblock lang:xml %}
+        <provider
+            android:name="com.example.sqltest.ItemContentProvider"
+            android:authorities="com.example.sqltest.items" >
+        </provider>
+{% endcodeblock %}
+
+
+###SQLiteOpenHelper
+
+创建、升级数据库（使用了单例模式）
+
+{% codeblock lang:java %}
+	private static class ItemDatabaseHelper extends SQLiteOpenHelper {
+
+		private static ItemDatabaseHelper instance = null;
+
+		public static ItemDatabaseHelper getInstance(Context context) {
+
+			if (instance == null) {
+				instance = new ItemDatabaseHelper(context);
+			}
+			return instance;
+		}
+
+		private ItemDatabaseHelper(Context context) {
+			super(context, "items", null, DATABASE_VERSION);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase database) {
+
+			database.execSQL("create table if not exists items("
+					+ " _id integer primary key autoincrement," + " name text,"
+					+ "cid text" + ");");
+		}
+		//...
+	}
+{% endcodeblock %}
+
+##创建Service的子类，使用startService(intent);的方式，在Activity onDestroy时使用stopService(intent);销毁。
+
+所注册的BroadcastReceiver也要使用 unregisterReceiver(receiver);
+
+###在AndroidManifest里注册
+
+{% codeblock lang:xml %}
+        <service android:name="com.example.sqltest.LoadService" >
+            <intent-filter>
+                <action android:name="com.example.sqltest.LOAD_SERVICE" />
+            </intent-filter>
+        </service>
+{% endcodeblock %}
+
+##在现实数据的Activity里，较为灵活地注册了Receiver
+
+{% codeblock lang:java %}
+	private void registerLoadReceiver() {
+		LoadReceiver receiver = new LoadReceiver();
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.example.sqltest.LOAD_BROADCAST");
+		registerReceiver(receiver, filter);
+	}
+{% endcodeblock %}
+
+因此可以在BroadcastReceiver的子类中方便地修改UI，
+
+{% codeblock lang:java %}
+	private class LoadReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			setRiverListViewAdapter();
+		}
+	}
+{% endcodeblock %}
+
+此处只是简单地设置listview的Adapter
+
+{% codeblock lang:java %}
+	@SuppressWarnings("deprecation")
+	private void setRiverListViewAdapter() {
+		mListView = (ListView) this.findViewById(R.id.list);
+
+		Cursor cursor = managedQuery(ItemContentProvider.CONTENT_URI, null,
+				null, null, null);
+		CursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.row,
+				cursor, new String[] { ItemContentProvider.NAME },
+				new int[] { R.id.text1 });
+		mListView.setAdapter(adapter);
+	}
+{% endcodeblock %}
+
+全部代码地址 <https://github.com/dande618/SQLTest>

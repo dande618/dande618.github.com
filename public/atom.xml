@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-04-27T20:12:21+08:00</updated>
+  <updated>2013-05-13T19:58:40+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,808 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Service写入数据库并更新UI]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/13/SQLTest/"/>
+    <updated>2013-05-13T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/13/SQLTest</id>
+    <content type="html"><![CDATA[<p>目的是使用Service写入SQLite数据库，然后通知UI更新。</p>
+
+<!-- more -->
+
+
+<p>首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。</p>
+
+<h3>ItemContentProvider.java</h3>
+
+<p>重写方法提供对数据库的操作（插入、修改、删除等），设置好Uri</p>
+
+<p>这里主要重写了bulkInsert，由于一次插入的数据太多，如果每次都读写一次文件会导致速度很慢，所以添加事务处理。</p>
+
+<p>如果使用ContentObserver，需要在更改数据库后调用getContext().getContentResolver().notifyChange(uri, null);通知所有使用Uri的地方更新数据。</p>
+
+<p>基于需要，每次bulkInsert时清空表，并重新开始计号。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="c1">//...</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Uri</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">ContentValues</span> <span class="n">contentValues</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">mDatabase</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">&quot;items&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">contentValues</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">bulkInsert</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">ContentValues</span><span class="o">[]</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">numInserted</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">mDatabase</span> <span class="o">=</span> <span class="n">mHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">mDatabase</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">mDatabase</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;delete from items ; &quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">mDatabase</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;update sqlite_sequence set seq=0 where name=&#39;items&#39;&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">values</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">insert</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">values</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="n">mDatabase</span><span class="o">.</span><span class="na">setTransactionSuccessful</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">numInserted</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">mDatabase</span><span class="o">.</span><span class="na">endTransaction</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'><span class="c1">//       sendNotify(uri);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">numInserted</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">sendNotify</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">String</span> <span class="n">notify</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="na">getQueryParameter</span><span class="o">(</span><span class="s">&quot;notify&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">notify</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">notify</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;true&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">getContext</span><span class="o">().</span><span class="na">getContentResolver</span><span class="o">().</span><span class="na">notifyChange</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在AndroidManifest里注册provider</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>        <span class="nt">&lt;provider</span>
+</span><span class='line'>            <span class="na">android:name=</span><span class="s">&quot;com.example.sqltest.ItemContentProvider&quot;</span>
+</span><span class='line'>            <span class="na">android:authorities=</span><span class="s">&quot;com.example.sqltest.items&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/provider&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>SQLiteOpenHelper</h3>
+
+<p>创建、升级数据库（使用了单例模式）</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ItemDatabaseHelper</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">ItemDatabaseHelper</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">ItemDatabaseHelper</span> <span class="nf">getInstance</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ItemDatabaseHelper</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">ItemDatabaseHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">&quot;items&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">DATABASE_VERSION</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">database</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;create table if not exists items(&quot;</span>
+</span><span class='line'>                  <span class="o">+</span> <span class="s">&quot; _id integer primary key autoincrement,&quot;</span> <span class="o">+</span> <span class="s">&quot; name text,&quot;</span>
+</span><span class='line'>                  <span class="o">+</span> <span class="s">&quot;cid text&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>创建Service的子类，使用startService(intent);的方式，在Activity onDestroy时使用stopService(intent);销毁。</h2>
+
+<p>所注册的BroadcastReceiver也要使用 unregisterReceiver(receiver);</p>
+
+<h3>在AndroidManifest里注册</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>        <span class="nt">&lt;service</span> <span class="na">android:name=</span><span class="s">&quot;com.example.sqltest.LoadService&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;intent-filter&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&quot;com.example.sqltest.LOAD_SERVICE&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/intent-filter&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/service&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>在现实数据的Activity里，较为灵活地注册了Receiver</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">private</span> <span class="kt">void</span> <span class="nf">registerLoadReceiver</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">LoadReceiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LoadReceiver</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">IntentFilter</span> <span class="n">filter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntentFilter</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">filter</span><span class="o">.</span><span class="na">addAction</span><span class="o">(</span><span class="s">&quot;com.example.sqltest.LOAD_BROADCAST&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">registerReceiver</span><span class="o">(</span><span class="n">receiver</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因此可以在BroadcastReceiver的子类中方便地修改UI，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">private</span> <span class="kd">class</span> <span class="nc">LoadReceiver</span> <span class="kd">extends</span> <span class="n">BroadcastReceiver</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceive</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">setRiverListViewAdapter</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此处只是简单地设置listview的Adapter</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">setRiverListViewAdapter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">mListView</span> <span class="o">=</span> <span class="o">(</span><span class="n">ListView</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">managedQuery</span><span class="o">(</span><span class="n">ItemContentProvider</span><span class="o">.</span><span class="na">CONTENT_URI</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span>
+</span><span class='line'>              <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">CursorAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleCursorAdapter</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">row</span><span class="o">,</span>
+</span><span class='line'>              <span class="n">cursor</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">ItemContentProvider</span><span class="o">.</span><span class="na">NAME</span> <span class="o">},</span>
+</span><span class='line'>              <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">text1</span> <span class="o">});</span>
+</span><span class='line'>      <span class="n">mListView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>全部代码地址 <a href="https://github.com/dande618/SQLTest">https://github.com/dande618/SQLTest</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【转载】Android到处都在使用的回调分析]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/01/listener/"/>
+    <updated>2013-05-01T13:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/01/listener</id>
+    <content type="html"><![CDATA[<p>Android到处都在使用的回调分析</p>
+
+<!-- more -->
+
+
+<p><a href="http://lzd20021683.iteye.com/blog/1319626">http://lzd20021683.iteye.com/blog/1319626</a></p>
+
+<blockquote><p><strong>回调函数：</strong></p>
+
+<p>回调函数就是一个通过函数指针调用的函数。如果你把函数的指针(地址)作为参数传递给另一个函数，当这个指针被用为调用它所指向的函数时，我们就说这是回调函数。回调函数不是由该函数的实现方直接调用，而是在特定的事件或条件发生时由另外的一方调用的，用于对该事件或条件进行响应。</p></blockquote>
+
+<p>Java 中没有指针的概念，通过接口和内部类的方式实现回调的功能:</p>
+
+<ol>
+<li><p>定义接口 Callback ,包含回调方法 callback()</p></li>
+<li><p>在一个类Caller 中声明一个Callback接口对象 mCallback</p></li>
+<li><p>在程序中赋予Caller对象的接口成员(mCallback) 一个内部类对象如</p></li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">new</span>  <span class="n">Callback</span><span class="err">（）</span><span class="o">{</span>
+</span><span class='line'>     <span class="n">callback</span><span class="err">（）</span><span class="o">{</span>
+</span><span class='line'>         <span class="c1">//函数的具体实现</span>
+</span><span class='line'>     <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　这样,在需要的时候,可用Caller对象的mCallback接口成员调用callback()方法,完成回调.</p>
+
+<p>　　Android事件侦听器是视图View类的接口，包含一个单独的回调方法。这些方法将在视图中注册的侦听器被用户界面操作触发时由Android框架调用。回调方法被包含在Android事件侦听器接口中：</p>
+
+<p>　　例如,Android 的view 对象都含有一个命名为 OnClickListener 接口成员变量，用户的点击操作都会交给 OnClickListener的 OnClick() 方法进行处理。</p>
+
+<p>　　开发者若需要对点击事件做处理，可以定义一个 OnClickListener 接口对象，赋给需要被点击的 view的接口成员变量OnClickListener，一般是用 view 的setOnClickListener() 函数来完成这一操作。</p>
+
+<p>　　当有用户点击事件时，系统就会回调被点击view的OnClickListener接口成员的OnClick()方法。</p>
+
+<h3>实例(对于Android界面上Button点击事件监听的模拟):</h3>
+
+<p>1．定义接口</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">OnClickListener</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">OnClick</span><span class="o">(</span><span class="n">Button</span> <span class="n">b</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2． 定义Button</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Button</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">OnClickListener</span> <span class="n">listener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">click</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">.</span><span class="na">OnClick</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setOnClickListener</span><span class="o">(</span><span class="n">OnClickListener</span> <span class="n">listener</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">listener</span> <span class="o">=</span> <span class="n">listener</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3． 将接口对象OnClickListener 赋给 Button的接口成员</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">Activity</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">OnClickListener</span><span class="o">(){</span>
+</span><span class='line'>       <span class="nd">@Override</span>
+</span><span class='line'>       <span class="kd">public</span> <span class="kt">void</span> <span class="nf">OnClick</span><span class="o">(</span><span class="n">Button</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;clicked&quot;</span><span class="o">);</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>    <span class="n">button</span><span class="o">.</span><span class="na">click</span><span class="o">();</span> <span class="c1">//user click,System call button.click();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要定义这些方法并处理你的事件，在你的活动中实现这个嵌套接口或定义它为一个匿名类：</p>
+
+<p>采用匿名类方式实现：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Create an anonymous implementation of OnClickListener  </span>
+</span><span class='line'><span class="kd">private</span> <span class="n">OnClickListener</span> <span class="n">mCorkyListener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// do something when the button is clicked  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedValues</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="c1">// Capture our button from layout  </span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span><span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">corky</span><span class="o">);</span>
+</span><span class='line'><span class="c1">// Register the onClick listener with the implementation above  </span>
+</span><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="n">mCorkyListener</span><span class="o">);</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>采用嵌套接口实现：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExampleActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="kd">implements</span> <span class="n">OnClickListener</span> <span class="o">{</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedValues</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span><span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">corky</span><span class="o">);</span>
+</span><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c1">// Implement the OnClickListener callback  </span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// do something when the button is clicked  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面以MMS模块中的实际例子为例进行说明：</p>
+
+<h3>例子1：</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//ConversationListAdapter.java  </span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">OnContentChangedListener</span> <span class="n">mOnContentChangedListener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">OnContentChangedListener</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onContentChanged</span><span class="o">(</span><span class="n">ConversationListAdapter</span> <span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setOnContentChangedListener</span><span class="o">(</span><span class="n">OnContentChangedListener</span> <span class="n">l</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mOnContentChangedListener</span> <span class="o">=</span> <span class="n">l</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onContentChanged</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">mCursor</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mCursor</span><span class="o">.</span><span class="na">isClosed</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">mOnContentChangedListener</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">mOnContentChangedListener</span><span class="o">.</span><span class="na">onContentChanged</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//ConversationList.java  </span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">ConversationListAdapter</span><span class="o">.</span><span class="na">OnContentChangedListener</span> <span class="n">mContentChangedListener</span> <span class="o">=</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">ConversationListAdapter</span><span class="o">.</span><span class="na">OnContentChangedListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onContentChanged</span><span class="o">(</span><span class="n">ConversationListAdapter</span> <span class="n">adapter</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">startAsyncQuery</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">initListAdapter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mListAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConversationListAdapter</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">mListAdapter</span><span class="o">.</span><span class="na">setOnContentChangedListener</span><span class="o">(</span><span class="n">mContentChangedListener</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">setListAdapter</span><span class="o">(</span><span class="n">mListAdapter</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">getListView</span><span class="o">().</span><span class="na">setRecyclerListener</span><span class="o">(</span><span class="n">mListAdapter</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>例子2：</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//WorkingMessage.java  </span>
+</span><span class='line'> <span class="kd">private</span> <span class="kd">final</span> <span class="n">MessageStatusListener</span> <span class="n">mStatusListener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MessageStatusListener</span> <span class="o">{</span>
+</span><span class='line'>        <span class="cm">/** </span>
+</span><span class='line'><span class="cm">         * Called when the protocol for sending the message changes from SMS </span>
+</span><span class='line'><span class="cm">         * to MMS, and vice versa. </span>
+</span><span class='line'><span class="cm">         * </span>
+</span><span class='line'><span class="cm">         * @param mms If true, it changed to MMS.  If false, to SMS. </span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onProtocolChanged</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">mms</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="cm">/** </span>
+</span><span class='line'><span class="cm">         * Called when an attachment on the message has changed. </span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onAttachmentChanged</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="cm">/** </span>
+</span><span class='line'><span class="cm">         * Called just before the process of sending a message. </span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onPreMessageSent</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="cm">/** </span>
+</span><span class='line'><span class="cm">         * Called once the process of sending a message, triggered by </span>
+</span><span class='line'><span class="cm">         * {@link send} has completed. This doesn&#39;t mean the send succeeded, </span>
+</span><span class='line'><span class="cm">         * just that it has been dispatched to the network. </span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onMessageSent</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="cm">/** </span>
+</span><span class='line'><span class="cm">         * Called if there are too many unsent messages in the queue and we&#39;re not allowing </span>
+</span><span class='line'><span class="cm">         * any more Mms&#39;s to be sent. </span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onMaxPendingMessagesReached</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="cm">/** </span>
+</span><span class='line'><span class="cm">         * Called if there&#39;s an attachment error while resizing the images just before sending. </span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="nf">onAttachmentError</span><span class="o">(</span><span class="kt">int</span> <span class="n">error</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">WorkingMessage</span><span class="o">(</span><span class="n">ComposeMessageActivity</span> <span class="n">activity</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mActivity</span> <span class="o">=</span> <span class="n">activity</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">mContentResolver</span> <span class="o">=</span> <span class="n">mActivity</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">mStatusListener</span> <span class="o">=</span> <span class="n">activity</span><span class="o">;</span> <span class="c1">//设置  </span>
+</span><span class='line'>        <span class="n">mAttachmentType</span> <span class="o">=</span> <span class="n">TEXT</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">mText</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">WorkingMessage</span> <span class="nf">createEmpty</span><span class="o">(</span><span class="n">ComposeMessageActivity</span> <span class="n">activity</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// Make a new empty working message.  </span>
+</span><span class='line'>        <span class="n">WorkingMessage</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WorkingMessage</span><span class="o">(</span><span class="n">activity</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">msg</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">sendSmsWorker</span><span class="o">(</span><span class="n">String</span> <span class="n">msgText</span><span class="o">,</span> <span class="n">String</span> <span class="n">semiSepRecipients</span><span class="o">,</span> <span class="kt">long</span> <span class="n">threadId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">[]</span> <span class="n">dests</span> <span class="o">=</span> <span class="n">TextUtils</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="n">semiSepRecipients</span><span class="o">,</span> <span class="s">&quot;;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">LogTag</span><span class="o">.</span><span class="na">VERBOSE</span> <span class="o">||</span> <span class="n">Log</span><span class="o">.</span><span class="na">isLoggable</span><span class="o">(</span><span class="n">LogTag</span><span class="o">.</span><span class="na">TRANSACTION</span><span class="o">,</span> <span class="n">Log</span><span class="o">.</span><span class="na">VERBOSE</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">LogTag</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&quot;sendSmsWorker sending message: recipients=&quot;</span> <span class="o">+</span> <span class="n">semiSepRecipients</span> <span class="o">+</span>
+</span><span class='line'>                    <span class="s">&quot;, threadId=&quot;</span> <span class="o">+</span> <span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">MessageSender</span> <span class="n">sender</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SmsMessageSender</span><span class="o">(</span><span class="n">mActivity</span><span class="o">,</span> <span class="n">dests</span><span class="o">,</span> <span class="n">msgText</span><span class="o">,</span> <span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">sender</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Make sure this thread isn&#39;t over the limits in message count  </span>
+</span><span class='line'>            <span class="n">Recycler</span><span class="o">.</span><span class="na">getSmsRecycler</span><span class="o">().</span><span class="na">deleteOldMessagesByThreadId</span><span class="o">(</span><span class="n">mActivity</span><span class="o">,</span> <span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;Failed to send SMS message, threadId=&quot;</span> <span class="o">+</span> <span class="n">threadId</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">mStatusListener</span><span class="o">.</span><span class="na">onMessageSent</span><span class="o">();</span>  <span class="c1">//调用  </span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//ComposeMessageActivity.java  </span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ComposeMessageActivity</span> <span class="kd">extends</span> <span class="n">Activity</span>
+</span><span class='line'>        <span class="kd">implements</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">,</span> <span class="n">TextView</span><span class="o">.</span><span class="na">OnEditorActionListener</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">MessageStatusListener</span><span class="cm">/*实现该接口*/</span><span class="o">,</span> <span class="n">Contact</span><span class="o">.</span><span class="na">UpdateListener</span> <span class="o">{</span>
+</span><span class='line'>     <span class="o">....</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onProtocolChanged</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">mms</span><span class="o">)</span> <span class="o">{</span><span class="c1">//实现onProtocolChanged接口  </span>
+</span><span class='line'>        <span class="c1">// Have to make sure we&#39;re on the UI thread. This function can be called off of the UI  </span>
+</span><span class='line'>        <span class="c1">// thread when we&#39;re adding multi-attachments  </span>
+</span><span class='line'>        <span class="n">runOnUiThread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">toastConvertInfo</span><span class="o">(</span><span class="n">mms</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">setSendButtonText</span><span class="o">(</span><span class="n">mms</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">});</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">....</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">,</span> <span class="kt">long</span> <span class="n">originalThreadId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="n">getIntent</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Create a new empty working message.  </span>
+</span><span class='line'>        <span class="n">mWorkingMessage</span> <span class="o">=</span> <span class="n">WorkingMessage</span><span class="o">.</span><span class="na">createEmpty</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> <span class="c1">//  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考：</h3>
+
+<p>回调机制在 Android 监听用户界面操作中的体现 <a href="http://www.cnblogs.com/greatstar/archive/2011/03/02/1968999.html">http://www.cnblogs.com/greatstar/archive/2011/03/02/1968999.html</a></p>
+
+<p>百度百科: 回调函数 <a href="http://baike.baidu.com/view/414773.html?fromTaglist">http://baike.baidu.com/view/414773.html?fromTaglist</a></p>
+
+<p>java中回调函数的实例说明 <a href="http://www.blogjava.net/songfei/articles/126093.html">http://www.blogjava.net/songfei/articles/126093.html</a></p>
+
+<p>Android事件侦听浅谈 <a href="http://developer.51cto.com/art/201001/180846.htm">http://developer.51cto.com/art/201001/180846.htm</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android Service]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/30/service/"/>
+    <updated>2013-04-30T20:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/30/service</id>
+    <content type="html"><![CDATA[<p>Service，Android在后台运行的服务，和Activiy比较相似，只是没有界面显示。Service的启动方式有Context.startService()和Context.bindService()两种。</p>
+
+<!-- more -->
+
+
+<p>使用Service，需要定义一个继承android.app.Service的子类；</p>
+
+<p>和Activity一样，Service也要在AndroidMainfest里声明，同时可以声明由哪些intent启动；</p>
+
+<p>Service的子类必须实现abstract IBinder onBind(Intent intent)方法，该方法返回一个IBinder对象，应用程序可以通过该对象与Service通讯；</p>
+
+<h3>Service的生命周期</h3>
+
+<p><img src="http://img.my.csdn.net/uploads/201203/20/0_13322041884wH4.gif" alt="Service生命周期" /></p>
+
+<h3>服务的生命周期</h3>
+
+<p>有了 Service 类我们如何启动他呢，有两种方法：</p>
+
+<ul>
+<li><p>Context.startService()</p></li>
+<li><p>Context.bindService()</p></li>
+</ul>
+
+
+<p>在同一个应用任何地方调用 startService() 方法就能启动 Service 了，然后系统会回调 Service 类的 onCreate() 以及 onStart() 方法。这样启动的 Service 会一直运行在后台，直到 Context.stopService() 或者 selfStop() 方法被调用。另外如果一个 Service 已经被启动，其他代码再试图调用 startService() 方法，是不会执行 onCreate() 的，但会重新执行一次 onStart() 。</p>
+
+<p>另外一种 bindService() 方法的意思是，把这个 Service 和调用 Service 的客户类绑起来，如果调用这个客户类被销毁，Service 也会被销毁。用这个方法的一个好处是，bindService() 方法执行后 Service 会回调上边提到的 onBind() 方发，你可以从这里返回一个实现了 IBind 接口的类，在客户端操作这个类就能和这个服务通信了，比如得到 Service 运行的状态或其他操作。如果 Service 还没有运行，使用这个方法启动 Service 就会 onCreate() 方法而不会调用 onStart()。</p>
+
+<h3>与 Service 通信并且让它持续运行</h3>
+
+<p>如果我们想保持和 Service 的通信，又不想让 Service 随着 Activity 退出而退出呢？你可以先 startService() 然后再 bindService() 。当你不需要绑定的时候就执行 unbindService() 方法，执行这个方法只会触发 Service 的 onUnbind() 而不会把这个 Service 销毁。这样就可以既保持和 Service 的通信，也不会随着 Activity 销毁而销毁了。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android ContentProvider]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/28/ContentProvider/"/>
+    <updated>2013-04-28T20:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/28/ContentProvider</id>
+    <content type="html"><![CDATA[<p>ContentProvider是Android不同应用程序之间进行数据交换的标准API。ContentProvider是Android的四大组件之一（Activity、ContentProvider、Service、BroadcastReceiver），他们都需要在Mainfest文件中配置。ContentProvider以Uri对外提供数据，其他应用使用ContentResolver根据Uri去访问操作指定数据。</p>
+
+<!-- more -->
+
+
+<p>其中ContentProvider负责</p>
+
+<ul>
+<li><p>组织应用程序的数据；</p></li>
+<li><p>向其他应用程序提供数据；</p></li>
+</ul>
+
+
+<p>ContentResolver则负责</p>
+
+<ul>
+<li><p>获取ContentProvider提供的数据；</p></li>
+<li><p>修改/添加/删除更新数据等；</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android SQLite]]></title>
@@ -3213,415 +4015,6 @@ Android的应用程序包含三种重要的组件：Activity、Service、Broadca
 </span></code></pre></td></tr></table></div></figure>
 
 
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[认识Bundle]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/29/Bundle/"/>
-    <updated>2013-01-29T15:22:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/29/Bundle</id>
-    <content type="html"><![CDATA[<p>　　用于不同Activity之间的数据传递</p>
-
-<!-- more -->
-
-
-<h2>重要方法</h2>
-
-
-<p class="para">clear()：清除此Bundle映射中的所有保存的数据。</p>
-
-
-<p class="para">clone()：克隆当前Bundle</p>
-
-
-<p class="para">containsKey(String key)：返回指定key的值</p>
-
-
-<p class="para">getString(String key)：返回指定key的字符</p>
-
-
-<p class="para">hasFileDescriptors()：指示是否包含任何捆绑打包文件描述符</p>
-
-
-<p class="para">isEmpty()：如果这个捆绑映射为空，则返回true</p>
-
-
-<p class="para">putString(String key, String value):插入一个给定key的字符串值</p>
-
-
-<p class="para">readFromParcel(Parcel parcel)：读取这个parcel的内容</p>
-
-
-<p class="para">remove(String key)：移除指定key的值</p>
-
-
-<p class="para">writeToParcel(Parcel parcel, int flags)：写入这个parcel的内容</p>
-
-
-<h2>Android Bundle类</h2>
-
-
-<p></p>
-
-<p class="laiyuan">[转载]　<a href="http://blog.csdn.net/randyjiawenjie/article/details/6651437">文章出处</a></p>
-
-
-<p class="para">根据google官方的文档（http://developer.android.com/reference/android/os/Bundle.html）</p>
-
-
-<p class="para">Bundle类是一个key-value对，“A mapping from String values to various Parcelable types.”</p>
-
-
-<p class="para">类继承关系：</p>
-
-
-<p class="dk">java.lang.Object</p>
-
-
-<p class="dk">android.os.Bundle</p>
-
-
-<p class="para">Bundle类是一个final类：</p>
-
-
-<p class="dk">public final class</p>
-
-
-<p class="dk">Bundle</p>
-
-
-<p class="dk">extends Objectimplements Parcelable Cloneable</p>
-
-
-<p class="para">两个activity之间的通讯可以通过bundle类来实现，做法就是：</p>
-
-
-<p class="para">（1）新建一个bundle类</p>
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Bundle</span> <span class="n">mBundle</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>（2）bundle类中加入数据（key -value的形式，另一个activity里面取数据的时候，就要用到key，找出对应的value）</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mBundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;Data&quot;</span><span class="o">,</span> <span class="s">&quot;data from TestBundle&quot;</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>(3)新建一个intent对象，并将该bundle加入这个intent对象</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
-</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">TestBundle</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">Target</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">mBundle</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<p class="para">完整代码见原文</p>
-
-
-<p>————————</p>
-
-<p>Activity1：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">btn</span><span class="o">.</span><span class="na">setOnClickListener</span>
-</span><span class='line'>        <span class="o">(</span>
-</span><span class='line'>         <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
-</span><span class='line'>         <span class="o">{</span>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">String</span> <span class="n">str</span><span class="o">=</span><span class="n">ev</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">();</span>
-</span><span class='line'>     <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
-</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">Activity1</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">Activity2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>     <span class="n">Bundle</span> <span class="n">bundle</span><span class="o">=</span><span class="k">new</span> <span class="n">Bundle</span><span class="o">();</span>
-</span><span class='line'>     <span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;str&quot;</span><span class="o">,</span> <span class="n">str</span><span class="o">);</span>
-</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">putExtras</span><span class="o">(</span><span class="n">bundle</span><span class="o">);</span><span class="c1">//绑定信息</span>
-</span><span class='line'>     <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span><span class="c1">//启动Activity</span>
-</span><span class='line'>     <span class="n">Activity1</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">finish</span><span class="o">();</span><span class="c1">//关闭Activity</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'> <span class="o">}</span>
-</span><span class='line'><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Activity2：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span>
-</span><span class='line'> <span class="o">{</span>
-</span><span class='line'>  <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">anthor</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">TextView</span> <span class="n">tv</span><span class="o">=(</span><span class="n">TextView</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">TextView1</span><span class="o">);</span><span class="c1">//显示的信息</span>
-</span><span class='line'>  <span class="n">Button</span> <span class="n">button</span><span class="o">=(</span><span class="n">Button</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">anthorButton</span><span class="o">);</span><span class="c1">//返回按钮</span>
-</span><span class='line'>  <span class="n">Bundle</span> <span class="n">bundle</span><span class="o">=</span><span class="k">this</span><span class="o">.</span><span class="na">getIntent</span><span class="o">().</span><span class="na">getExtras</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">String</span> <span class="n">str</span><span class="o">=</span><span class="n">bundle</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;str&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">StringBuilder</span> <span class="n">sb</span><span class="o">=</span><span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
-</span><span class='line'>  <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;您填写的信息为：&quot;</span><span class="o">+</span><span class="n">str</span><span class="o">+</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
-</span><span class='line'>  <span class="n">tv</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">trim</span><span class="o">());</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span>
-</span><span class='line'>  <span class="o">(</span>
-</span><span class='line'>   <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
-</span><span class='line'>   <span class="o">{</span>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
-</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">Activity2</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">Activity1</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>     <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
-</span><span class='line'>     <span class="n">AnotherActivity</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">finish</span><span class="o">();</span><span class="c1">//关闭Activity</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'>  <span class="o">);</span>
-</span><span class='line'> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[认识Handler]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/28/handler/"/>
-    <updated>2013-01-28T11:36:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/28/handler</id>
-    <content type="html"><![CDATA[<p>　　主要接受子线程发送的数据, 并用此数据配合主线程更新UI。</p>
-
-<p>　　主要是为了解决Android应用的多线程问题。Android平台不允许Activity新启动的线程访问该Activity里的界面组件，这样就会导致新启动的线程无法动态改变界面组件的属性值。</p>
-
-<!-- more -->
-
-
-<p><strong>Handler类的主要作用有两个：</strong></p>
-
-<ol>
-<li><p>在新启动的线程中发送消息。</p></li>
-<li><p>在主线程中获取、处理消息。</p></li>
-</ol>
-
-
-<p>　　通过回调的方式来实现，重写Handler类中处理消息的方法。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[事件处理]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/26/listener/"/>
-    <updated>2013-01-26T10:27:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/26/listener</id>
-    <content type="html"><![CDATA[<p>Android的时间处理机制包括</p>
-
-<ul>
-    <li>基于监听的事件处理</li>
-    <li>基于回调的事件处理</li>
-</ul>
-
-
-<!-- more -->
-
-
-<p>基于监听的事件处理：为界面组件绑定监听器。
-基于回调的事件处理：重写组件（Activity）特定的回调方法。</p>
-
-<h2>基于监听的事件处理</h2>
-
-
-<ol>
-    <li>获取被监听的对象（即界面组件）</li>
-    <li>实现事件监听器（即一个实现XxxListener接口的类）</li>
-    <li>调用事件源的setXxxListener(XxxListener)方法将事件监听器注册给被监听的对象</li>
-</ol>
-
-
-<p>View类的接口有</p>
-
-<ul>
-    <li>View.OnClickListener</li>
-    <li>View.OnCreateContextMenuLister</li>
-    <li>View.OnFocusChangeListener</li>
-    <li>View.OnKeyListener</li>
-    <li>View.OnLongClickListener</li>
-    <li>View.OnTouchListener</li>
-</ul>
-
-
-<p>实现事件监听器的形式</p>
-
-<ul>
-    <li>内部类形式</li>
-    <li>外部类形式</li>
-    <li>Activity本身作为事件监听器类</li>
-    <li>匿名内部类</li>（常用）
-    <li>直接绑定到标签</li>
-</ul>
-
-
-<h2>基于回调的事件处理</h2>
-
-
-<p>以View类为例，一些事件处理的回调方法</p>
-
-<ul>
-    <li>boolean onKeyDown(int keyCode,KeyEvent event)</li>
-    <li>boolean onKeyLongPress(int keyCode,KeyEvent event)</li>
-    <li>boolean onKeyShortcut(int keyCode,KeyEvent event)</li>
-    <li>boolean onKeyUp(int keyCode,KeyEvent event)</li>
-    <li>boolean onTouchEvent(MotionEvent event)</li>
-    <li>boolean onTrackballEvent(MotionEvent event)</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SimpleAdapter]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/11/adapter/"/>
-    <updated>2013-01-11T10:27:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/11/adapter</id>
-    <content type="html"><![CDATA[<p>　　Android Adapter 是将数据绑定到UI 界面上的桥接类。 Adapter负责创建和显示每个项目的子View和提供对下层数据的访问。支持Adapter绑定的UI控件必须扩展Adapter View抽象类。创建自己的继承自AdapterView的控件和创建新的Adapter类来绑定它们是可能的。</p>
-
-<!-- more -->
-
-
-<p><img src="http://img14.poco.cn/mypoco/myphoto/20130111/09/430947902013011109012106.png" width="610">
-<img src="http://img14.poco.cn/mypoco/myphoto/20130111/09/4309479020130111090229016.jpg" width="610"></p>
-
-<h2>ListView和ListAdapter</h2>
-
-
-<p class="laiyuan">[转载]<a href="http://blog.sina.com.cn/s/blog_7db304660100x2f0.html">文章出处</a></p>
-
-
-
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//新建一个ListView,也就是新建一个列表，在新建一个组件是会将一个Content传递给构造函数</span>
-</span><span class='line'><span class="n">listView</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListView</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'><span class="c1">// 将ListView和ArrayAdapter进行绑定，listview会把ArrayAdapter里面的数据显示出来</span>
-</span><span class='line'><span class="c1">// ArrayAdapter的第一个参数是Context，即上下文的引用</span>
-</span><span class='line'><span class="c1">// 第二个参数为一个在R文件里定义的Layout，不过是系统的R文件</span>
-</span><span class='line'><span class="c1">// simple_list_item_single_choice表明ListView里边的每一项都只有一个TextView</span>
-</span><span class='line'><span class="c1">// 第三个参数为一个数组</span>
-</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="k">new</span> <span class="n">ArrayAdapter</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span>
-</span><span class='line'><span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">simple_list_item_single_choice</span><span class="o">,</span> <span class="n">data</span><span class="o">));</span>
-</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setItemsCanFocus</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-</span><span class='line'><span class="n">listView</span><span class="o">.</span><span class="na">setChoiceMode</span><span class="o">(</span><span class="n">ListView</span><span class="o">.</span><span class="na">CHOICE_MODE_MULTIPLE</span><span class="o">);</span>
-</span><span class='line'><span class="c1">// 将listView内容直接进行显示</span>
-</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">listView</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<h3>什么是ListAdapter?</h3>
-
-
-<p class="para">ListAdapter继承于Adapter，它是ListView和其里面数据的适配器。也就是要让一个ListView显示出来需要三个东西：</p>
-
-
-<ol>
-    <li>ListView (需要被显示的列表)。</li>
-    <li>Data, 和ListView绑定的数据，一般是一个Cursor或者一个字符串数组。</li>
-    <li>ListAdapter,是data和ListView的桥梁，起一个适配器的作用。</li>
-</ol>
-
-
-<h3>什么是ArrayAdapter?</h3>
-
-
-<p class="para">ArrayAdapter是ListAdapter的一个直接子类，意思是数组适配器。</p>
-
-
-<p class="para">它的作用就是一个数组和ListView之间的桥梁。它将数组里定义的数据一一对应的显示在ListView里，通常有ArrayAdapter进行适配的ListView每一项通常只有一个TextView，而TextView里面显示的内容就是数组里面的对象调用toString()方法后生成的字符串。</p>
-
-
-<h3>SimpleAdapter</h3>
-
-
-<p class="para">SimpleAdapter也是ListAdapter的直接子类。通过SimpleAdapter可以让ListView当中的每一项里边的内容更加个性化。通常将ListView中某项的布局信息写在一个xml的布局文件当中。这个布局文件通过R.layout.file获得。</p>
-
-
-<p class="para">ArrayAdapter的作用是数组和ListView间的桥梁；而SimpleAdapter的作用是ArrayList和ListView间的桥梁。</p>
-
-
-<p class="para">注意，这个ArrayList里面的每一项都是一个Map<String,?>类型。ArrayList当中的每一项Map对象都和ListView当中的一项进行数据绑定和一一对应。</p>
-
-
-<h3>Android系统默认的布局方式</h3>
-
-
-<p class="para">Android.R.layout_simple_list_item_1, 每一项只有一个TextView.</p>
-
-
-<p class="para">Android.R.layout_simple_list_item_2, 每一项只有两个TextView.</p>
-
-
-<p class="para">Android.R.layout_simple_list_item_single_choice, 每一项有一个TextView，但是这一项可以被选择。</p>
 
 ]]></content>
   </entry>

@@ -1,0 +1,41 @@
+---
+layout: post
+title: "Android Service"
+date: 2013-04-30 20:01
+comments: true
+categories: android
+---
+Service，Android在后台运行的服务，和Activiy比较相似，只是没有界面显示。Service的启动方式有Context.startService()和Context.bindService()两种。
+<!-- more -->
+
+使用Service，需要定义一个继承android.app.Service的子类；
+
+和Activity一样，Service也要在AndroidMainfest里声明，同时可以声明由哪些intent启动；
+
+Service的子类必须实现abstract IBinder onBind(Intent intent)方法，该方法返回一个IBinder对象，应用程序可以通过该对象与Service通讯；
+
+###Service的生命周期
+
+![Service生命周期](http://img.my.csdn.net/uploads/201203/20/0_13322041884wH4.gif)
+
+
+
+
+
+
+###服务的生命周期
+
+有了 Service 类我们如何启动他呢，有两种方法：
+
+- Context.startService()
+
+- Context.bindService()
+
+在同一个应用任何地方调用 startService() 方法就能启动 Service 了，然后系统会回调 Service 类的 onCreate() 以及 onStart() 方法。这样启动的 Service 会一直运行在后台，直到 Context.stopService() 或者 selfStop() 方法被调用。另外如果一个 Service 已经被启动，其他代码再试图调用 startService() 方法，是不会执行 onCreate() 的，但会重新执行一次 onStart() 。
+
+另外一种 bindService() 方法的意思是，把这个 Service 和调用 Service 的客户类绑起来，如果调用这个客户类被销毁，Service 也会被销毁。用这个方法的一个好处是，bindService() 方法执行后 Service 会回调上边提到的 onBind() 方发，你可以从这里返回一个实现了 IBind 接口的类，在客户端操作这个类就能和这个服务通信了，比如得到 Service 运行的状态或其他操作。如果 Service 还没有运行，使用这个方法启动 Service 就会 onCreate() 方法而不会调用 onStart()。
+
+
+###与 Service 通信并且让它持续运行
+
+如果我们想保持和 Service 的通信，又不想让 Service 随着 Activity 退出而退出呢？你可以先 startService() 然后再 bindService() 。当你不需要绑定的时候就执行 unbindService() 方法，执行这个方法只会触发 Service 的 onUnbind() 而不会把这个 Service 销毁。这样就可以既保持和 Service 的通信，也不会随着 Activity 销毁而销毁了。

@@ -1,0 +1,281 @@
+---
+layout: post
+title: "【转载】Android到处都在使用的回调分析"
+date: 2013-05-01 13:01
+comments: true
+categories: android
+---
+Android到处都在使用的回调分析
+<!-- more -->
+<http://lzd20021683.iteye.com/blog/1319626>
+
+> __回调函数：__
+ 
+> 回调函数就是一个通过函数指针调用的函数。如果你把函数的指针(地址)作为参数传递给另一个函数，当这个指针被用为调用它所指向的函数时，我们就说这是回调函数。回调函数不是由该函数的实现方直接调用，而是在特定的事件或条件发生时由另外的一方调用的，用于对该事件或条件进行响应。
+ 
+Java 中没有指针的概念，通过接口和内部类的方式实现回调的功能:
+
+1. 定义接口 Callback ,包含回调方法 callback()
+
+2. 在一个类Caller 中声明一个Callback接口对象 mCallback
+
+3. 在程序中赋予Caller对象的接口成员(mCallback) 一个内部类对象如
+
+{% codeblock lang:java %}
+new  Callback（）{
+     callback（）{
+         //函数的具体实现
+     }
+{% endcodeblock %}
+
+　　这样,在需要的时候,可用Caller对象的mCallback接口成员调用callback()方法,完成回调.
+ 
+　　Android事件侦听器是视图View类的接口，包含一个单独的回调方法。这些方法将在视图中注册的侦听器被用户界面操作触发时由Android框架调用。回调方法被包含在Android事件侦听器接口中：
+
+　　例如,Android 的view 对象都含有一个命名为 OnClickListener 接口成员变量，用户的点击操作都会交给 OnClickListener的 OnClick() 方法进行处理。
+
+　　开发者若需要对点击事件做处理，可以定义一个 OnClickListener 接口对象，赋给需要被点击的 view的接口成员变量OnClickListener，一般是用 view 的setOnClickListener() 函数来完成这一操作。
+
+　　当有用户点击事件时，系统就会回调被点击view的OnClickListener接口成员的OnClick()方法。
+
+###实例(对于Android界面上Button点击事件监听的模拟):
+ 
+1．定义接口
+
+{% codeblock lang:java %}
+public interface OnClickListener {
+    public void OnClick(Button b);
+}
+{% endcodeblock %}
+
+2． 定义Button
+
+{% codeblock lang:java %}
+public class Button {
+  OnClickListener listener;
+ 
+  public void click() {
+    listener.OnClick(this);
+  }
+  public void setOnClickListener(OnClickListener listener) {
+    this.listener = listener;
+  }
+}
+{% endcodeblock %}
+
+3． 将接口对象OnClickListener 赋给 Button的接口成员
+
+{% codeblock lang:java %}
+public class Activity {
+  public Activity() {
+  }
+  public static void main(String[] args) {
+    Button button = new Button();
+    button.setOnClickListener(new OnClickListener(){
+       @Override
+       public void OnClick(Button b) {
+                 System.out.println("clicked");
+       }   
+    });
+    button.click(); //user click,System call button.click();
+  }
+}
+{% endcodeblock %}
+
+要定义这些方法并处理你的事件，在你的活动中实现这个嵌套接口或定义它为一个匿名类：
+
+采用匿名类方式实现：
+
+{% codeblock lang:java %}
+// Create an anonymous implementation of OnClickListener  
+private OnClickListener mCorkyListener = new OnClickListener() {  
+public void onClick(View v) {  
+// do something when the button is clicked  
+}  
+};  
+protected void onCreate(Bundle savedValues) {  
+...  
+// Capture our button from layout  
+Button button = (Button)findViewById(R.id.corky);  
+// Register the onClick listener with the implementation above  
+button.setOnClickListener(mCorkyListener);  
+...  
+} 
+{% endcodeblock %}
+
+采用嵌套接口实现：
+
+{% codeblock lang:java %}
+public class ExampleActivity extends Activity implements OnClickListener {  
+protected void onCreate(Bundle savedValues) {  
+...  
+Button button = (Button)findViewById(R.id.corky);  
+button.setOnClickListener(this);  
+}  
+// Implement the OnClickListener callback  
+public void onClick(View v) {  
+// do something when the button is clicked  
+}  
+...  
+} 
+{% endcodeblock %}
+ 
+下面以MMS模块中的实际例子为例进行说明：
+ 
+###例子1：
+
+{% codeblock lang:java %}
+//ConversationListAdapter.java  
+  
+private OnContentChangedListener mOnContentChangedListener;  
+  
+ public interface OnContentChangedListener {  
+        void onContentChanged(ConversationListAdapter adapter);  
+    }  
+  
+    public void setOnContentChangedListener(OnContentChangedListener l) {  
+        mOnContentChangedListener = l;  
+    }  
+  
+    @Override  
+    protected void onContentChanged() {  
+        if (mCursor != null && !mCursor.isClosed()) {  
+            if (mOnContentChangedListener != null) {  
+                mOnContentChangedListener.onContentChanged(this);  
+            }  
+        }  
+    }  
+  
+  
+//ConversationList.java  
+  
+  private final ConversationListAdapter.OnContentChangedListener mContentChangedListener =  
+        new ConversationListAdapter.OnContentChangedListener() {  
+        public void onContentChanged(ConversationListAdapter adapter) {  
+            startAsyncQuery();  
+        }  
+    };  
+  
+    private void initListAdapter() {  
+        mListAdapter = new ConversationListAdapter(this, null);  
+        mListAdapter.setOnContentChangedListener(mContentChangedListener);  
+        setListAdapter(mListAdapter);  
+        getListView().setRecyclerListener(mListAdapter);  
+    }  
+  
+{% endcodeblock %}
+
+###例子2：
+ 
+{% codeblock lang:java %}
+//WorkingMessage.java  
+ private final MessageStatusListener mStatusListener;  
+  
+ public interface MessageStatusListener {  
+        /** 
+         * Called when the protocol for sending the message changes from SMS 
+         * to MMS, and vice versa. 
+         * 
+         * @param mms If true, it changed to MMS.  If false, to SMS. 
+         */  
+        void onProtocolChanged(boolean mms);  
+  
+        /** 
+         * Called when an attachment on the message has changed. 
+         */  
+        void onAttachmentChanged();  
+  
+        /** 
+         * Called just before the process of sending a message. 
+         */  
+        void onPreMessageSent();  
+  
+        /** 
+         * Called once the process of sending a message, triggered by 
+         * {@link send} has completed. This doesn't mean the send succeeded, 
+         * just that it has been dispatched to the network. 
+         */  
+        void onMessageSent();  
+  
+        /** 
+         * Called if there are too many unsent messages in the queue and we're not allowing 
+         * any more Mms's to be sent. 
+         */  
+        void onMaxPendingMessagesReached();  
+  
+        /** 
+         * Called if there's an attachment error while resizing the images just before sending. 
+         */  
+        void onAttachmentError(int error);  
+    }  
+  
+    private WorkingMessage(ComposeMessageActivity activity) {  
+        mActivity = activity;  
+        mContentResolver = mActivity.getContentResolver();  
+        mStatusListener = activity; //设置  
+        mAttachmentType = TEXT;  
+        mText = "";  
+    }  
+  
+  public static WorkingMessage createEmpty(ComposeMessageActivity activity) {  
+        // Make a new empty working message.  
+        WorkingMessage msg = new WorkingMessage(activity);  
+        return msg;  
+    }  
+  
+  private void sendSmsWorker(String msgText, String semiSepRecipients, long threadId) {  
+        String[] dests = TextUtils.split(semiSepRecipients, ";");  
+        if (LogTag.VERBOSE || Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {  
+            LogTag.debug("sendSmsWorker sending message: recipients=" + semiSepRecipients +  
+                    ", threadId=" + threadId);  
+        }  
+        MessageSender sender = new SmsMessageSender(mActivity, dests, msgText, threadId);  
+        try {  
+            sender.sendMessage(threadId);  
+  
+            // Make sure this thread isn't over the limits in message count  
+            Recycler.getSmsRecycler().deleteOldMessagesByThreadId(mActivity, threadId);  
+        } catch (Exception e) {  
+            Log.e(TAG, "Failed to send SMS message, threadId=" + threadId, e);  
+        }  
+  
+        mStatusListener.onMessageSent();  //调用  
+    }  
+  
+//ComposeMessageActivity.java  
+  
+public class ComposeMessageActivity extends Activity  
+        implements View.OnClickListener, TextView.OnEditorActionListener,  
+        MessageStatusListener/*实现该接口*/, Contact.UpdateListener {  
+     ....  
+  
+       public void onProtocolChanged(final boolean mms) {//实现onProtocolChanged接口  
+        // Have to make sure we're on the UI thread. This function can be called off of the UI  
+        // thread when we're adding multi-attachments  
+        runOnUiThread(new Runnable() {  
+            public void run() {  
+                toastConvertInfo(mms);  
+                setSendButtonText(mms);  
+            }  
+        });  
+    }  
+  
+    ....  
+  
+     public void initialize(Bundle savedInstanceState, long originalThreadId) {  
+        Intent intent = getIntent();  
+  
+        // Create a new empty working message.  
+        mWorkingMessage = WorkingMessage.createEmpty(this); //  
+}  
+ {% endcodeblock %}
+
+###参考：
+ 
+回调机制在 Android 监听用户界面操作中的体现 <http://www.cnblogs.com/greatstar/archive/2011/03/02/1968999.html>
+
+百度百科: 回调函数 <http://baike.baidu.com/view/414773.html?fromTaglist>
+
+java中回调函数的实例说明 <http://www.blogjava.net/songfei/articles/126093.html>
+
+Android事件侦听浅谈 <http://developer.51cto.com/art/201001/180846.htm>

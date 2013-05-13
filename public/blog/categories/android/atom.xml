@@ -4,7 +4,7 @@
   <title><![CDATA[Category: android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-04-27T20:12:21+08:00</updated>
+  <updated>2013-05-13T19:58:40+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,927 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Service写入数据库并更新UI]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/13/SQLTest/"/>
+    <updated>2013-05-13T22:22:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/13/SQLTest</id>
+    <content type="html"><![CDATA[<p>目的是使用Service写入SQLite数据库，然后通知UI更新。</p>
+
+<!-- more -->
+
+
+<p>首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。</p>
+
+<h3>ItemContentProvider.java</h3>
+
+<p>重写方法提供对数据库的操作（插入、修改、删除等），设置好Uri</p>
+
+<p>这里主要重写了bulkInsert，由于一次插入的数据太多，如果每次都读写一次文件会导致速度很慢，所以添加事务处理。</p>
+
+<p>如果使用ContentObserver，需要在更改数据库后调用getContext().getContentResolver().notifyChange(uri, null);通知所有使用Uri的地方更新数据。</p>
+
+<p>基于需要，每次bulkInsert时清空表，并重新开始计号。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">//...</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Uri</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">ContentValues</span> <span class="n">contentValues</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mDatabase</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">&quot;items&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">contentValues</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">bulkInsert</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">ContentValues</span><span class="o">[]</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">numInserted</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">mDatabase</span> <span class="o">=</span> <span class="n">mHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">mDatabase</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mDatabase</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;delete from items ; &quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">mDatabase</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;update sqlite_sequence set seq=0 where name=&#39;items&#39;&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">values</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">insert</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">values</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">mDatabase</span><span class="o">.</span><span class="na">setTransactionSuccessful</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">numInserted</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mDatabase</span><span class="o">.</span><span class="na">endTransaction</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//      sendNotify(uri);&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="k">return</span> <span class="n">numInserted</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">sendNotify</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">notify</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="na">getQueryParameter</span><span class="o">(</span><span class="s">&quot;notify&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">notify</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">notify</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;true&quot;</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">getContext</span><span class="o">().</span><span class="na">getContentResolver</span><span class="o">().</span><span class="na">notifyChange</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>在AndroidManifest里注册provider</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>    <span class="ni">&amp;lt;</span>provider
+</span><span class='line'>        android:name=&quot;com.example.sqltest.ItemContentProvider&quot;
+</span><span class='line'>        android:authorities=&quot;com.example.sqltest.items&quot; <span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/provider<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>SQLiteOpenHelper</h3>
+
+<p>创建、升级数据库（使用了单例模式）</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ItemDatabaseHelper</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">ItemDatabaseHelper</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">ItemDatabaseHelper</span> <span class="nf">getInstance</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ItemDatabaseHelper</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">ItemDatabaseHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">&quot;items&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">DATABASE_VERSION</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">database</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;create table if not exists items(&quot;</span>
+</span><span class='line'>                <span class="o">+</span> <span class="s">&quot; _id integer primary key autoincrement,&quot;</span> <span class="o">+</span> <span class="s">&quot; name text,&quot;</span>
+</span><span class='line'>                <span class="o">+</span> <span class="s">&quot;cid text&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>创建Service的子类，使用startService(intent);的方式，在Activity onDestroy时使用stopService(intent);销毁。</h2>
+
+<p>所注册的BroadcastReceiver也要使用 unregisterReceiver(receiver);</p>
+
+<h3>在AndroidManifest里注册</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>    <span class="ni">&amp;lt;</span>service android:name=&quot;com.example.sqltest.LoadService&quot; <span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>intent-filter<span class="ni">&amp;gt;</span>
+</span><span class='line'>            <span class="ni">&amp;lt;</span>action android:name=&quot;com.example.sqltest.LOAD_SERVICE&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'>        <span class="ni">&amp;lt;</span>/intent-filter<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>/service<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>在现实数据的Activity里，较为灵活地注册了Receiver</h2>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kt">void</span> <span class="n">registerLoadReceiver</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">LoadReceiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LoadReceiver</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">IntentFilter</span> <span class="n">filter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntentFilter</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">filter</span><span class="o">.</span><span class="na">addAction</span><span class="o">(</span><span class="s">&quot;com.example.sqltest.LOAD_BROADCAST&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">registerReceiver</span><span class="o">(</span><span class="n">receiver</span><span class="o">,</span> <span class="n">filter</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>因此可以在BroadcastReceiver的子类中方便地修改UI，</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">class</span> <span class="nc">LoadReceiver</span> <span class="kd">extends</span> <span class="n">BroadcastReceiver</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceive</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">setRiverListViewAdapter</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>此处只是简单地设置listview的Adapter</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&quot;deprecation&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">setRiverListViewAdapter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mListView</span> <span class="o">=</span> <span class="o">(</span><span class="n">ListView</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">managedQuery</span><span class="o">(</span><span class="n">ItemContentProvider</span><span class="o">.</span><span class="na">CONTENT_URI</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span>
+</span><span class='line'>            <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">CursorAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleCursorAdapter</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">row</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">cursor</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">ItemContentProvider</span><span class="o">.</span><span class="na">NAME</span> <span class="o">},</span>
+</span><span class='line'>            <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">text1</span> <span class="o">});</span>
+</span><span class='line'>    <span class="n">mListView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>全部代码地址 <a href="https://github.com/dande618/SQLTest">https://github.com/dande618/SQLTest</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[【转载】Android到处都在使用的回调分析]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/01/listener/"/>
+    <updated>2013-05-01T13:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/01/listener</id>
+    <content type="html"><![CDATA[<p>Android到处都在使用的回调分析</p>
+
+<!-- more -->
+
+
+<p><a href="http://lzd20021683.iteye.com/blog/1319626">http://lzd20021683.iteye.com/blog/1319626</a></p>
+
+<blockquote><p><strong>回调函数：</strong></p>
+
+<p>回调函数就是一个通过函数指针调用的函数。如果你把函数的指针(地址)作为参数传递给另一个函数，当这个指针被用为调用它所指向的函数时，我们就说这是回调函数。回调函数不是由该函数的实现方直接调用，而是在特定的事件或条件发生时由另外的一方调用的，用于对该事件或条件进行响应。</p></blockquote>
+
+<p>Java 中没有指针的概念，通过接口和内部类的方式实现回调的功能:</p>
+
+<ol>
+<li><p>定义接口 Callback ,包含回调方法 callback()</p></li>
+<li><p>在一个类Caller 中声明一个Callback接口对象 mCallback</p></li>
+<li><p>在程序中赋予Caller对象的接口成员(mCallback) 一个内部类对象如</p></li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">new</span>  <span class="n">Callback</span><span class="err">（）</span><span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">callback</span><span class="err">（）</span><span class="o">{</span>
+</span><span class='line'>     <span class="c1">//函数的具体实现</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>　　这样,在需要的时候,可用Caller对象的mCallback接口成员调用callback()方法,完成回调.</p>
+
+<p>　　Android事件侦听器是视图View类的接口，包含一个单独的回调方法。这些方法将在视图中注册的侦听器被用户界面操作触发时由Android框架调用。回调方法被包含在Android事件侦听器接口中：</p>
+
+<p>　　例如,Android 的view 对象都含有一个命名为 OnClickListener 接口成员变量，用户的点击操作都会交给 OnClickListener的 OnClick() 方法进行处理。</p>
+
+<p>　　开发者若需要对点击事件做处理，可以定义一个 OnClickListener 接口对象，赋给需要被点击的 view的接口成员变量OnClickListener，一般是用 view 的setOnClickListener() 函数来完成这一操作。</p>
+
+<p>　　当有用户点击事件时，系统就会回调被点击view的OnClickListener接口成员的OnClick()方法。</p>
+
+<h3>实例(对于Android界面上Button点击事件监听的模拟):</h3>
+
+<p>1．定义接口</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">OnClickListener</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">OnClick</span><span class="o">(</span><span class="n">Button</span> <span class="n">b</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>2． 定义Button</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Button</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">OnClickListener</span> <span class="n">listener</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kt">void</span> <span class="n">click</span><span class="o">()</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">listener</span><span class="o">.</span><span class="na">OnClick</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setOnClickListener</span><span class="o">(</span><span class="n">OnClickListener</span> <span class="n">listener</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">this</span><span class="o">.</span><span class="na">listener</span> <span class="o">=</span> <span class="n">listener</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>3． 将接口对象OnClickListener 赋给 Button的接口成员</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Activity</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">Activity</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">();</span>
+</span><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">OnClickListener</span><span class="o">(){</span>
+</span><span class='line'>   <span class="nd">@Override</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">OnClick</span><span class="o">(</span><span class="n">Button</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;clicked&quot;</span><span class="o">);</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">click</span><span class="o">();</span> <span class="c1">//user click,System call button.click();</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>要定义这些方法并处理你的事件，在你的活动中实现这个嵌套接口或定义它为一个匿名类：</p>
+
+<p>采用匿名类方式实现：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Create an anonymous implementation of OnClickListener&lt;br/&gt;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">OnClickListener</span> <span class="n">mCorkyListener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OnClickListener</span><span class="o">()</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="c1">// do something when the button is clicked&lt;br/&gt;</span>
+</span><span class='line'><span class="o">}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">};&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedValues</span><span class="o">)</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">...&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="c1">// Capture our button from layout&lt;br/&gt;</span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span><span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">corky</span><span class="o">);&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="c1">// Register the onClick listener with the implementation above&lt;br/&gt;</span>
+</span><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="n">mCorkyListener</span><span class="o">);&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">...&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>采用嵌套接口实现：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExampleActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="kd">implements</span> <span class="n">OnClickListener</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedValues</span><span class="o">)</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">...&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span><span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">corky</span><span class="o">);&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="c1">// Implement the OnClickListener callback&lt;br/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="c1">// do something when the button is clicked&lt;br/&gt;</span>
+</span><span class='line'><span class="o">}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">...&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>下面以MMS模块中的实际例子为例进行说明：</p>
+
+<h3>例子1：</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//ConversationListAdapter.java&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">OnContentChangedListener</span> <span class="n">mOnContentChangedListener</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">OnContentChangedListener</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="kt">void</span> <span class="n">onContentChanged</span><span class="o">(</span><span class="n">ConversationListAdapter</span> <span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setOnContentChangedListener</span><span class="o">(</span><span class="n">OnContentChangedListener</span> <span class="n">l</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mOnContentChangedListener</span> <span class="o">=</span> <span class="n">l</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onContentChanged</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">mCursor</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="o">!</span><span class="n">mCursor</span><span class="o">.</span><span class="na">isClosed</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">mOnContentChangedListener</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">mOnContentChangedListener</span><span class="o">.</span><span class="na">onContentChanged</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//ConversationList.java&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">ConversationListAdapter</span><span class="o">.</span><span class="na">OnContentChangedListener</span> <span class="n">mContentChangedListener</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="k">new</span> <span class="n">ConversationListAdapter</span><span class="o">.</span><span class="na">OnContentChangedListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onContentChanged</span><span class="o">(</span><span class="n">ConversationListAdapter</span> <span class="n">adapter</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">startAsyncQuery</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">initListAdapter</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mListAdapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConversationListAdapter</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">mListAdapter</span><span class="o">.</span><span class="na">setOnContentChangedListener</span><span class="o">(</span><span class="n">mContentChangedListener</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">setListAdapter</span><span class="o">(</span><span class="n">mListAdapter</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">getListView</span><span class="o">().</span><span class="na">setRecyclerListener</span><span class="o">(</span><span class="n">mListAdapter</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>例子2：</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//WorkingMessage.java&lt;br/&gt;</span>
+</span><span class='line'> <span class="kd">private</span> <span class="kd">final</span> <span class="n">MessageStatusListener</span> <span class="n">mStatusListener</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MessageStatusListener</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="cm">/** </span>
+</span><span class='line'><span class="cm">     * Called when the protocol for sending the message changes from SMS </span>
+</span><span class='line'><span class="cm">     * to MMS, and vice versa. </span>
+</span><span class='line'><span class="cm">     * </span>
+</span><span class='line'><span class="cm">     * @param mms If true, it changed to MMS.  If false, to SMS. </span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">onProtocolChanged</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">mms</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/** </span>
+</span><span class='line'><span class="cm">     * Called when an attachment on the message has changed. </span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">onAttachmentChanged</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/** </span>
+</span><span class='line'><span class="cm">     * Called just before the process of sending a message. </span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">onPreMessageSent</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/** </span>
+</span><span class='line'><span class="cm">     * Called once the process of sending a message, triggered by </span>
+</span><span class='line'><span class="cm">     * {@link send} has completed. This doesn&#39;t mean the send succeeded, </span>
+</span><span class='line'><span class="cm">     * just that it has been dispatched to the network. </span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">onMessageSent</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/** </span>
+</span><span class='line'><span class="cm">     * Called if there are too many unsent messages in the queue and we&#39;re not allowing </span>
+</span><span class='line'><span class="cm">     * any more Mms&#39;s to be sent. </span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">onMaxPendingMessagesReached</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/** </span>
+</span><span class='line'><span class="cm">     * Called if there&#39;s an attachment error while resizing the images just before sending. </span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">onAttachmentError</span><span class="o">(</span><span class="kt">int</span> <span class="n">error</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="nf">WorkingMessage</span><span class="o">(</span><span class="n">ComposeMessageActivity</span> <span class="n">activity</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mActivity</span> <span class="o">=</span> <span class="n">activity</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">mContentResolver</span> <span class="o">=</span> <span class="n">mActivity</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">mStatusListener</span> <span class="o">=</span> <span class="n">activity</span><span class="o">;</span> <span class="c1">//设置  </span>
+</span><span class='line'>    <span class="n">mAttachmentType</span> <span class="o">=</span> <span class="n">TEXT</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">mText</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">WorkingMessage</span> <span class="n">createEmpty</span><span class="o">(</span><span class="n">ComposeMessageActivity</span> <span class="n">activity</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="c1">// Make a new empty working message.  </span>
+</span><span class='line'>    <span class="n">WorkingMessage</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WorkingMessage</span><span class="o">(</span><span class="n">activity</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">msg</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="kd">private</span> <span class="kt">void</span> <span class="n">sendSmsWorker</span><span class="o">(</span><span class="n">String</span> <span class="n">msgText</span><span class="o">,</span> <span class="n">String</span> <span class="n">semiSepRecipients</span><span class="o">,</span> <span class="kt">long</span> <span class="n">threadId</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="n">String</span><span class="o">[]</span> <span class="n">dests</span> <span class="o">=</span> <span class="n">TextUtils</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="n">semiSepRecipients</span><span class="o">,</span> <span class="s">&quot;;&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">LogTag</span><span class="o">.</span><span class="na">VERBOSE</span> <span class="o">||</span> <span class="n">Log</span><span class="o">.</span><span class="na">isLoggable</span><span class="o">(</span><span class="n">LogTag</span><span class="o">.</span><span class="na">TRANSACTION</span><span class="o">,</span> <span class="n">Log</span><span class="o">.</span><span class="na">VERBOSE</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">LogTag</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&quot;sendSmsWorker sending message: recipients=&quot;</span> <span class="o">+</span> <span class="n">semiSepRecipients</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot;, threadId=&quot;</span> <span class="o">+</span> <span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">MessageSender</span> <span class="n">sender</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SmsMessageSender</span><span class="o">(</span><span class="n">mActivity</span><span class="o">,</span> <span class="n">dests</span><span class="o">,</span> <span class="n">msgText</span><span class="o">,</span> <span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">sender</span><span class="o">.</span><span class="na">sendMessage</span><span class="o">(</span><span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// Make sure this thread isn&#39;t over the limits in message count  </span>
+</span><span class='line'>        <span class="n">Recycler</span><span class="o">.</span><span class="na">getSmsRecycler</span><span class="o">().</span><span class="na">deleteOldMessagesByThreadId</span><span class="o">(</span><span class="n">mActivity</span><span class="o">,</span> <span class="n">threadId</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;Failed to send SMS message, threadId=&quot;</span> <span class="o">+</span> <span class="n">threadId</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mStatusListener</span><span class="o">.</span><span class="na">onMessageSent</span><span class="o">();</span>  <span class="c1">//调用  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//ComposeMessageActivity.java&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ComposeMessageActivity</span> <span class="kd">extends</span> <span class="n">Activity</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="kd">implements</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">,</span> <span class="n">TextView</span><span class="o">.</span><span class="na">OnEditorActionListener</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">MessageStatusListener</span><span class="cm">/*实现该接口*/</span><span class="o">,</span> <span class="n">Contact</span><span class="o">.</span><span class="na">UpdateListener</span> <span class="o">{</span>
+</span><span class='line'> <span class="o">....</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onProtocolChanged</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">mms</span><span class="o">)</span> <span class="o">{</span><span class="c1">//实现onProtocolChanged接口  </span>
+</span><span class='line'>    <span class="c1">// Have to make sure we&#39;re on the UI thread. This function can be called off of the UI  </span>
+</span><span class='line'>    <span class="c1">// thread when we&#39;re adding multi-attachments  </span>
+</span><span class='line'>    <span class="n">runOnUiThread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">toastConvertInfo</span><span class="o">(</span><span class="n">mms</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">setSendButtonText</span><span class="o">(</span><span class="n">mms</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">....</span>
+</span><span class='line'>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">,</span> <span class="kt">long</span> <span class="n">originalThreadId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="n">getIntent</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Create a new empty working message.  </span>
+</span><span class='line'>    <span class="n">mWorkingMessage</span> <span class="o">=</span> <span class="n">WorkingMessage</span><span class="o">.</span><span class="na">createEmpty</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> <span class="c1">//  </span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>参考：</h3>
+
+<p>回调机制在 Android 监听用户界面操作中的体现 <a href="http://www.cnblogs.com/greatstar/archive/2011/03/02/1968999.html">http://www.cnblogs.com/greatstar/archive/2011/03/02/1968999.html</a></p>
+
+<p>百度百科: 回调函数 <a href="http://baike.baidu.com/view/414773.html?fromTaglist">http://baike.baidu.com/view/414773.html?fromTaglist</a></p>
+
+<p>java中回调函数的实例说明 <a href="http://www.blogjava.net/songfei/articles/126093.html">http://www.blogjava.net/songfei/articles/126093.html</a></p>
+
+<p>Android事件侦听浅谈 <a href="http://developer.51cto.com/art/201001/180846.htm">http://developer.51cto.com/art/201001/180846.htm</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android Service]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/30/service/"/>
+    <updated>2013-04-30T20:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/30/service</id>
+    <content type="html"><![CDATA[<p>Service，Android在后台运行的服务，和Activiy比较相似，只是没有界面显示。Service的启动方式有Context.startService()和Context.bindService()两种。</p>
+
+<!-- more -->
+
+
+<p>使用Service，需要定义一个继承android.app.Service的子类；</p>
+
+<p>和Activity一样，Service也要在AndroidMainfest里声明，同时可以声明由哪些intent启动；</p>
+
+<p>Service的子类必须实现abstract IBinder onBind(Intent intent)方法，该方法返回一个IBinder对象，应用程序可以通过该对象与Service通讯；</p>
+
+<h3>Service的生命周期</h3>
+
+<p><img src="http://img.my.csdn.net/uploads/201203/20/0_13322041884wH4.gif" alt="Service生命周期" /></p>
+
+<h3>服务的生命周期</h3>
+
+<p>有了 Service 类我们如何启动他呢，有两种方法：</p>
+
+<ul>
+<li><p>Context.startService()</p></li>
+<li><p>Context.bindService()</p></li>
+</ul>
+
+
+<p>在同一个应用任何地方调用 startService() 方法就能启动 Service 了，然后系统会回调 Service 类的 onCreate() 以及 onStart() 方法。这样启动的 Service 会一直运行在后台，直到 Context.stopService() 或者 selfStop() 方法被调用。另外如果一个 Service 已经被启动，其他代码再试图调用 startService() 方法，是不会执行 onCreate() 的，但会重新执行一次 onStart() 。</p>
+
+<p>另外一种 bindService() 方法的意思是，把这个 Service 和调用 Service 的客户类绑起来，如果调用这个客户类被销毁，Service 也会被销毁。用这个方法的一个好处是，bindService() 方法执行后 Service 会回调上边提到的 onBind() 方发，你可以从这里返回一个实现了 IBind 接口的类，在客户端操作这个类就能和这个服务通信了，比如得到 Service 运行的状态或其他操作。如果 Service 还没有运行，使用这个方法启动 Service 就会 onCreate() 方法而不会调用 onStart()。</p>
+
+<h3>与 Service 通信并且让它持续运行</h3>
+
+<p>如果我们想保持和 Service 的通信，又不想让 Service 随着 Activity 退出而退出呢？你可以先 startService() 然后再 bindService() 。当你不需要绑定的时候就执行 unbindService() 方法，执行这个方法只会触发 Service 的 onUnbind() 而不会把这个 Service 销毁。这样就可以既保持和 Service 的通信，也不会随着 Activity 销毁而销毁了。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android ContentProvider]]></title>
+    <link href="http://dande618.github.com/blog/2013/04/28/ContentProvider/"/>
+    <updated>2013-04-28T20:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/04/28/ContentProvider</id>
+    <content type="html"><![CDATA[<p>ContentProvider是Android不同应用程序之间进行数据交换的标准API。ContentProvider是Android的四大组件之一（Activity、ContentProvider、Service、BroadcastReceiver），他们都需要在Mainfest文件中配置。ContentProvider以Uri对外提供数据，其他应用使用ContentResolver根据Uri去访问操作指定数据。</p>
+
+<!-- more -->
+
+
+<p>其中ContentProvider负责</p>
+
+<ul>
+<li><p>组织应用程序的数据；</p></li>
+<li><p>向其他应用程序提供数据；</p></li>
+</ul>
+
+
+<p>ContentResolver则负责</p>
+
+<ul>
+<li><p>获取ContentProvider提供的数据；</p></li>
+<li><p>修改/添加/删除更新数据等；</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android SQLite]]></title>
@@ -445,1345 +1366,6 @@ close() synchronized void 关闭所有打开的数据库对象</p>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ShareAction在AVD失效的问题]]></title>
-    <link href="http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork/"/>
-    <updated>2013-04-07T11:11:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork</id>
-    <content type="html"><![CDATA[<p>　　在虚拟机（AVD，Android Virtual Device）使用ActionBar／ActionBarSherlock）上的ShareAction分享按键，怎么点也点不出程式列表，但在手机上没有问题。</p>
-
-<!-- more -->
-
-
-<br />
-
-
-<p><img class="center" src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093427048.jpg" title="ShareAction" ></p>
-
-<br />
-
-
-<p>　　在网路上查找，确有人反映过这个问题，应该是一个BUG。</p>
-
-<p>　　参见 <a href="http://code.google.com/p/android/issues/detail?id=25467">android.widget.ShareActionProvider does not work on the emulator</a></p>
-
-<br />
-
-
-<p><img class="center" src="http://img14.poco.cn/mypoco/myphoto/20130409/10/4309479020130409101555091.jpg" title="ShareActionProvider" ></p>
-
-<p>　　此图是系统提供的ShareActionProvider类及相关对象，提供快速存取提供共享服务的Action。</p>
-
-<p>　　整个类图主要包括ShareActionProvider、ActivityChooserModel、ActivityChooserView、ActivityChooserViewAdapter等对象。</p>
-
-<p>　　派生自ActionProvider的具体类ShareActionProvider，用来实例化ActivityChooserModel、ActivityChooserView对象，并为ActivityChooserView对象设置数据模式，生成视图，操作和获取Model信息，根据Model信息创建活动菜单。</p>
-
-<p>　　ActivityChooserModel、ActivityChooserView、ActivityChooserViewAdapter三者构成MVC模式，分别对应Model、View及采用Adapter模式的Control，ActivityChooserView通过ActivityChooserViewAdapter获取ActivityChooserModel中的活动信息，ActivityChooserModel本身派生自DataSetObservable，可以在ActivityChooserView对象中为ActivityChooserModel对象登记一个DataSetObserver类型的对象，ActivityChooserModel对象通过该对象向ActivityChooserView对象发送ActivityChooserModel对象中的数据变化通知。</p>
-
-<p>　　ActivityChooserModel对于通过intent从包管理器中获得的符合intent条件的活动记录（以ActivityResolveInfo类型保存在数组列表中mActivites）的排序方法采用了策略模式，排序方法被封装成对象，在没有通过setActivitySorter方法设置排序方法时，采用默认排序方法，由DefaultSorter对象封装。DefaultSorter对象提供的排序方法是依据活动记录中的weight值进行排序，被排序的活动记录的weight值还依据记录在HistoricalRecord（HistoricalRecord中的活动通过读私有的XML类型的共享历史文件获得）列表中的活动顺序进行修改，依据HistoricalRecord列表的从后往前的顺序为mActivites数组中对应的对象增加weight值，活动历史记录中越往后的记录在mActivites列表中对应活动增加的权值越小，最新的相应记录增加的权值越大。</p>
-
-<p>　　HistoryPersister线程对象用于把HistoricalRecord列表中的记录保存到历史文件中。HistoryLoader线程对象用于读取历史文件到HistoricalRecord列表中。DataModelPackageMonitor对象用于监视数据包，在数据包更新时同步活动记录列表mActivites。ActivityChooserMode对象还通过Map类型的HashMap保证一个相同的历史文件只能实例化一个ActivityChooserModel对象，是单例模式的具体应用。</p>
-
-<br />
-
-
-<br />
-
-
-<p>在ActivityChooserView.java内的ActivityChooserViewAdapter类
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">mShowDefaultActivity</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(!</span><span class="n">mShowDefaultActivity</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">mDataModel</span><span class="o">.</span><span class="na">getDefaultActivity</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">activityCount</span><span class="o">--;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<br />
-
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="k">if</span> <span class="o">(</span><span class="n">activityCount</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="n">historySize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>        <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="n">VISIBLE</span><span class="o">);</span>
-</span><span class='line'>        <span class="n">ResolveInfo</span> <span class="n">activity</span> <span class="o">=</span> <span class="n">mAdapter</span><span class="o">.</span><span class="na">getDefaultActivity</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">PackageManager</span> <span class="n">packageManager</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getPackageManager</span><span class="o">();</span>
-</span><span class='line'>        <span class="n">mDefaultActivityButtonImage</span><span class="o">.</span><span class="na">setImageDrawable</span><span class="o">(</span><span class="n">activity</span><span class="o">.</span><span class="na">loadIcon</span><span class="o">(</span><span class="n">packageManager</span><span class="o">));</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">mDefaultActionButtonContentDescription</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">CharSequence</span> <span class="n">label</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="na">loadLabel</span><span class="o">(</span><span class="n">packageManager</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">String</span> <span class="n">contentDescription</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span>
-</span><span class='line'>                    <span class="n">mDefaultActionButtonContentDescription</span><span class="o">,</span> <span class="n">label</span><span class="o">);</span>
-</span><span class='line'>            <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setContentDescription</span><span class="o">(</span><span class="n">contentDescription</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// Work-around for #415.</span>
-</span><span class='line'>        <span class="n">mAdapter</span><span class="o">.</span><span class="na">setShowDefaultActivity</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">GONE</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>　　当打开程式时，如果只有一个响应intent的程式，activityCount成为0，button因而不能使用。</p>
-
-<br />
-
-
-<br />
-
-
-<br />
-
-
-<br />
-
-
-
-
-<div style="float:right;width:38.2%;margin-left: 0.6em;margin-top: 0.6em;"><img src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093549098.jpg" /></div>
-
-
-<p>　　据分析，当只有一个（或零个）程式接受Intent.ACTION_SEND（或其他）的某个类型（如text/plain）时，就无法点出分享。而AVD初始时可能只有SMS（简讯息）可接受此Intent。如果再装载一个程式（如微博客户端），就可以正常使用ShareAction打开分享程式列表了。由于ShareAction会记住使用最多的程式，并显示在ActionBar上，所以使用过一次分享到SMS后卸载掉“微博”也是会显示SMS。但这并不解决问题。</p>
-
-<p>　　参见 <a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">ShareActionProvider does not work if only one intent</a></p>
-
-<br />
-
-
-<p>　　附ShareAction实现的部分代码（在SherlockFragment内，覆盖onCreateOptionsMenu方法）
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">ShareActionProvider</span> <span class="n">mShareActionProvider</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">,</span> <span class="n">MenuInflater</span> <span class="n">inflater</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">MenuItem</span> <span class="n">menuItem</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="na">findItem</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">share</span><span class="o">);</span>
-</span><span class='line'><span class="c1">// Get the provider and hold onto it to set/change the share intent.</span>
-</span><span class='line'><span class="n">mShareActionProvider</span> <span class="o">=</span> <span class="o">(</span><span class="n">ShareActionProvider</span><span class="o">)</span> <span class="n">menuItem</span><span class="o">.</span><span class="na">getActionProvider</span><span class="o">();</span>
-</span><span class='line'><span class="n">GoodsItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">GoodsItemManager</span><span class="o">.</span><span class="na">instance</span><span class="o">().</span><span class="na">getGoodsItems</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">mPosition</span><span class="o">);&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Intent</span> <span class="n">shareIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_SEND</span><span class="o">);</span>
-</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_SUBJECT</span><span class="o">,</span> <span class="n">getResources</span><span class="o">().</span><span class="na">getString</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">share_subject</span><span class="o">));</span>
-</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_TEXT</span><span class="o">,</span> <span class="n">Html</span><span class="o">.</span><span class="na">fromHtml</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">getTitle</span><span class="o">()));</span>
-</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">mShareActionProvider</span><span class="o">.</span><span class="na">setShareIntent</span><span class="o">(</span><span class="n">shareIntent</span><span class="o">);</span> <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<br />
-
-
-<p>　　menu下的xml文件中定义
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>item
-</span><span class='line'>    android:id=&quot;@+id/share&quot;
-</span><span class='line'>    android:icon=&quot;@drawable/ic_action_share&quot;
-</span><span class='line'>    android:showAsAction=&quot;ifRoom&quot;
-</span><span class='line'>    android:actionProviderClass=&quot;com.actionbarsherlock.widget.ShareActionProvider&quot;
-</span><span class='line'>    android:title=&quot;@string/action_share&quot;<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/item<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<br />
-
-
-<p>　　ActionBarSherlock在最近修复了这个问题，详见<a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">上文链接</a>。有兴趣的朋友可以下载最新代码，或者在调试时装载其他支持分享的程式！</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[【转载】convertView&setTag方法的一点理解  ]]></title>
-    <link href="http://dande618.github.com/blog/2013/03/22/convertView/"/>
-    <updated>2013-03-22T22:02:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/03/22/convertView</id>
-    <content type="html"><![CDATA[<p>convertView&amp;setTag方法的一点理解</p>
-
-<p>转载来源 <a href="http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/">http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/</a></p>
-
-<!-- more -->
-
-
-<h2>前言</h2>
-
-<p>　　首先我们要知道setTag方法是干什么的，SDK解释为</p>
-
-<p>Tags</p>
-
-<blockquote><p>Unlike IDs, tags are not used to identify views. Tags are essentially an extra piece of information that can be associated with a view. They are most often used as a convenience to store data related to views in the views themselves rather than by putting them in a separate structure.</p></blockquote>
-
-<p>　　Tag不像ID是用标示view的。Tag从本质上来讲是就是相关联的view的额外的信息。它们经常用来存储一些view的数据，这样做非常方便而不用存入另外的单独结构。</p>
-
-<h2>convertView中的TAG</h2>
-
-<p>1.对于使用了LayoutInflater对象进行View扩充的Tag的使用</p>
-
-<p>　　在之前，在adapter中，我们在getView中是这么些的代码：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">ViewHolder</span> <span class="n">holder</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">holder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ViewHolder</span><span class="o">();</span>
-</span><span class='line'><span class="n">convertView</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">vlist2</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
-</span><span class='line'><span class="n">holder</span><span class="o">.</span><span class="na">img</span> <span class="o">=</span> <span class="o">(</span><span class="n">ImageView</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">img</span><span class="o">);</span>
-</span><span class='line'><span class="n">holder</span><span class="o">.</span><span class="na">title</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">title</span><span class="o">);</span>
-</span><span class='line'><span class="n">holder</span><span class="o">.</span><span class="na">info</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span>
-</span><span class='line'><span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">info</span><span class="o">);</span>
-</span><span class='line'><span class="c1">// setTag的妙用</span>
-</span><span class='line'><span class="n">convertView</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="n">holder</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'><span class="c1">// setTag的妙用</span>
-</span><span class='line'><span class="n">holder</span> <span class="o">=</span> <span class="o">(</span><span class="n">ViewHolder</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="c1">//……略</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>　　注意标红的地方，他们是使用了Tag的。</p>
-
-<p>　　首先我们要知道setTag方法是干什么的，他是给View对象的一个标签，标签可以是任何内容，我们这里把他设置成了一个对象，因为我们是把vlist2.xml的元素抽象出来成为一个类ViewHolder，用了setTag，这个标签就是ViewHolder实例化后对象的一个属性。我们之后对于ViewHolder实例化的对象holder的操作，都会因为java的引用机制而一直存活并改变convertView的内容，而不是每次都是去new一个。我们就这样达到的重用——我希望我说清楚了。如果有更简单的解释，请指教。</p>
-
-<p>　　这是我们在Adapter中的使用，那么我们在这里不使用Tag标签会怎么样呢？</p>
-
-<p>　　我们试想，如果我们不用Tag标签，那么我们的对象如何与convertView缓存结合并达到合理的效率利用？貌似答案并不明朗——所以使用Tag是比较明智的做法。</p>
-
-<p>2.对于没有使用LayoutInflater对象进行View扩充的Tag的使用。
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="n">view</span> <span class="o">=</span> <span class="n">convertView</span><span class="o">;</span>
-</span><span class='line'><span class="o">...</span>
-</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'><span class="n">view</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Xxx</span><span class="o">(...);</span>
-</span><span class='line'><span class="o">...</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>　　这是我们的程序，我们看到，貌似没有用Tag——是的，当没有使用LayoutInflater进行View的扩充的时候，是没有必要用的，虽然也可以用。</p>
-
-<p>3.对于其他View的Tag使用</p>
-
-<p>　　我们可以对所有的View对象进行操作，至于怎么用，就看作者怎么想的了，下面举例说一个View的子类button对于tag的一个使用。</p>
-
-<p>　　直接贴代码了：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ButtonTagTestActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="kd">implements</span> <span class="n">OnClickListener</span> <span class="o">{</span>
-</span><span class='line'><span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span> <span class="n">Called</span> <span class="n">when</span> <span class="n">the</span> <span class="n">activity</span> <span class="n">is</span> <span class="n">first</span> <span class="n">created</span><span class="o">.</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
-</span><span class='line'><span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
-</span><span class='line'><span class="n">Button</span> <span class="n">button1</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button1</span><span class="o">);</span>
-</span><span class='line'><span class="n">Button</span> <span class="n">button2</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button2</span><span class="o">);</span>
-</span><span class='line'><span class="n">Button</span> <span class="n">button3</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button3</span><span class="o">);</span>
-</span><span class='line'><span class="n">button1</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-</span><span class='line'><span class="n">button2</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
-</span><span class='line'><span class="n">button3</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
-</span><span class='line'><span class="n">button1</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="nd">@Override</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="c1">// TODO Auto-generated method stub</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">tag</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">arg0</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
-</span><span class='line'><span class="k">switch</span> <span class="o">(</span><span class="n">tag</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="o">{</span>
-</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button1&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
-</span><span class='line'><span class="k">break</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">case</span> <span class="mi">2</span><span class="o">:</span> <span class="o">{</span>
-</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button2&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
-</span><span class='line'><span class="k">break</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">case</span> <span class="mi">3</span><span class="o">:</span> <span class="o">{</span>
-</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button3&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
-</span><span class='line'><span class="k">break</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">default</span><span class="o">:</span> <span class="o">{</span>
-</span><span class='line'><span class="k">break</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>　　Xml页面代码就不贴了。这个例子是点击界面上的3个button然后会显示用户点击的按钮。我们的程序是实现了页面全局监听，在监听前设置了每个button的tag，之后我们在switch的时候，使用getTag取出的标签来看是什么操作。</p>
-
-<p>　　这样做的好处是可以将监听集中管理，提高代码的易读性——当然，这是我的自我理解。</p>
-
-<h2>后记</h2>
-
-<p>　　看了这么多的实例，我想已经明白了Tag以及convertView。</p>
-
-<p>　　对我们知道了Tag的作用就是设置标签，标签可以是任意玩意。</p>
-
-<p>　　以及convertView是如何在程序中使代码运行变的效率的：利用缓存convertView尽可能少实例化同样结构体的对象；</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[【转载】android多种方式实现异步加载图片 ]]></title>
-    <link href="http://dande618.github.com/blog/2013/03/14/threadpool/"/>
-    <updated>2013-03-14T14:12:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/03/14/threadpool</id>
-    <content type="html"><![CDATA[<p>转载来源 <a href="http://www.cnblogs.com/Jaylong/archive/2012/08/08/handler.html">http://www.cnblogs.com/Jaylong/archive/2012/08/08/handler.html</a></p>
-
-<!-- more -->
-
-
-<p>如果异步加载网络图片，要在非UI线程中进行。通常有以下四种方式：</p>
-
-<p>1.handler+runnable方式：</p>
-
-<p>在activity中定义handler,然后用handler.post（Runnable）方法，此时会在主线程中执行，如果是sdk3.0以上会阻塞UI线程，报异常</p>
-
-<p>2.handler+thread+message模式：</p>
-
-<p>在handler中重写handMessage方法，加载网络图片的操作在thread中执行，通过handler发送消息，在handlerMessage中更新UI</p>
-
-<p>3.handler+threadpool(线程池)+message</p>
-
-<p>定义一个线程池，存放5个线程，然后使用handler的post方法执行UI更新操作</p>
-
-<p>4.handler+threadpool+message+softreference缓存</p>
-
-<p>先从缓存中加载图片，如果没有，就从网络中加载，然后保存到缓存，其他步骤同3</p>
-
-<p>获取网络图片的相关代码如下：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>package com.allen.utils;&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>import java.io.IOException;
-</span><span class='line'>import java.io.InputStream;
-</span><span class='line'>import java.lang.ref.SoftReference;
-</span><span class='line'>import java.net.HttpURLConnection;
-</span><span class='line'>import java.net.MalformedURLException;
-</span><span class='line'>import java.net.URL;
-</span><span class='line'>import java.util.Map;&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>import android.graphics.Bitmap;
-</span><span class='line'>import android.graphics.BitmapFactory;
-</span><span class='line'>import android.graphics.drawable.Drawable;
-</span><span class='line'>import android.util.Log;&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;p>public class Utils {&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>/**
-</span><span class='line'> * 获取网络中图片资源
-</span><span class='line'> * @param src 图片地址
-</span><span class='line'> * @return drawable对象
-</span><span class='line'> */
-</span><span class='line'>public static Drawable loadImage(String src){
-</span><span class='line'>    URL url=null;
-</span><span class='line'>    try {
-</span><span class='line'>        url = new URL(src);
-</span><span class='line'>    } catch (MalformedURLException e) {
-</span><span class='line'>        Log.e("-Utils--&gt;MalformedURLExcetion--", e.toString());
-</span><span class='line'>    }
-</span><span class='line'>    InputStream is=null;
-</span><span class='line'>    try {
-</span><span class='line'>        is = url.openStream();
-</span><span class='line'>    } catch (IOException e) {
-</span><span class='line'>        Log.e("-Utils--&gt;IOException--", e.toString());
-</span><span class='line'>    }
-</span><span class='line'>    Drawable drawable=Drawable.createFromStream(is, "img");
-</span><span class='line'>    return drawable;
-</span><span class='line'>}
-</span><span class='line'>/**  
-</span><span class='line'> * 从网络上下载  
-</span><span class='line'> * @param url  
-</span><span class='line'> * @return  
-</span><span class='line'> */  
-</span><span class='line'>public static Bitmap getBitMapFromUrl(String url) {   
-</span><span class='line'>    Bitmap bitmap = null;   
-</span><span class='line'>    URL u =null;   
-</span><span class='line'>    HttpURLConnection conn = null;   
-</span><span class='line'>    InputStream is = null;   
-</span><span class='line'>    try {   
-</span><span class='line'>        u = new URL(url);   
-</span><span class='line'>        conn = (HttpURLConnection)u.openConnection();   
-</span><span class='line'>        is = conn.getInputStream();   
-</span><span class='line'>        bitmap = BitmapFactory.decodeStream(is);   
-</span><span class='line'>    } catch (Exception e) {   
-</span><span class='line'>        e.printStackTrace();   
-</span><span class='line'>    }   
-</span><span class='line'>    return bitmap;   
-</span><span class='line'>}   
-</span><span class='line'>
-</span><span class='line'>/**  
-</span><span class='line'> * 从缓存中读取  
-</span><span class='line'> * @param url  
-</span><span class='line'> * @return  
-</span><span class='line'> * @throws Exception   
-</span><span class='line'> */  
-</span><span class='line'>public static Bitmap getImgFromCache(String url,Map&lt;String,SoftReference&lt;Bitmap&gt;&gt; imgCache) throws Exception {   
-</span><span class='line'>    Bitmap bitmap = null;   
-</span><span class='line'>    //从内存中读取   
-</span><span class='line'>    if(imgCache.containsKey(url)) {   
-</span><span class='line'>        synchronized (imgCache) {   
-</span><span class='line'>            SoftReference&lt;Bitmap&gt; bitmapReference = imgCache.get(url);   
-</span><span class='line'>            if(null != bitmapReference) {   
-</span><span class='line'>                bitmap = bitmapReference.get();                                  
-</span><span class='line'>            }   
-</span><span class='line'>        }   
-</span><span class='line'>    } else {//從網絡中下載  
-</span><span class='line'>        bitmap = getBitMapFromUrl(url);   
-</span><span class='line'>        //将图片保存进内存中   
-</span><span class='line'>        imgCache.put(url, new SoftReference&lt;Bitmap&gt;(bitmap));             
-</span><span class='line'>    }   
-</span><span class='line'>    return bitmap;   
-</span><span class='line'>}   
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>所有源码下载：<a href="http://files.cnblogs.com/Jaylong/loadImage.zip">http://files.cnblogs.com/Jaylong/loadImage.zip</a>；</p>
-
-<p>当然还有其他的方式，比如使用anysctask，或者timer，timertask……</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[【转载】Android组合控件 ]]></title>
-    <link href="http://dande618.github.com/blog/2013/03/12/attr/"/>
-    <updated>2013-03-12T19:22:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/03/12/attr</id>
-    <content type="html"><![CDATA[<p>来源地址：<a href="http://blog.csdn.net/lincyang/article/details/7421734">http://blog.csdn.net/lincyang/article/details/7421734</a></p>
-
-<!-- more -->
-
-
-<p>组合控件是自定义控件的一种，只不过它是由其他几个原生控件组合而成，故名组合控件。</p>
-
-<p>在实际项目中，GUI会遇到一些可以提取出来做成自定义控件情况。</p>
-
-<p>一个自定义控件的好处就是把一些需要模块化的UI和逻辑放在一起，做到了高内聚，向其他模块提供接口并很少
- 依赖外界，这样就是低耦合。一个自定义控件就是一个封闭的王国，这里由你掌控。</p>
-
-<p>上述是我自己的一个体会，想必大家也会常做自定义控件吧，就像逻辑部分的模块化一样。</p>
-
-<p>下面我要做一个例子，请看完成图。</p>
-
-<p><img src="http://my.csdn.net/uploads/201204/02/1333352187_6116.png" alt="示例图" /></p>
-
-<p>下面一排图片加文字就是组合控件了，我是怎么做的呢？</p>
-
-<p>其实这里用到了两个组合控件，一个是图片+文字，我把它叫一个Item，而三个在一起就是另一个控件了。</p>
-
-<p>重点看这个Item，它有自己的属性如图片、文字、图片大小、文字大小、不透明度等等。这些把它定义在attr文件中，然后在xml文件中</p>
-
-<p>配置，就像我们用原生控件一样。</p>
-
-<p>先看attr文件。</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>&lt;?xml version="1.0" encoding="utf-8"?&gt;  
-</span><span class='line'>&lt;resources&gt;  
-</span><span class='line'>        &lt;declare-styleable name="LevelMenuItem"&gt;  
-</span><span class='line'>        &lt;attr name="text" format="string" /&gt;  
-</span><span class='line'>        &lt;attr name="text_color" format="color"/&gt;  
-</span><span class='line'>        &lt;attr name="text_size" format="dimension" /&gt;          
-</span><span class='line'>        &lt;attr name="image_src" format="reference"/&gt;  
-</span><span class='line'>        &lt;attr name="image_bg" format="reference"/&gt;  
-</span><span class='line'>        &lt;attr name="image_alpha" format="integer" /&gt;  
-</span><span class='line'>        &lt;attr name="image_height" format="dimension"&gt;&lt;/attr&gt;  
-</span><span class='line'>        &lt;attr name="image_width" format="dimension" /&gt;  
-</span><span class='line'>    &lt;/declare-styleable&gt;  
-</span><span class='line'>&lt;/resources&gt;  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-这个文件在values下，和string文件同级。把你自己要定义的属性都写在这里吧。format是属性的“单位”，如果你要问有多少中format呀？答案在这里。
-有了属性了，下面看看布局文件level_menu_item.xml。</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>&lt;?xml version="1.0" encoding="utf-8"?&gt;  
-</span><span class='line'>&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
-</span><span class='line'>    android:layout_width="fill_parent"  
-</span><span class='line'>    android:layout_height="fill_parent"  
-</span><span class='line'>    android:orientation="vertical" &gt;  
-</span><span class='line'>        &lt;ImageView  
-</span><span class='line'>            android:id="@+id/image_item"  
-</span><span class='line'>            android:layout_width="fill_parent"  
-</span><span class='line'>            android:layout_height="fill_parent"  
-</span><span class='line'>            android:scaleType="fitCenter"  
-</span><span class='line'>            /&gt;  
-</span><span class='line'>         &lt;TextView  
-</span><span class='line'>            android:id="@+id/tv_item"  
-</span><span class='line'>            android:layout_width="fill_parent"  
-</span><span class='line'>            android:layout_height="wrap_content"  
-</span><span class='line'>            android:gravity="center_horizontal"  
-</span><span class='line'>            android:textColor="#23ffffff"  
-</span><span class='line'>            android:textSize="25sp"   
-</span><span class='line'>         /&gt;      
-</span><span class='line'>&lt;/LinearLayout&gt;  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-这里唯一值得一说的是文本的颜色。大家看见他是8位的，前两位是表示不透明度的，后六位是表示颜色的，三色，范围都是00～ff。</p>
-
-<p>如果在java中设置颜色，需要这样。
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>setTextColor(0x23ffffff);  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-关于不透明度，一般美工会定义。有些要求不透明如30%这样的，可以用整型换算一下。00～ff对应十进制为0～255，那么30%就是255x0.3=76.5，用科学计算机换算为4c。
-更多颜色相关请看《Android中设置文本颜色的三种办法》</p>
-
-<p>然后我们就要写一个类，我这继承子线性布局。有两个构造函数，我们主要在两个参数的函数中工作。</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>public class LevelMenuItem extends LinearLayout {  
-</span><span class='line'>
-</span><span class='line'>    public LevelMenuItem(Context context, AttributeSet attrs) {  
-</span><span class='line'>        super(context, attrs);  
-</span><span class='line'>
-</span><span class='line'>    }  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-这个类中我们要完成的工作是，初始化控件属性、提供外部修改属性的接口、控件点击的回调接口。</p>
-
-<p>此类完整代码：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>package com.linc.game;  
-</span><span class='line'>
-</span><span class='line'>import android.content.Context;  
-</span><span class='line'>import android.content.res.TypedArray;  
-</span><span class='line'>import android.util.AttributeSet;  
-</span><span class='line'>import android.view.LayoutInflater;  
-</span><span class='line'>import android.view.View;  
-</span><span class='line'>import android.widget.ImageView;  
-</span><span class='line'>import android.widget.LinearLayout;  
-</span><span class='line'>import android.widget.TextView;  
-</span><span class='line'>/** 
-</span><span class='line'> * 自定义一个关卡 
-</span><span class='line'> * 共有7个属性，看attr文件 
-</span><span class='line'> * 在程序中提供修改这7个属性的接口， 
-</span><span class='line'> * 一个自定义控件的任务就算完成。 
-</span><span class='line'> * 一个自定义控件的好处就是把一些需要模块化的 
-</span><span class='line'> * UI和逻辑放在一起，做到了高内聚，向其他模块提供接口并很少 
-</span><span class='line'> * 依赖外界，这样就是低耦合。一个自定义控件就是一个封闭的王国， 
-</span><span class='line'> * 这里由你掌控。 
-</span><span class='line'> *  
-</span><span class='line'> * 编写时，如果遇到在attr里写好属性，但是在这里认不出来， 
-</span><span class='line'> * 就clean一下项目。切记。 
-</span><span class='line'> *  
-</span><span class='line'> * @author linc 
-</span><span class='line'> * 
-</span><span class='line'> */  
-</span><span class='line'>public class LevelMenuItem extends LinearLayout {  
-</span><span class='line'>    private TextView mTextView = null;  
-</span><span class='line'>    private ImageView mImageView = null;  
-</span><span class='line'>
-</span><span class='line'>    public LevelMenuItem(Context context) {  
-</span><span class='line'>        super(context);  
-</span><span class='line'>    }  
-</span><span class='line'>    public LevelMenuItem(Context context, AttributeSet attrs) {  
-</span><span class='line'>        super(context, attrs);  
-</span><span class='line'>
-</span><span class='line'>        LayoutInflater layoutInflater = (LayoutInflater) context.  
-</span><span class='line'>                        getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
-</span><span class='line'>        layoutInflater.inflate(R.layout.level_menu_item, this);  
-</span><span class='line'>
-</span><span class='line'>        TypedArray typedArray = context.obtainStyledAttributes(attrs  
-</span><span class='line'>                ,R.styleable.LevelMenuItem);  
-</span><span class='line'>
-</span><span class='line'>        initWidget(typedArray);  
-</span><span class='line'>    }  
-</span><span class='line'>    private void initWidget(TypedArray typedArray)  
-</span><span class='line'>    {  
-</span><span class='line'>        mTextView = (TextView)findViewById(R.id.tv_item);  
-</span><span class='line'>        String textString = typedArray.getString(R.styleable.LevelMenuItem_text);  
-</span><span class='line'>        int textColor = typedArray.getColor(R.styleable.LevelMenuItem_text_color,  
-</span><span class='line'>                0xffffffff);  
-</span><span class='line'>        float textSize = typedArray.getDimension(R.styleable.LevelMenuItem_text_size,  
-</span><span class='line'>                20);  
-</span><span class='line'>        mTextView.setText(textString);  
-</span><span class='line'>        mTextView.setTextColor(textColor);  
-</span><span class='line'>        mTextView.setTextSize(textSize);  
-</span><span class='line'>
-</span><span class='line'>        mImageView = (ImageView)findViewById(R.id.image_item);  
-</span><span class='line'>        int imageHeight = (int) typedArray.getDimension(R.styleable.LevelMenuItem_image_height, 25);  
-</span><span class='line'>        int imageWidth = (int) typedArray.getDimension(R.styleable.LevelMenuItem_image_width, 25);  
-</span><span class='line'>        int imageSrc = typedArray.getResourceId(R.styleable.LevelMenuItem_image_src, 0);  
-</span><span class='line'>        int imageBg = typedArray.getResourceId(R.styleable.LevelMenuItem_image_bg, 0);  
-</span><span class='line'>        int imageAlpha = typedArray.getInt(R.styleable.LevelMenuItem_image_alpha, 255);  
-</span><span class='line'>        mImageView.setAlpha(imageAlpha);  
-</span><span class='line'>        mImageView.setImageResource(imageSrc);  
-</span><span class='line'>        mImageView.setBackgroundResource(imageBg);  
-</span><span class='line'>        LayoutParams layoutParams = new LayoutParams(imageWidth, imageHeight);  
-</span><span class='line'>        mImageView.setLayoutParams(layoutParams);  
-</span><span class='line'>
-</span><span class='line'>        typedArray.recycle();  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置此控件的文本 
-</span><span class='line'>     * @param text 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setText(String text)  
-</span><span class='line'>    {  
-</span><span class='line'>        mTextView.setText(text);  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置文字颜色 
-</span><span class='line'>     * @param textColor 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setTextColor(int textColor)  
-</span><span class='line'>    {  
-</span><span class='line'>        mTextView.setTextColor(textColor);  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置字体大小 
-</span><span class='line'>     * @param textSize 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setTextSize(int textSize)  
-</span><span class='line'>    {  
-</span><span class='line'>        mTextView.setTextSize(textSize);  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置图片 
-</span><span class='line'>     * @param resId 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setImageResource(int resId)  
-</span><span class='line'>    {  
-</span><span class='line'>        mImageView.setImageResource(resId);  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置图片背景 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setBackgroundResource(int resId)  
-</span><span class='line'>    {  
-</span><span class='line'>        mImageView.setBackgroundResource(resId);  
-</span><span class='line'>    }     
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置图片的不透名度 
-</span><span class='line'>     * @param alpha 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setImageAlpha(int alpha)  
-</span><span class='line'>    {  
-</span><span class='line'>        mImageView.setAlpha(alpha);  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 设置图片的大小 
-</span><span class='line'>     * 这里面需要使用LayoutParams这个布局参数来设置 
-</span><span class='line'>     * @param width 
-</span><span class='line'>     * @param height 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setImageSize(int width,int height)  
-</span><span class='line'>    {  
-</span><span class='line'>        LayoutParams layoutParams = new LayoutParams(width, height);  
-</span><span class='line'>        mImageView.setLayoutParams(layoutParams);  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * image点击事件的回调 
-</span><span class='line'>     * @param listener 
-</span><span class='line'>     */  
-</span><span class='line'>    public void setOnClickListener(OnItemClickListener listener)  
-</span><span class='line'>    {  
-</span><span class='line'>        mImageView.setOnClickListener(new View.OnClickListener() {  
-</span><span class='line'>            @Override  
-</span><span class='line'>            public void onClick(View v) {  
-</span><span class='line'>                listener.onImageClick();  
-</span><span class='line'>            }  
-</span><span class='line'>        });  
-</span><span class='line'>    }  
-</span><span class='line'>    /** 
-</span><span class='line'>     * 点击事件接口 
-</span><span class='line'>     * @author linc 
-</span><span class='line'>     * 
-</span><span class='line'>     */  
-</span><span class='line'>    public interface OnItemClickListener  
-</span><span class='line'>    {  
-</span><span class='line'>        public void onImageClick();  
-</span><span class='line'>    }  
-</span><span class='line'>}  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-好，一个完整的组合控件就做好了，那么，我们如何使用呢？</p>
-
-<p>我要在LevelMenu中用它。xml文件如下：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>&lt;?xml version="1.0" encoding="utf-8"?&gt;  
-</span><span class='line'>&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
-</span><span class='line'>    xmlns:linc="http://schemas.android.com/apk/res/com.linc.game"  
-</span><span class='line'>    android:layout_width="fill_parent"  
-</span><span class='line'>    android:layout_height="fill_parent"  
-</span><span class='line'>    android:orientation="horizontal"&gt;      
-</span><span class='line'>    &lt;com.linc.game.LevelMenuItem  
-</span><span class='line'>        android:id="@+id/item1"  
-</span><span class='line'>        android:layout_width="70dp"  
-</span><span class='line'>        android:layout_height="80dp"  
-</span><span class='line'>        linc:text="@string/item1"  
-</span><span class='line'>        linc:text_size="14sp"  
-</span><span class='line'>        linc:text_color="#80fa8072"  
-</span><span class='line'>        linc:image_src="@drawable/orange_button_selector"  
-</span><span class='line'>        linc:image_alpha="128"  
-</span><span class='line'>        linc:image_height="48dp"  
-</span><span class='line'>        linc:image_width="48dp"  
-</span><span class='line'>        /&gt;  
-</span><span class='line'>    &lt;com.linc.game.LevelMenuItem  
-</span><span class='line'>        android:id="@+id/item2"  
-</span><span class='line'>        android:layout_marginLeft="20dp"  
-</span><span class='line'>        android:layout_width="70dp"  
-</span><span class='line'>        android:layout_height="80dp"  
-</span><span class='line'>        linc:text="@string/item2"  
-</span><span class='line'>        linc:text_size="14sp"  
-</span><span class='line'>        linc:text_color="#ffeee8aa"  
-</span><span class='line'>        linc:image_src="@drawable/red_button_selector"  
-</span><span class='line'>        linc:image_alpha="255"  
-</span><span class='line'>        linc:image_height="48dp"  
-</span><span class='line'>        linc:image_width="48dp"  
-</span><span class='line'>        /&gt;     
-</span><span class='line'>    &lt;com.linc.game.LevelMenuItem  
-</span><span class='line'>        android:id="@+id/item3"  
-</span><span class='line'>        android:layout_marginLeft="20dp"  
-</span><span class='line'>        android:layout_width="70dp"  
-</span><span class='line'>        android:layout_height="80dp"  
-</span><span class='line'>        linc:text="@string/item3"  
-</span><span class='line'>        linc:text_size="14sp"  
-</span><span class='line'>        linc:text_color="#80cd853f"  
-</span><span class='line'>        linc:image_src="@drawable/yellow_button_selector"  
-</span><span class='line'>        linc:image_alpha="128"  
-</span><span class='line'>        linc:image_height="48dp"  
-</span><span class='line'>        linc:image_width="48dp"  
-</span><span class='line'>        /&gt;         
-</span><span class='line'>&lt;/LinearLayout&gt;  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-加入自己包名的索引
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>xmlns:linc="http://schemas.android.com/apk/res/com.linc.game"  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-剩下的就一目了然了。</p>
-
-<p>LevelMenu.java</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>package com.linc.game;  
-</span><span class='line'>
-</span><span class='line'>import com.linc.game.LevelMenuItem.OnItemClickListener;  
-</span><span class='line'>import android.content.Context;  
-</span><span class='line'>import android.util.AttributeSet;  
-</span><span class='line'>import android.util.Log;  
-</span><span class='line'>import android.view.LayoutInflater;  
-</span><span class='line'>import android.widget.LinearLayout;  
-</span><span class='line'>
-</span><span class='line'>public class LevelMenu extends LinearLayout {  
-</span><span class='line'>    private LevelMenuItem item1,item2,item3;  
-</span><span class='line'>
-</span><span class='line'>    public LevelMenu(Context context) {  
-</span><span class='line'>        super(context);  
-</span><span class='line'>
-</span><span class='line'>    }  
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    public LevelMenu(Context context, AttributeSet attrs) {  
-</span><span class='line'>        super(context, attrs);  
-</span><span class='line'>        LayoutInflater layoutInflater = (LayoutInflater) context.  
-</span><span class='line'>            getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
-</span><span class='line'>        layoutInflater.inflate(R.layout.level_menu, this);  
-</span><span class='line'>        initWidget();  
-</span><span class='line'>    }  
-</span><span class='line'>    private void initWidget()  
-</span><span class='line'>    {  
-</span><span class='line'>        item1 = (LevelMenuItem)findViewById(R.id.item1);  
-</span><span class='line'>        item2 = (LevelMenuItem)findViewById(R.id.item2);  
-</span><span class='line'>        item3 = (LevelMenuItem)findViewById(R.id.item3);  
-</span><span class='line'>
-</span><span class='line'>        item1.setOnClickListener(new OnItemClickListener() {  
-</span><span class='line'>            @Override  
-</span><span class='line'>            public void onImageClick() {  
-</span><span class='line'>                Log.e("dfjdkfjd","dfdfd");  
-</span><span class='line'>            }  
-</span><span class='line'>        });  
-</span><span class='line'>    }  
-</span><span class='line'>}  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-在处理图片点击事件的时候，我用到了选择器（selector），这是我们实际开发中最常用的小技巧了。它能描述的状态很多，各位看官可以去查查。</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>&lt;?xml version="1.0" encoding="utf-8"?&gt;  
-</span><span class='line'>&lt;selector xmlns:android="http://schemas.android.com/apk/res/android" &gt;  
-</span><span class='line'>    &lt;item android:state_pressed="true"  
-</span><span class='line'>        android:drawable="@drawable/button_push"/&gt;  
-</span><span class='line'>    &lt;item android:drawable="@drawable/orange_button"/&gt;  
-</span><span class='line'>&lt;/selector&gt;  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-好，组合控件的例子先到这里，实际功能在下一个实战技巧中演练。</p>
-
-<p>大家在做自定义控件时需要注意的是：</p>
-
-<p>1、自定义控件类不能是是抽象类</p>
-
-<p>2、要用
-<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
-</span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>(Context context, AttributeSet attrs)  
-</span><span class='line'>&lt;/code>&lt;/pre>
-</span><span class='line'>
-</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div>
-这个构造函数</p>
-
-<p>否则报错：android.view.InflateException: Binary XML file line #15: Error inflating cla。。。</p>
 ]]></content>
   </entry>
   
