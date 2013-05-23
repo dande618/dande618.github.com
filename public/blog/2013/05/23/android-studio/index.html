@@ -3,11 +3,11 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Android ContentProvider - 初心</title>
+	<title>android studio 安装无法打开 - 初心</title>
 	<meta name="author" content="dande618">
 
 	
-	<meta name="description" content="ContentProvider是Android不同应用程序之间进行数据交换的标准API。ContentProvider是Android的四大组件之一（Activity、ContentProvider、Service、BroadcastReceiver），他们都需要在Mainfest文件中配置。 &hellip;">
+	<meta name="description" content="最近谷歌发布了Android Studio，是一个全新的Android开发环境，基于IntelliJIDEA。可以作为替代eclispe+adt的开发环境。 下载地址 http://developer.android.com/sdk/installing/studio.html 现在是0.1版， &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -72,41 +72,19 @@
 		
 	
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">Android ContentProvider</h2>
-	<div class="entry-content"><p>ContentProvider是Android不同应用程序之间进行数据交换的标准API。ContentProvider是Android的四大组件之一（Activity、ContentProvider、Service、BroadcastReceiver），他们都需要在Mainfest文件中配置。ContentProvider以Uri对外提供数据，其他应用使用ContentResolver根据Uri去访问操作指定数据。</p>
-
-<!-- more -->
+	<h2 class="title">Android Studio 安装无法打开</h2>
+	<div class="entry-content"><!-- more -->
 
 
-<p>其中ContentProvider负责</p>
+<p>最近谷歌发布了Android Studio，是一个全新的Android开发环境，基于IntelliJIDEA。可以作为替代eclispe+adt的开发环境。</p>
 
-<ul>
-<li><p>组织应用程序的数据；</p></li>
-<li><p>向其他应用程序提供数据；</p></li>
-</ul>
+<p>下载地址 http://developer.android.com/sdk/installing/studio.html</p>
 
+<p>现在是0.1版，编写布局文件实时预览并适配多屏的功能是亮点。</p>
 
-<p>ContentResolver则负责</p>
+<p>但是安装后出现可打开程序无反应的情况，似乎是系统变量中JAVA_HOME、CLASSPATH、PATH的配置问题。</p>
 
-<ul>
-<li><p>获取ContentProvider提供的数据；</p></li>
-<li><p>修改/添加/删除更新数据等；</p></li>
-</ul>
-
-
-<h2>Uri</h2>
-
-<p>与Url较为相似。由 content:// 、authority 和 words 三部分组成</p>
-
-<p>比如，访问words数据 content://com.test.providertest/words</p>
-
-<p>访问words数据中id为2的数据 content://com.test.providertest/words/2</p>
-
-<p>将string转化为uri，可以使用Uri.parse(String)静态方法</p>
-
-<h2>ContentResolver</h2>
-
-<p>使用 getContentResolver()方法获取到ContentResolver对象，然后可以使用对应的ContentProvider中的方法来操作数据了。</p>
+<p>但修改后也没有解决。。最后重新安装JDK1.7后就没问题了（原来是1.6）。</p>
 </div>
 
 
@@ -123,7 +101,7 @@
   
 
 
-<time datetime="2013-04-28T20:01:00+08:00" pubdate data-updated="true">Apr 28<span>th</span>, 2013</time></div>
+<time datetime="2013-05-23T23:01:00+08:00" pubdate data-updated="true">May 23<span>rd</span>, 2013</time></div>
 	<div class="tags">
 
 
@@ -132,7 +110,7 @@
 
 </div>
 	
-		<div class="comments"><a href="/blog/2013/04/28/ContentProvider/#disqus_thread">Comments</a></div>
+		<div class="comments"><a href="/blog/2013/05/23/android-studio/#disqus_thread">Comments</a></div>
 	
 </div></article>
 
@@ -175,8 +153,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://dande618.github.com/blog/2013/04/28/ContentProvider/';
-        var disqus_url = 'http://dande618.github.com/blog/2013/04/28/ContentProvider/';
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/05/23/android-studio/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/05/23/android-studio/';
         var disqus_script = 'embed.js';
       
     (function () {

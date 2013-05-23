@@ -20,9 +20,19 @@ ContentResolver则负责
 
 + 修改/添加/删除更新数据等；
 
+## Uri
 
+与Url较为相似。由 content:// 、authority 和 words 三部分组成
 
+比如，访问words数据 content://com.test.providertest/words
 
+访问words数据中id为2的数据 content://com.test.providertest/words/2
+
+将string转化为uri，可以使用Uri.parse(String)静态方法
+
+## ContentResolver
+
+使用 getContentResolver()方法获取到ContentResolver对象，然后可以使用对应的ContentProvider中的方法来操作数据了。
 
 
 

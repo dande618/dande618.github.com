@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-05-13T19:58:40+08:00</updated>
+  <updated>2013-05-23T23:11:04+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -12,6 +12,339 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[android studio 安装无法打开]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/23/android-studio/"/>
+    <updated>2013-05-23T23:01:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/23/android-studio</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>最近谷歌发布了Android Studio，是一个全新的Android开发环境，基于IntelliJIDEA。可以作为替代eclispe+adt的开发环境。</p>
+
+<p>下载地址 http://developer.android.com/sdk/installing/studio.html</p>
+
+<p>现在是0.1版，编写布局文件实时预览并适配多屏的功能是亮点。</p>
+
+<p>但是安装后出现可打开程序无反应的情况，似乎是系统变量中JAVA_HOME、CLASSPATH、PATH的配置问题。</p>
+
+<p>但修改后也没有解决。。最后重新安装JDK1.7后就没问题了（原来是1.6）。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android关闭Cursor]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/19/Close-Cursor/"/>
+    <updated>2013-05-19T07:17:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/19/Close-Cursor</id>
+    <content type="html"><![CDATA[<p>转载 <a href="http://zhifeiji512.iteye.com/blog/963925">http://zhifeiji512.iteye.com/blog/963925</a></p>
+
+<!-- more -->
+
+
+<p>Cursor是Android查询数据后得到的一个管理数据集合的类，正常情况下，如果查询得到的数据量较小时不会有内存问题，而且虚拟机能够保证Cusor最终会被释放掉。</p>
+
+<p>然而如果Cursor的数据量特表大，特别是如果里面有Blob信息时，应该保证Cursor占用的内存被及时的释放掉，而不是等待GC来处理。并且Android明显是倾向于编程者手动的将Cursor close掉，因为在源代码中我们发现，如果等到垃圾回收器来回收时，会给用户以错误提示。</p>
+
+<p>所以我们使用Cursor的方式一般如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="k">try</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">cursor</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">().</span><span class="na">query</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">cursor</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class='line'>        <span class="n">cursor</span><span class="o">.</span><span class="na">moveToFirst</span><span class="o">();</span>
+</span><span class='line'>    <span class="c1">//do something  </span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span><span class="k">catch</span><span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">e</span><span class="o">.</span><span class="na">printStatckTrace</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">cursor</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class='line'>        <span class="n">cursor</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有一种情况下，我们不能直接将Cursor关闭掉，这就是在CursorAdapter中应用的情况，但是注意，CursorAdapter在Acivity结束时并没有自动的将Cursor关闭掉，因此，你需要在onDestroy函数中，手动关闭。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onDestroy</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">mAdapter</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">mAdapter</span><span class="o">.</span><span class="na">getCurosr</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mAdapter</span><span class="o">.</span><span class="na">getCursor</span><span class="o">().</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">.</span><span class="na">onDestroy</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>CursorAdapter中的changeCursor函数，会将原来的Cursor释放掉，并替换为新的Cursor，所以你不用担心原来的Cursor没有被关闭。</p>
+
+<p>你可能会想到使用Activity的managedQuery来生成Cursor，这样Cursor就会与Acitivity的生命周期一致了，多么完美的解决方法！然而事实上managedQuery也有很大的局限性。</p>
+
+<p>managedQuery生成的Cursor必须确保不会被替换，因为可能很多程序事实上查询条件都是不确定的，因此我们经常会用新查询的Cursor来替换掉原先的Cursor。因此这种方法适用范围也是很小。</p>
+
+<hr />
+
+
+<h2>managedQuery的问题</h2>
+
+<p>在Android 3.x版本，使用managedQuery可能会遇到RuntimeException: Unable to resume activity的异常，使用GetContentResolver().query即可。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[简单使用ContentObserver观察数据库更新]]></title>
+    <link href="http://dande618.github.com/blog/2013/05/17/ContentObserver/"/>
+    <updated>2013-05-17T20:54:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/05/17/ContentObserver</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<p>需要注意的是，使用了registerContentObserver后，一定要使用unregisterContentObserver，否则会多次注册引起多次onChange。</p>
+
+<p>MainActivity.java</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Button</span> <span class="n">button</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">OnClickListener</span> <span class="n">listener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OnClickListener</span><span class="o">(){</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">ContentResolver</span> <span class="n">resolver</span> <span class="o">=</span> <span class="n">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">Uri</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">Uri</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="s">&quot;content://com.example.test/person&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">PersonObserver</span> <span class="n">observer</span><span class="o">=</span><span class="k">new</span> <span class="n">PersonObserver</span><span class="o">(</span><span class="k">new</span> <span class="n">Handler</span><span class="o">());</span>
+</span><span class='line'>            <span class="n">resolver</span><span class="o">.</span><span class="na">registerContentObserver</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span><span class="n">observer</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">ContentValues</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;zzz&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;cid&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">resolver</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>   <span class="c1">//向ContentProvider插入数据  </span>
+</span><span class='line'>            <span class="n">resolver</span><span class="o">.</span><span class="na">unregisterContentObserver</span><span class="o">(</span><span class="n">observer</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_main</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">button</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button1</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="n">listener</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">PersonObserver</span> <span class="kd">extends</span> <span class="n">ContentObserver</span><span class="o">{</span><span class="c1">//监听  </span>
+</span><span class='line'>        <span class="kd">public</span> <span class="nf">PersonObserver</span><span class="o">(</span><span class="n">Handler</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">super</span><span class="o">(</span><span class="n">handler</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="c1">//当ContentProvier数据发生改变，则触发该函数  </span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onChange</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">selfChange</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kd">super</span><span class="o">.</span><span class="na">onChange</span><span class="o">(</span><span class="n">selfChange</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="s">&quot;Test1&quot;</span><span class="o">,</span> <span class="s">&quot;数据改变&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PersonProvider.java</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonProvider</span> <span class="kd">extends</span> <span class="n">ContentProvider</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">ItemDatabaseHelper</span> <span class="n">helper</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">;</span>
+</span><span class='line'><span class="c1">//   private UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreate</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">helper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ItemDatabaseHelper</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'><span class="c1">//       matcher.addURI(&quot;com.example.test&quot;, &quot;person&quot;, 1);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Cursor</span> <span class="nf">query</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">projection</span><span class="o">,</span> <span class="n">String</span> <span class="n">selection</span><span class="o">,</span>
+</span><span class='line'>          <span class="n">String</span><span class="o">[]</span> <span class="n">selectionArgs</span><span class="o">,</span> <span class="n">String</span> <span class="n">sortOrder</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm">  * 如果操作集合，则必须以vnd.android.cursor.dir开头 如果操作非集合，则必须以vnd.android.cursor.item开头</span>
+</span><span class='line'><span class="cm">  */</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getType</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">Uri</span> <span class="nf">insert</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">ContentValues</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">db</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>          <span class="kt">long</span> <span class="n">rowid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getContentResolver</span><span class="o">().</span><span class="na">notifyChange</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span><span class="c1">// 如果改变数据，则通知所有人</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">ContentUris</span><span class="o">.</span><span class="na">withAppendedId</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="n">rowid</span><span class="o">);</span> <span class="c1">// 返回插入的记录所代表的URI</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">String</span> <span class="n">selection</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">selectionArgs</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">update</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="n">ContentValues</span> <span class="n">values</span><span class="o">,</span> <span class="n">String</span> <span class="n">selection</span><span class="o">,</span>
+</span><span class='line'>          <span class="n">String</span><span class="o">[]</span> <span class="n">selectionArgs</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ItemDatabaseHelper</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="nf">ItemDatabaseHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">database</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;create table if not exists person(&quot;</span>
+</span><span class='line'>                  <span class="o">+</span> <span class="s">&quot; _id integer primary key autoincrement,&quot;</span> <span class="o">+</span> <span class="s">&quot; name text,&quot;</span>
+</span><span class='line'>                  <span class="o">+</span> <span class="s">&quot;cid text&quot;</span> <span class="o">+</span> <span class="s">&quot;);&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onUpgrade</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">database</span><span class="o">,</span> <span class="kt">int</span> <span class="n">oldVersion</span><span class="o">,</span>
+</span><span class='line'>              <span class="kt">int</span> <span class="n">newVersion</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;drop table if exists items&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">onCreate</span><span class="o">(</span><span class="n">database</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Service写入数据库并更新UI]]></title>
@@ -812,6 +1145,20 @@
 <li><p>修改/添加/删除更新数据等；</p></li>
 </ul>
 
+
+<h2>Uri</h2>
+
+<p>与Url较为相似。由 content:// 、authority 和 words 三部分组成</p>
+
+<p>比如，访问words数据 content://com.test.providertest/words</p>
+
+<p>访问words数据中id为2的数据 content://com.test.providertest/words/2</p>
+
+<p>将string转化为uri，可以使用Uri.parse(String)静态方法</p>
+
+<h2>ContentResolver</h2>
+
+<p>使用 getContentResolver()方法获取到ContentResolver对象，然后可以使用对应的ContentProvider中的方法来操作数据了。</p>
 ]]></content>
   </entry>
   
@@ -3540,482 +3887,6 @@ close() synchronized void 关闭所有打开的数据库对象</p>
 
 
 <p>源码地址：<a href="https://github.com/dande618/BinarySearchDemo.git">https://github.com/dande618/BinarySearchDemo.git</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[markdown]]></title>
-    <link href="http://dande618.github.com/blog/2013/02/15/markdown/"/>
-    <updated>2013-02-15T19:00:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/02/15/markdown</id>
-    <content type="html"><![CDATA[<div style="float:left;padding-right:20px"><img src="http://mouapp.com/Mou_128.png"/></div>
-
-
-<p>Markdown是什么？</p>
-
-
-<p>Markdown 是一种轻量级标记语言，创始人为John Gruber和Aaron Swartz。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”。</p>
-
-
-<p>摘自维基百科Markdown条。</p>
-
-
-<!-- more -->
-
-
-<p>Markdown有啥好处？</p>
-
-<p>正如上文所述，Markdown具有：</p>
-
-<ol>
-<li><p>易学易用；</p></li>
-<li><p>方便转换为HTML等其他格式；</p></li>
-<li><p>支持广泛，便于维护；</p></li>
-</ol>
-
-
-<p>等等特性。</p>
-
-<h2>以下摘自 Markdown 语法说明 (简体中文版)</h2>
-
-<p><a href="http://wowubuntu.com/markdown/index.html">源地址</a></p>
-
-<p>Markdown 语法:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>A First Level Header
-</span><span class='line'>====================
-</span><span class='line'>A Second Level Header
-</span><span class='line'>---------------------
-</span><span class='line'>
-</span><span class='line'>Now is the time for all good men to come to
-</span><span class='line'>the aid of their country. This is just a
-</span><span class='line'>regular paragraph.
-</span><span class='line'>
-</span><span class='line'>The quick brown fox jumped over the lazy
-</span><span class='line'>dog's back.
-</span><span class='line'>### Header 3
-</span><span class='line'>
-</span><span class='line'>> This is a blockquote.
-</span><span class='line'>> 
-</span><span class='line'>> This is the second paragraph in the blockquote.
-</span><span class='line'>>
-</span><span class='line'>> ## This is an H2 in a blockquote</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出 HTML 为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;h1>A First Level Header&lt;/h1>
-</span><span class='line'>&lt;h2>A Second Level Header&lt;/h2>
-</span><span class='line'>&lt;p>Now is the time for all good men to come to
-</span><span class='line'>the aid of their country. This is just a
-</span><span class='line'>regular paragraph.&lt;/p>
-</span><span class='line'>&lt;p>The quick brown fox jumped over the lazy
-</span><span class='line'>dog's back.&lt;/p>
-</span><span class='line'>&lt;h3>Header 3&lt;/h3>
-</span><span class='line'>&lt;blockquote>
-</span><span class='line'>&lt;p>This is a blockquote.&lt;/p>
-</span><span class='line'>&lt;p>This is the second paragraph in the blockquote.&lt;/p>
-</span><span class='line'>&lt;h2>This is an H2 in a blockquote&lt;/h2>
-</span><span class='line'>&lt;/blockquote></span></code></pre></td></tr></table></div></figure>
-
-
-<h2>修辞和强调</h2>
-
-<p>Markdown 使用星号和底线来标记需要强调的区段。</p>
-
-<p>Markdown 语法:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Some of these words *are emphasized*.
-</span><span class='line'>Some of these words _are emphasized also_.
-</span><span class='line'>Use two asterisks for **strong emphasis**.
-</span><span class='line'>Or, if you prefer, __use two underscores instead__.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出 HTML 为:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;p>Some of these words &lt;em>are emphasized&lt;/em>.
-</span><span class='line'>Some of these words &lt;em>are emphasized also&lt;/em>.&lt;/p>
-</span><span class='line'>&lt;p>Use two asterisks for &lt;strong>strong emphasis&lt;/strong>.
-</span><span class='line'>Or, if you prefer, &lt;strong>use two underscores instead&lt;/strong>.&lt;/p></span></code></pre></td></tr></table></div></figure>
-
-
-<h2>列表</h2>
-
-<p>无序列表使用星号、加号和减号来做为列表的项目标记，这些符号是都可以使用的，使用星号：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>* Candy.
-</span><span class='line'>* Gum.
-</span><span class='line'>* Booze.</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有序的列表则是使用一般的数字接着一个英文句点作为项目标记：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1. Red
-</span><span class='line'>2. Green
-</span><span class='line'>3. Blue</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>链接</h2>
-
-<p>Markdown 支援两种形式的链接语法： 行内 和 参考 两种形式，两种都是使用角括号来把文字转成连结。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>This is an [example link](http://example.com/ "With a Title").</span></code></pre></td></tr></table></div></figure>
-
-
-<p>参考形式的链接让你可以为链接定一个名称，之后你可以在文件的其他地方定义该链接的内容：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>I get 10 times more traffic from [Google][1] than from
-</span><span class='line'>[Yahoo][2] or [MSN][3].
-</span><span class='line'>
-</span><span class='line'>[1]: http://google.com/ "Google"
-</span><span class='line'>[2]: http://search.yahoo.com/ "Yahoo Search"
-</span><span class='line'>[3]: http://search.msn.com/ "MSN Search"</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>自动链接</h2>
-
-<p>Markdown 支持以比较简短的自动链接形式来处理网址和电子邮件信箱，只要是用方括号包起来， Markdown 就会自动把它转成链接。一般网址的链接文字就和链接地址一样，例如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;http://example.com/></span></code></pre></td></tr></table></div></figure>
-
-
-<p>Markdown 会转为：</p>
-
-<h2>图片</h2>
-
-<p>图片的语法和链接很像。</p>
-
-<p>行内形式（title 是选择性的）：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>![alt text](/path/to/img.jpg "Title")</span></code></pre></td></tr></table></div></figure>
-
-
-<p>参考形式：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>![alt text][id]
-</span><span class='line'>[id]: /path/to/img.jpg "Title"</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>区块引用 Blockquotes</h2>
-
-<p>Markdown 标记区块引用是使用类似 email 中用 > 的引用方式。如果你还熟悉在 email 信件中的引言部分，你就知道怎么在 Markdown 文件中建立一个区块引用，那会看起来像是你自己先断好行，然后在每行的最前面加上 > ：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>> This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
-</span><span class='line'>> consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
-</span><span class='line'>> Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
-</span><span class='line'>> 
-</span><span class='line'>> Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
-</span><span class='line'>> id sem consectetuer libero luctus adipiscing.</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>分隔线</h2>
-
-<p>你可以在一行中用三个以上的星号、减号、底线来建立一个分隔线，行内不能有其他东西。你也可以在星号或是减号中间插入空格。下面每种写法都可以建立分隔线：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>* * *
-</span><span class='line'>
-</span><span class='line'>***
-</span><span class='line'>
-</span><span class='line'>*****
-</span><span class='line'>
-</span><span class='line'>- - -
-</span><span class='line'>
-</span><span class='line'>---------------------------------------</span></code></pre></td></tr></table></div></figure>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[正则表达式]]></title>
-    <link href="http://dande618.github.com/blog/2013/02/15/regex/"/>
-    <updated>2013-02-15T16:00:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/02/15/regex</id>
-    <content type="html"><![CDATA[<p>　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p></p>
-
-<br/>
-
-
-<!-- more -->
-
-
-<table class="mytable"><tr><td class="mytable">元字符 
-</td><td class="mytable">描述
-</td></tr><tr><td class="mytable">\
-</td><td class="mytableb">将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“\n”匹配字符“n”。“&#92;n”匹配一个换行符。序列“&#92;”匹配“\”而“\(”则匹配“(”。
-</td></tr><tr><td class="mytable">^
-</td><td class="mytableb">匹配输入字符串的开始位置。如果设置了RegExp对象的Multiline属性，^也匹配“\n”或“\r”之后的位置。
-</td></tr><tr><td class="mytable">$
-</td><td class="mytableb">匹配输入字符串的结束位置。如果设置了RegExp对象的Multiline属性，$也匹配“\n”或“\r”之前的位置。
-</td></tr><tr><td class="mytable">*
-</td><td class="mytableb">匹配前面的子表达式零次或多次。例如，zo*能匹配“z”以及“zoo”。*等价于{0,}。
-</td></tr><tr><td class="mytable">+
-</td><td class="mytableb">匹配前面的子表达式一次或多次。例如，“zo+”能匹配“zo”以及“zoo”，但不能匹配“z”。+等价于{1,}。
-</td></tr><tr><td class="mytable">?
-</td><td class="mytableb">匹配前面的子表达式零次或一次。例如，“do(es)?”可以匹配“does”或“does”中的“do”。?等价于{0,1}。
-</td></tr><tr><td class="mytable">{n}
-</td><td class="mytableb">n是一个非负整数。匹配确定的n次。例如，“o{2}”不能匹配“Bob”中的“o”，但是能匹配“food”中的两个o。
-</td></tr><tr><td class="mytable">{n,}
-</td><td class="mytableb">n是一个非负整数。至少匹配n次。例如，“o{2,}”不能匹配“Bob”中的“o”，但能匹配“foooood”中的所有o。“o{1,}”等价于“o+”。“o{0,}”则等价于“o*”。
-</td></tr><tr><td class="mytable">{n,m}
-</td><td class="mytableb">m和n均为非负整数，其中n&lt;=m。最少匹配n次且最多匹配m次。例如，“o{1,3}”将匹配“fooooood”中的前三个o。“o{0,1}”等价于“o?”。请注意在逗号和两个数之间不能有空格。
-</td></tr><tr><td class="mytable">?
-</td><td class="mytableb">当该字符紧跟在任何一个其他限制符（*,+,?，{n}，{n,}，{n,m}）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串“oooo”，“o+?”将匹配单个“o”，而“o+”将匹配所有“o”。
-</td></tr><tr><td class="mytable">.点
-</td><td class="mytableb">匹配除“\n”之外的任何单个字符。要匹配包括“\n”在内的任何字符，请使用像“&#91;\s\S&#93;”的模式。
-</td></tr><tr><td class="mytable">(pattern)
-</td><td class="mytableb">匹配pattern并获取这一匹配。所获取的匹配可以从产生的Matches集合得到，在VBScript中使用SubMatches集合，在JScript中则使用$0…$9属性。要匹配圆括号字符，请使用“\(”或“\)”。
-</td></tr><tr><td class="mytable">(?:pattern)
-</td><td class="mytableb">匹配pattern但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用或字符“(|)”来组合一个模式的各个部分是很有用。例如“industr(?:y|ies)”就是一个比“industry|industries”更简略的表达式。
-</td></tr><tr><td class="mytable">(?=pattern)
-</td><td class="mytableb">正向肯定预查，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，“Windows(?=95|98|NT|2000)”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
-</td></tr><tr><td class="mytable">(?!pattern)
-</td><td class="mytableb">正向否定预查，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如“Windows(?!95|98|NT|2000)”能匹配“Windows3.1”中的“Windows”，但不能匹配“Windows2000”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
-</td></tr><tr><td class="mytable">(?&lt;=pattern)
-</td><td class="mytableb">反向肯定预查，与正向肯定预查类似，只是方向相反。例如，“(?&lt;=95|98|NT|2000)Windows”能匹配“2000Windows”中的“Windows”，但不能匹配“3.1Windows”中的“Windows”。
-</td></tr><tr><td class="mytable">(?&lt;!pattern)
-</td><td class="mytableb">反向否定预查，与正向否定预查类似，只是方向相反。例如“(?&lt;!95|98|NT|2000)Windows”能匹配“3.1Windows”中的“Windows”，但不能匹配“2000Windows”中的“Windows”。
-</td></tr><tr><td class="mytable">x|y
-</td><td class="mytableb">匹配x或y。例如，“z|food”能匹配“z”或“food”。“(z|f)ood”则匹配“zood”或“food”。
-</td></tr><tr><td class="mytable">&#91;xyz&#93;
-</td><td class="mytableb">字符集合。匹配所包含的任意一个字符。例如，“&#91;abc&#93;”可以匹配“plain”中的“a”。
-</td></tr><tr><td class="mytable">&#91;^xyz&#93;
-</td><td class="mytableb">负值字符集合。匹配未包含的任意字符。例如，“&#91;^abc&#93;”可以匹配“plain”中的“plin”。
-</td></tr><tr><td class="mytable">&#91;a-z&#93;
-</td><td class="mytableb">字符范围。匹配指定范围内的任意字符。例如，“&#91;a-z&#93;”可以匹配“a”到“z”范围内的任意小写字母字符。
-</td></tr><tr><td class="mytable">&#91;^a-z&#93;
-</td><td class="mytableb">负值字符范围。匹配任何不在指定范围内的任意字符。例如，“&#91;^a-z&#93;”可以匹配任何不在“a”到“z”范围内的任意字符。
-</td></tr><tr><td class="mytable">\b
-</td><td class="mytableb">匹配一个单词边界，也就是指单词和空格间的位置。例如，“er\b”可以匹配“never”中的“er”，但不能匹配“verb”中的“er”。
-</td></tr><tr><td class="mytable">\B
-</td><td class="mytableb">匹配非单词边界。“er\B”能匹配“verb”中的“er”，但不能匹配“never”中的“er”。
-</td></tr><tr><td class="mytable">\cx
-</td><td class="mytableb">匹配由x指明的控制字符。例如，\cM匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的“c”字符。
-</td></tr><tr><td class="mytable">\d
-</td><td class="mytableb">匹配一个数字字符。等价于&#91;0-9&#93;。
-</td></tr><tr><td class="mytable">\D
-</td><td class="mytableb">匹配一个非数字字符。等价于&#91;^0-9&#93;。
-</td></tr><tr><td class="mytable">\f
-</td><td class="mytableb">匹配一个换页符。等价于\x0c和\cL。
-</td></tr><tr><td class="mytable">\n
-</td><td class="mytableb">匹配一个换行符。等价于\x0a和\cJ。
-</td></tr><tr><td class="mytable">\r
-</td><td class="mytableb">匹配一个回车符。等价于\x0d和\cM。
-</td></tr><tr><td class="mytable">\s
-</td><td class="mytableb">匹配任何空白字符，包括空格、制表符、换页符等等。等价于&#91; \f\n\r\t\v&#93;。
-</td></tr><tr><td class="mytable">\S
-</td><td class="mytableb">匹配任何非空白字符。等价于&#91;^ \f\n\r\t\v&#93;。
-</td></tr><tr><td class="mytable">\t
-</td><td class="mytableb">匹配一个制表符。等价于\x09和\cI。
-</td></tr><tr><td class="mytable">\v
-</td><td class="mytableb">匹配一个垂直制表符。等价于\x0b和\cK。
-</td></tr><tr><td class="mytable">\w
-</td><td class="mytableb">匹配包括下划线的任何单词字符。等价于“&#91;A-Za-z0-9_&#93;”。
-</td></tr><tr><td class="mytable">\W
-</td><td class="mytableb">匹配任何非单词字符。等价于“&#91;^A-Za-z0-9_&#93;”。
-</td></tr><tr><td class="mytable">\xn
-</td><td class="mytableb">匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，“\x41”匹配“A”。“\x041”则等价于“\x04&amp;1”。正则表达式中可以使用ASCII编码。
-</td></tr><tr><td class="mytable">\num
-</td><td class="mytableb">匹配num，其中num是一个正整数。对所获取的匹配的引用。例如，“(.)\1”匹配两个连续的相同字符。
-</td></tr><tr><td class="mytable">\n
-</td><td class="mytableb">标识一个八进制转义值或一个向后引用。如果\n之前至少n个获取的子表达式，则n为向后引用。否则，如果n为八进制数字（0-7），则n为一个八进制转义值。
-</td></tr><tr><td class="mytable">\nm
-</td><td class="mytableb">标识一个八进制转义值或一个向后引用。如果\nm之前至少有nm个获得子表达式，则nm为向后引用。如果\nm之前至少有n个获取，则n为一个后跟文字m的向后引用。如果前面的条件都不满足，若n和m均为八进制数字（0-7），则\nm将匹配八进制转义值nm。
-</td></tr><tr><td class="mytable">\nml
-</td><td class="mytableb">如果n为八进制数字（0-3），且m和l均为八进制数字（0-7），则匹配八进制转义值nml。
-</td></tr><tr><td class="mytable">\un
-</td><td class="mytableb">匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\u00A9匹配版权符号（&copy;）。
-</td></tr></table>
-
-
-<h2>使用emeditor宏批处理</h2>
-
-<p>例
-1. 添加菜单项</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>if (document.selection.isempty)
-</span><span class='line'>
-</span><span class='line'>  nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
-</span><span class='line'>
-</span><span class='line'>else 
-</span><span class='line'>
-</span><span class='line'>  nFlags=eeFindNext | eeReplaceSelOnly | eeReplaceAll | eeFindReplaceRegExp;
-</span><span class='line'>
-</span><span class='line'>menu= CreatePopupMenu();
-</span><span class='line'>
-</span><span class='line'>menu.Add("使用正则表达式提取字符串",1);
-</span><span class='line'>
-</span><span class='line'>result = menu.Track( 0 );
-</span><span class='line'>
-</span><span class='line'>if (result>40) nFlags=nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
-</span><span class='line'>
-</span><span class='line'>switch(result){
-</span><span class='line'>
-</span><span class='line'>case 1: //内容
-</span><span class='line'>
-</span><span class='line'>      break;
-</span><span class='line'>
-</span><span class='line'>default:
-</span><span class='line'>
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>2.删除段首尾空格</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>document.selection.Replace("^\\s*","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);
-</span><span class='line'>
-</span><span class='line'>document.selection.Replace("\\s*$","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);</span></code></pre></td></tr></table></div></figure>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[认识Intent]]></title>
-    <link href="http://dande618.github.com/blog/2013/01/29/intent/"/>
-    <updated>2013-01-29T20:29:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/01/29/intent</id>
-    <content type="html"><![CDATA[<p>　　Intent：意图</p>
-
-<p>　　当一个Activity需要启动另一个Activity时，程序并没有直接告诉系统要启动那个Activity，而是通过Intent来表达自己的意图：需要启动哪个Activity。</p>
-
-<!-- more -->
-
-
-<p>　　Intent封装Android应用程序需要启动某个组件的“意图”。不仅如此，Intent还是应用程序组件之间通讯的重要媒介。两个Activity可以把需要交换的数据封装成Bundle对象，然后使用Intent来携带Bundle对象，这样就实现了两个Activity之间的数据交换。</p>
-Android的应用程序包含三种重要的组件：Activity、Service、BroadcastReceiver，应用程序采用了一致的方式来启动他们——都是依靠Intent来进行启动的，Intent就封装了程序想要启动程序的意图，不仅如此，Intent还可用于与被启动组件交换信息。</p>
-
-<p>　　通过点击按钮打开另一个Activity</p></p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">button</span><span class="o">.</span><span class="na">setOnClickListener</span>
-</span><span class='line'>  <span class="o">(</span>
-</span><span class='line'>   <span class="k">new</span> <span class="nf">OnClickListener</span><span class="o">()</span>
-</span><span class='line'>   <span class="o">{</span>
-</span><span class='line'>    <span class="nd">@Override</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>     <span class="n">Intent</span> <span class="n">intent</span><span class="o">=</span><span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
-</span><span class='line'>     <span class="n">intent</span><span class="o">.</span><span class="na">setClass</span><span class="o">(</span><span class="n">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">SecondActivity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>     <span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>   <span class="o">}</span>
-</span><span class='line'>  <span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
 ]]></content>
   </entry>
   
