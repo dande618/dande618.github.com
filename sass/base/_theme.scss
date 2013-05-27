@@ -7,15 +7,15 @@ $link-color-hover: adjust-color($link-color, $lightness: 10, $saturation: 25) !d
 $link-color-visited: adjust-color($link-color, $hue: 80, $lightness: -4) !default;
 $link-color-active: adjust-color($link-color-hover, $lightness: -15) !default;
 
-// Main Section Colors
-$main-bg: #f8f8f8 !default;
+// Main Section Colors#f8f8f8
+$main-bg: rgba(#ffffff, 0.5) !default;
 $page-bg: #252525 !default;
 $article-border: #eeeeee !default;
 
-$header-bg: #333 !default;
+$header-bg: rgba(#333, 0) !default;
 $header-border: lighten($header-bg, 15) !default;
-$title-color: #f2f2f2 !default;
-$subtitle-color: #aaa !default;
+$title-color: #07457e !default;
+$subtitle-color: #888888 !default;
 
 $text-color: #222 !default;
 $text-color-light: #aaa !default;
@@ -35,7 +35,7 @@ $nav-border-left: darken($nav-bg, 11) !default;
 $nav-border-right: lighten($nav-bg, 7) !default;
 
 /* Sidebar colors */
-$sidebar-bg: #f2f2f2 !default;
+$sidebar-bg: rgba(#f2f2f2, 0.8) !default;
 $sidebar-link-color: $link-color !default;
 $sidebar-link-color-hover: $link-color-hover !default;
 $sidebar-link-color-active: $link-color-active !default;
@@ -72,11 +72,15 @@ a {
 }
 
 html {
-  background: $page-bg image-url('line-tile.png') top left;
+  background: image-url("base.jpg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 body {
   > div {
-    background: $sidebar-bg $noise-bg;
+    background:  rgba(#ffffff, 0.6);
     border-bottom: 1px solid $page-border-bottom;
     > div {
       background: $main-bg $noise-bg;

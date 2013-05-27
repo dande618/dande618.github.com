@@ -6,10 +6,8 @@ comments: true
 categories: android
 ---
 
-<!-- more -->
-
 需要注意的是，使用了registerContentObserver后，一定要使用unregisterContentObserver，否则会多次注册引起多次onChange。
-
+<!-- more -->
 MainActivity.java
 {% codeblock lang:java %}
 public class MainActivity extends Activity {  

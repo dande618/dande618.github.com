@@ -7,10 +7,8 @@ categories: android
 ---
 目的是使用Service写入SQLite数据库，然后通知UI更新。
 
-<!-- more -->
-
 首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。
-
+<!-- more -->
 ### ItemContentProvider.java
 
 重写方法提供对数据库的操作（插入、修改、删除等），设置好Uri

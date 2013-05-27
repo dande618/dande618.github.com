@@ -6,10 +6,9 @@ comments: true
 categories: android
 ---
 转载 <http://zhifeiji512.iteye.com/blog/963925>
-<!-- more -->
 
 Cursor是Android查询数据后得到的一个管理数据集合的类，正常情况下，如果查询得到的数据量较小时不会有内存问题，而且虚拟机能够保证Cusor最终会被释放掉。
-
+<!-- more -->
 然而如果Cursor的数据量特表大，特别是如果里面有Blob信息时，应该保证Cursor占用的内存被及时的释放掉，而不是等待GC来处理。并且Android明显是倾向于编程者手动的将Cursor close掉，因为在源代码中我们发现，如果等到垃圾回收器来回收时，会给用户以错误提示。
 
 所以我们使用Cursor的方式一般如下：
@@ -48,8 +47,6 @@ CursorAdapter中的changeCursor函数，会将原来的Cursor释放掉，并替�
 你可能会想到使用Activity的managedQuery来生成Cursor，这样Cursor就会与Acitivity的生命周期一致了，多么完美的解决方法！然而事实上managedQuery也有很大的局限性。
 
 managedQuery生成的Cursor必须确保不会被替换，因为可能很多程序事实上查询条件都是不确定的，因此我们经常会用新查询的Cursor来替换掉原先的Cursor。因此这种方法适用范围也是很小。
-
-<hr />
 
 ## managedQuery的问题
 
