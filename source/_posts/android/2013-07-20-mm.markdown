@@ -1,0 +1,14 @@
+---
+layout: post
+title: "android源码，编译完整的APK"
+date: 2013-07-20 15:06
+comments: true
+categories: android
+---
+修改源码下的
+
+/build/core/java_library.mk 和 /build/core/package.mk
+
+将 LOCAL_DEX_PREOPT :=true
+
+改成 false

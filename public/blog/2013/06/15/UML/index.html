@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java UML类图 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="http://blog.sina.com.cn/s/blog_71460d95010111dc.html 类图是最常用的UML图，它用于描述系统的结构化设计。其中包括类关系以及与每个类关联的属性及行为。类图能出色地表示继承与合成关系。为了将类图作为一种高效的沟通工具使用， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/15/UML/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java UML类图</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T12:28:00+08:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://blog.sina.com.cn/s/blog_71460d95010111dc.html">http://blog.sina.com.cn/s/blog_71460d95010111dc.html</a></p>
+
+<p>类图是最常用的UML图，它用于描述系统的结构化设计。其中包括类关系以及与每个类关联的属性及行为。类图能出色地表示继承与合成关系。为了将类图作为一种高效的沟通工具使用，开发者必须理解如何将类图上出现的元素转换到Java中。下面来进一步探索这一转换过程。</p>
+
+<h2>元素</h2>
+
+<p>在后面的小节中，分别讲解了类图的各个元素及其在Java中相应的表示。我会列出元素名，后续简短的代码片断和一幅图来表示元素在类图上的样子。每一节的最后简要总结了该元素。</p>
+
+<!-- more -->
+
+
+<h3>类（Class）</h3>
+
+<p>类（图A）是对象的蓝图，其中包含3个组成部分。第一个是Java中定义的类名。第二个是属性（attributes）。第三个是该类提供的方法。
+属性和操作之前可附加一个可见性修饰符。加号（+）表示具有公共可见性。减号（-）表示私有可见性。#号表示受保护的可见性。省略这些修饰符表示具有package（包）级别的可见性。如果属性或操作具有下划线，表明它是静态的。在操作中，可同时列出它接受的参数，以及返回类型，如图A的“Java”区域所示。</p>
+
+<p>图A</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image001.gif"></p>
+
+<h3>包（Package）</h3>
+
+<p>包（图B）是一种常规用途的组合机制。UML中的一个包直接对应于Java中的一个包。在Java中，一个包可能含有其他包、类或者同时含有这两者。进行建模时，你通常拥有逻辑性的包，它主要用于对你的模型进行组织。你还会拥有物理性的包，它直接转换成系统中的Java包。每个包的名称对这个包进行了惟一性的标识。</p>
+
+<p>图B</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image002.gif"></p>
+
+<h3>接口（Interface）</h3>
+
+<p>接口（图C）是一系列操作的集合，它指定了一个类所提供的服务。它直接对应于Java中的一个接口类型。接口既可用图C的那个图标来表示，也可由附加了&lt;<interface>>的一个标准类来表示。通常，根据接口在类图上的样子，就能知道与其他类的关系。</p>
+
+<p>图C</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image003.gif"></p>
+
+<h2>关系</h2>
+
+<p>后面的例子将针对某个具体目的来独立地展示各种关系。虽然语法无误，但这些例子可进一步精炼，在它们的有效范围内包括更多的语义。</p>
+
+<h3>依赖（Dependency）</h3>
+
+<p>实体之间一个“使用”关系暗示一个实体的规范发生变化后，可能影响依赖于它的其他实例（图D）。更具体地说，它可转换为对不在实例作用域内的一个类或对象的任何类型的引用。其中包括一个局部变量，对通过方法调用而获得的一个对象的引用（如下例所示），或者对一个类的静态方法的引用（同时不存在那个类的一个实例）。也可利用“依赖”来表示包和包之间的关系。由于包中含有类，所以你可根据那些包中的各个类之间的关系，表示出包和包的关系。</p>
+
+<p>图D</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image004.gif"></p>
+
+<h3>关联（Association）</h3>
+
+<p>实体之间的一个结构化关系表明对象是相互连接的。箭头是可选的，它用于指定导航能力。如果没有箭头，暗示是一种双向的导航能力。在Java中，关联（图E）转换为一个实例作用域的变量，就像图E的“Java”区域所展示的代码那样。可为一个关联附加其他修饰符。多重性（Multiplicity）修饰符暗示着实例之间的关系。在示范代码中，Employee可以有0个或更多的TimeCard对象。但是，每个TimeCard只从属于单独一个Employee。</p>
+
+<p>图E</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image005.gif"></p>
+
+<h3>聚合（Aggregation）</h3>
+
+<p>聚合（图F）是关联的一种形式，代表两个类之间的整体/局部关系。聚合暗示着整体在概念上处于比局部更高的一个级别，而关联暗示两个类在概念上位于相同的级别。聚合也转换成Java中的一个实例作用域变量。</p>
+
+<p>关联和聚合的区别纯粹是概念上的，而且严格反映在语义上。聚合还暗示着实例图中不存在回路。换言之，只能是一种单向关系。</p>
+
+<p>图F</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image006.gif"></p>
+
+<h3>合成（Composition）</h3>
+
+<p>合成 （图G）是聚合的一种特殊形式，暗示“局部”在“整体”内部的生存期职责。合成也是非共享的。所以，虽然局部不一定要随整体的销毁而被销毁，但整体要么负责保持局部的存活状态，要么负责将其销毁。局部不可与其他整体共享。但是，整体可将所有权转交给另一个对象，后者随即将承担生存期职责。</p>
+
+<p>Employee和TimeCard的关系或许更适合表示成“合成”，而不是表示成“关联”。</p>
+
+<p>图G</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image007.gif"></p>
+
+<h3>泛化（Generalization）</h3>
+
+<p>泛化（图H）表示一个更泛化的元素和一个更具体的元素之间的关系。泛化是用于对继承进行建模的UML元素。在Java中，用extends关键字来直接表示这种关系。</p>
+
+<p>图H</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image008.gif"></p>
+
+<h3>实现（Realization）</h3>
+
+<p>实例（图I）关系指定两个实体之间的一个合同。换言之，一个实体定义一个合同，而另一个实体保证履行该合同。对Java应用程序进行建模时，实现关系可直接用implements关键字来表示。</p>
+
+<p>图I</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image009.gif"></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T12:28:00+08:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/13/JSON/" title="Previous Post: JAVA中的JSON">&laquo; JAVA中的JSON</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/16/notification/" title="Next Post: NotificationManager和Notification的使用总结">NotificationManager和Notification的使用总结 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/15/UML/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/15/UML/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

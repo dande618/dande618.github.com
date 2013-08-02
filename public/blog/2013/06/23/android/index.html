@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>在ubuntu下载android源码 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="首先你在自己的电脑上要安装好Ubuntu。 1.安装Git工具 Android源代码采用Git工具来管理，与SVN相比，这是一种分布式的源代码管理工具，而SVN是集中式的源代码管理工具。要安装Git工具，在Ubuntu上执行以下命令即可： USER-NAME@MACHINE-NAME:~$ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/23/android/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">在ubuntu下载android源码</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-23T16:03:00+08:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>首先你在自己的电脑上要安装好Ubuntu。</p>
+
+<h3>1.安装Git工具</h3>
+
+<p>Android源代码采用Git工具来管理，与SVN相比，这是一种分布式的源代码管理工具，而SVN是集中式的源代码管理工具。要安装Git工具，在Ubuntu上执行以下命令即可：</p>
+
+<p>USER-NAME@MACHINE-NAME:~$ sudo apt-get install git-core gnupg</p>
+
+<h3>2.安装Java SDK</h3>
+
+<!-- more -->
+
+
+<h3>3.依赖的其它包。在Ubuntu上执行以下命令：</h3>
+
+<p>USER-NAME@MACHINE-NAME:~$ sudo apt-get install flex bison gperf libsdl-dev libesd0-dev libwxgtk2.6-dev build-essential zip curl</p>
+
+<p>此处是安装了很多软件，直接将命令复制粘贴</p>
+
+<h3>4.调试工具。在Ubuntu上执行以下命令：</h3>
+
+<p>USER-NAME@MACHINE-NAME:~$ sudo apt-get install valgrind</p>
+
+<h2>下载android源码</h2>
+
+<p>官方页面 <a href="http://source.android.com/source/downloading.html">http://source.android.com/source/downloading.html</a></p>
+
+<p>转载 <a href="http://blog.csdn.net/lengxibo/article/details/8299888#reply">http://blog.csdn.net/lengxibo/article/details/8299888#reply</a></p>
+
+<p><strong>注意原文最后hosts修改有点问题，作者没有在文中修改，这里已经改正。</strong></p>
+
+<p>下载之前还是先修改hosts比较好（gfw。。）</p>
+
+<p>先 sudo -i   切换root权限</p>
+
+<p>gedit /etc/hosts   编辑hosts文件，在最后添加以下代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>74.125.71.82 www.googlesource.com
+</span><span class='line'>74.125.31.82 android.googlesource.com
+</span><span class='line'>203.208.46.172 cache.pack.google.com
+</span><span class='line'>59.24.3.173 cache.pack.google.com
+</span><span class='line'>173.194.72.82 gerrit.googlesource.com</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>下载过程分为以下几个步骤</h3>
+
+<h4>1、安装curl</h4>
+
+<p> 在终端中执行 sudo apt-get install curl</p>
+
+<h4>2、创建一个~/bin目录，并添加到环境变量中</h4>
+
+<p>$ mkdir ~/bin</p>
+
+<p>$ PATH=~/bin:$PATH</p>
+
+<h4>3、下载repo脚本并修改权限为可执行</h4>
+
+<p>$ curlhttps://dl-ssl.google.com/dl/googlesource/git-repo/repo > ~/bin/repo</p>
+
+<p>$ chmod a+x~/bin/repo</p>
+
+<h4>4、创建一个保存android源码的目录，修改为最大权限（这个是我自己增加的一个操作，怕以后操作权限不足等麻烦），并进入到该目录下</h4>
+
+<p>$ mkdir /opt/android_source</p>
+
+<p>$ sudo chmod –R 777 /opt/android_source</p>
+
+<p>$ cd  /opt/android_source</p>
+
+<h4>5、初始化repo，并选择要下载的分支（版本）</h4>
+
+<p>$ repo init -u https://android.googlesource.com/platform/manifest</p>
+
+<p>$ repo init -u https://android.googlesource.com/platform/manifest-b android-4.2_r1</p>
+
+<p>备注：在这过程中需要输入你的姓名、邮箱等信息。感觉只要输入就可以了，我输入了一个随意名称，我自己的126邮箱</p>
+
+<h4>6、开始下载源码</h4>
+
+<p>$ repo sync</p>
+
+<p>正常情况下，上面就是下载android4.2源码的流程，但我在下载的过程中遇到了下面问题</p>
+
+<h3>问题1：“A new repo command ( 1.18) is available.”</h3>
+
+<p>其实这个问题就是说你本地的repo版本不是1.18，比这个旧，在出现这个的时候，下面会有一个提示你怎么操作的，如：</p>
+
+<p>&#8230; A new repo command ( 1.18) is available.</p>
+
+<p>&#8230; You should upgrade soon:</p>
+
+<p><strong>cp /home/pn/android/.repo/repo/repo/home/pn/bin/repo</strong>（执行这一句就可以），开始我苦悲的上网找这个的解决方法，，，，浪费不少时间。。</p>
+
+<h3>问题2：“error: Exited sync due to fetch errors&#8230;”</h3>
+
+<p>这个问题，网上都说是需要IP认证，其中我也根据</p>
+
+<p>http://blog.csdn.net/fantao015/article/details/7625559</p>
+
+<p>上面的操作，执行了一遍，其中包括注册了一个@gmail.com邮件，后面发现我没有用到这个也全部下载成功了。</p>
+
+<h2>如果官方地址无法下载或下载速度慢，可以尝试从非官方网址下载，参考这个</h2>
+
+<p><a href="http://li53262182.blog.163.com/blog/static/128393387201182474652281/">http://li53262182.blog.163.com/blog/static/128393387201182474652281/</a></p>
+
+<p>我是联通（网通）的网络，还是官方的快一些。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-23T16:03:00+08:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/21/ubuntu/" title="Previous Post: 在win7基础上，安装ubuntu双系统">&laquo; 在win7基础上，安装ubuntu双系统</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/23/java/" title="Next Post: ubuntu搭建Java环境">ubuntu搭建Java环境 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/23/android/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/23/android/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

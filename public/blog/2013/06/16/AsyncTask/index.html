@@ -1,0 +1,1173 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>AsyncTask类的使用  - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="AsyncTask在包android.os中，使用AsyncTask能够使得和UI 线程的交互更为简单合适。它可以用来进行后台的操作，并且把结果显示在UI线程上，而不需要程序员自己人为的对线程（Thread or Handler）进行控制和管理。 这个类通过3个泛型参数（params， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/16/AsyncTask/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">AsyncTask类的使用</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-16T22:22:00+08:00" pubdate data-updated="true">Jun 16<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>AsyncTask在包android.os中，使用AsyncTask能够使得和UI 线程的交互更为简单合适。它可以用来进行后台的操作，并且把结果显示在UI线程上，而不需要程序员自己人为的对线程（Thread or Handler）进行控制和管理。</p>
+
+<p>这个类通过3个泛型参数（params，progress，result），和4个步骤（begin，doinbackground，processProgress，end）来定义。</p>
+
+<p><a href="http://blog.csdn.net/dww410/article/details/6605467">http://blog.csdn.net/dww410/article/details/6605467</a></p>
+
+<!-- more -->
+
+
+<h3>（一）三个泛型参数params，progress，result</h3>
+
+<p>这个三个参数可为任何类型和任何类型的数组，如果不需要，则用Void代替。</p>
+
+<p>params对应于doInbackground（Params&#8230;parames）</p>
+
+<p>progress对应于onProgressUpdate（）和publishProgress（Progress&#8230;progress)，用来反应线程执行的进度,其中publishProgress方法必须在doInBackground方法中调用。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>             <span class="n">Result</span> <span class="nf">doInBackground</span><span class="o">()</span>
+</span><span class='line'>               <span class="o">{</span>
+</span><span class='line'><span class="err">　　　　　　　　</span><span class="n">A</span><span class="o">();</span>            <span class="c1">//方法A,从网络读取数据</span>
+</span><span class='line'>                      <span class="k">this</span><span class="o">.</span><span class="na">publishProgress</span><span class="o">(</span><span class="s">&quot;state1&quot;</span><span class="o">,</span><span class="s">&quot;I like it&quot;</span><span class="o">);</span>
+</span><span class='line'>                      <span class="n">B</span><span class="o">();</span>          <span class="c1">//方法B，复杂的计算处理</span>
+</span><span class='line'>                      <span class="k">this</span><span class="o">.</span><span class="na">publishProgress</span><span class="o">(</span><span class="s">&quot;state2&quot;</span><span class="o">,</span><span class="s">&quot;for test&quot;</span><span class="o">);</span>
+</span><span class='line'>                      <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　　　　</span> <span class="o">}</span>
+</span><span class='line'>               <span class="n">onProgressUpdate</span><span class="o">(</span><span class="n">String</span> <span class="n">values</span><span class="o">)</span>
+</span><span class='line'>              <span class="o">{</span>
+</span><span class='line'>                   <span class="k">if</span><span class="o">(</span><span class="n">values</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;state1&quot;</span><span class="o">))</span>
+</span><span class='line'>                          <span class="n">C</span><span class="o">();</span>        <span class="c1">//将A读取的数据在UI上展现</span>
+</span><span class='line'>                   <span class="k">else</span> <span class="nf">if</span><span class="o">(</span><span class="n">values</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;state2&quot;</span><span class="o">))</span>
+</span><span class='line'>                         <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">&quot;value&quot;</span><span class="o">,</span><span class="n">values</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+</span><span class='line'><span class="err">　　　　　</span><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>result后台进程计算得出的结果，对应于onPostExecute（Result），后台进程得出的结果，作为参数传递给此方法。</p>
+
+<h3>（二）四个步骤和对应的方法</h3>
+
+<p>（1）begin和onPreExecute（）</p>
+
+<p>任务启动后（通过execute（）方法启动任务），这个步骤用来在UI线程中做一些初始化的工作，比如展现一个进度条。</p>
+
+<p>（2）doInBackground和doInBackground()</p>
+
+<p>当onPreExecute（）方法执行完后，这个步骤立即在后台线程运行，用来处理一些耗时的计算及其他引起UI线程阻塞的操作，处理的结果result返回给onPostExecute（Result）方法，也可以使用publishProgress（）和UI线程进行交互，上面已有例子。</p>
+
+<p>（3）processProgress和onProgressUpdate（）</p>
+
+<p>每次当在后台线程里调用了publishProgress（）方法后，onProgressUpdate（）都会在UI线程中执行。这个步骤在后台线程还未结束时，用来进行UI线程和后台线程的交互。</p>
+
+<p>（4）end和onPostExecute（）</p>
+
+<p>当后台线程执行完毕之后，后台线程将得到的结果传递给onPostExecute（）方法，这个步骤在UI线程上展现后台线程执行完毕后最终得到的结果。</p>
+
+<p>上面这四个方法都是只有doInBackground（）是在后台线程中执行，其他都是在UI线程中执行。 这四个方法都是protected，必须继承的使用AsyncTask类，必须重写doInbackground（）方法，经常还要重写onPostExecute（）方法。</p>
+
+<p>当然具体重写哪些方法根据实际需要决定，如果要在后台进程尚未执行完成需要和UI交互，就要重写onProgressUpdate（）方法，如果只需要等后台进程执行完毕得到结果后再和UI交互，则重写onPostExecute（）方法就行。</p>
+
+<h3>（三）使用AsyncTask遵循的线程规则</h3>
+
+<p>（1）这个类的实例必须在UI线程中创建。</p>
+
+<p>（2）execute()必须在UI线程中调用。</p>
+
+<p>（3）不要自己动手去调用上面的四个方法。</p>
+
+<p>（4）这个任务只能被执行一次，如果尝试多次执行会抛出异常。</p>
+
+<h1>详解Android中AsyncTask的使用</h1>
+
+<p><a href="http://blog.csdn.net/liuhe688/article/details/6532519">http://blog.csdn.net/liuhe688/article/details/6532519</a></p>
+
+<p>在Android中实现异步任务机制有两种方式，Handler和AsyncTask。</p>
+
+<p>Handler模式需要为每一个任务创建一个新的线程，任务完成后通过Handler实例向UI线程发送消息，完成界面的更新，这种方式对于整个过程的控制比较精细，但也是有缺点的，例如代码相对臃肿，在多个任务同时执行时，不易对线程进行精确的控制。关于Handler的相关知识，前面也有所介绍，不清楚的朋友们可以参照一下。</p>
+
+<p>为了简化操作，Android1.5提供了工具类android.os.AsyncTask，它使创建异步任务变得更加简单，不再需要编写任务线程和Handler实例即可完成相同的任务。</p>
+
+<p>先来看看AsyncTask的定义：</p>
+
+<p>[java] view plain
+copy</p>
+
+<p>public abstract class AsyncTask&lt;Params, Progress, Result> {</p>
+
+<p>三种泛型类型分别代表“启动任务执行的输入参数”、“后台任务执行的进度”、“后台计算结果的类型”。在特定场合下，并不是所有类型都被使用，如果没有被使用，可以用java.lang.Void类型代替。</p>
+
+<p>一个异步任务的执行一般包括以下几个步骤：</p>
+
+<p>1.execute(Params&#8230; params)，执行一个异步任务，需要我们在代码中调用此方法，触发异步任务的执行。</p>
+
+<p>2.onPreExecute()，在execute(Params&#8230; params)被调用后立即执行，一般用来在执行后台任务前对UI做一些标记。</p>
+
+<p>3.doInBackground(Params&#8230; params)，在onPreExecute()完成后立即执行，用于执行较为费时的操作，此方法将接收输入参数和返回计算结果。在执行过程中可以调用publishProgress(Progress&#8230; values)来更新进度信息。</p>
+
+<p>4.onProgressUpdate(Progress&#8230; values)，在调用publishProgress(Progress&#8230; values)时，此方法被执行，直接将进度信息更新到UI组件上。</p>
+
+<p>5.onPostExecute(Result result)，当后台操作结束时，此方法将会被调用，计算结果将做为参数传递到此方法中，直接将结果显示到UI组件上。</p>
+
+<p>在使用的时候，有几点需要格外注意：</p>
+
+<p>1.异步任务的实例必须在UI线程中创建。</p>
+
+<p>2.execute(Params&#8230; params)方法必须在UI线程中调用。</p>
+
+<p>3.不要手动调用onPreExecute()，doInBackground(Params&#8230; params)，onProgressUpdate(Progress&#8230; values)，onPostExecute(Result result)这几个方法。</p>
+
+<p>4.不能在doInBackground(Params&#8230; params)中更改UI组件的信息。</p>
+
+<p>5.一个任务实例只能执行一次，如果执行第二次将会抛出异常。</p>
+
+<p>接下来，我们来看看如何使用AsyncTask执行异步任务操作，我们先建立一个项目，结构如下：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_1308048004A27R.gif"></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="err">结构相对简单一些，让我们先看看</span><span class="n">MainActivity</span><span class="o">.</span><span class="na">java</span><span class="err">的代码：</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span><span class="n">java</span><span class="o">]</span> <span class="n">view</span> <span class="n">plain</span>
+</span><span class='line'><span class="n">copy</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">scott</span><span class="o">.</span><span class="na">async</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.ByteArrayOutputStream</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.http.HttpEntity</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.http.HttpResponse</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.http.HttpStatus</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.http.client.HttpClient</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.http.client.methods.HttpGet</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.apache.http.impl.client.DefaultHttpClient</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.os.AsyncTask</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.view.View</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.Button</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.ProgressBar</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.TextView</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;ASYNC_TASK&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Button</span> <span class="n">execute</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Button</span> <span class="n">cancel</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">ProgressBar</span> <span class="n">progressBar</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">TextView</span> <span class="n">textView</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">MyTask</span> <span class="n">mTask</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">execute</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">execute</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">execute</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nd">@Override</span>
+</span><span class='line'>            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="c1">//注意每次需new一个实例,新建的任务只能执行一次,否则会出现异常  </span>
+</span><span class='line'>                <span class="n">mTask</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyTask</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">mTask</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="s">&quot;http://www.baidu.com&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">execute</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">cancel</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">});</span>
+</span><span class='line'>        <span class="n">cancel</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">cancel</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">cancel</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nd">@Override</span>
+</span><span class='line'>            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="c1">//取消一个正在执行的任务,onCancelled方法将会被调用  </span>
+</span><span class='line'>                <span class="n">mTask</span><span class="o">.</span><span class="na">cancel</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">});</span>
+</span><span class='line'>        <span class="n">progressBar</span> <span class="o">=</span> <span class="o">(</span><span class="n">ProgressBar</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">progress_bar</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">textView</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">text_view</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">MyTask</span> <span class="kd">extends</span> <span class="n">AsyncTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//onPreExecute方法用于在执行后台任务前做一些UI操作  </span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPreExecute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;onPreExecute() called&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;loading...&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//doInBackground方法内部执行后台任务,不可在此方法内修改UI  </span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">protected</span> <span class="n">String</span> <span class="nf">doInBackground</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;doInBackground(Params... params) called&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">HttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultHttpClient</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">HttpGet</span> <span class="n">get</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="n">params</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'>                <span class="n">HttpResponse</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">get</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getStatusLine</span><span class="o">().</span><span class="na">getStatusCode</span><span class="o">()</span> <span class="o">==</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">SC_OK</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">HttpEntity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
+</span><span class='line'>                    <span class="n">InputStream</span> <span class="n">is</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="na">getContent</span><span class="o">();</span>
+</span><span class='line'>                    <span class="kt">long</span> <span class="n">total</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="na">getContentLength</span><span class="o">();</span>
+</span><span class='line'>                    <span class="n">ByteArrayOutputStream</span> <span class="n">baos</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span><span class='line'>                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">buf</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1024</span><span class="o">];</span>
+</span><span class='line'>                    <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>                    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>                    <span class="k">while</span> <span class="o">((</span><span class="n">length</span> <span class="o">=</span> <span class="n">is</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">buf</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                        <span class="n">baos</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">buf</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+</span><span class='line'>                        <span class="n">count</span> <span class="o">+=</span> <span class="n">length</span><span class="o">;</span>
+</span><span class='line'>                        <span class="c1">//调用publishProgress公布进度,最后onProgressUpdate方法将被执行  </span>
+</span><span class='line'>                        <span class="n">publishProgress</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="o">((</span><span class="n">count</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">total</span><span class="o">)</span> <span class="o">*</span> <span class="mi">100</span><span class="o">));</span>
+</span><span class='line'>                        <span class="c1">//为了演示进度,休眠500毫秒  </span>
+</span><span class='line'>                        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">500</span><span class="o">);</span>
+</span><span class='line'>                    <span class="o">}</span>
+</span><span class='line'>                    <span class="k">return</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">baos</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">(),</span> <span class="s">&quot;utf-8&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//onProgressUpdate方法用于更新进度信息  </span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onProgressUpdate</span><span class="o">(</span><span class="n">Integer</span><span class="o">...</span> <span class="n">progresses</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;onProgressUpdate(Progress... progresses) called&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">progressBar</span><span class="o">.</span><span class="na">setProgress</span><span class="o">(</span><span class="n">progresses</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'>            <span class="n">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;loading...&quot;</span> <span class="o">+</span> <span class="n">progresses</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">+</span> <span class="s">&quot;%&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//onPostExecute方法用于在执行完后台任务后更新UI,显示结果  </span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPostExecute</span><span class="o">(</span><span class="n">String</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;onPostExecute(Result result) called&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">execute</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">cancel</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//onCancelled方法用于在取消执行中的任务时更改UI  </span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCancelled</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;onCancelled() called&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;cancelled&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">progressBar</span><span class="o">.</span><span class="na">setProgress</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">execute</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">cancel</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>布局文件main.xml代码如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;LinearLayout</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+</span><span class='line'>    <span class="na">android:orientation=</span><span class="s">&quot;vertical&quot;</span>
+</span><span class='line'>    <span class="na">android:layout_width=</span><span class="s">&quot;fill_parent&quot;</span>
+</span><span class='line'>    <span class="na">android:layout_height=</span><span class="s">&quot;fill_parent&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Button</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/execute&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;fill_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+</span><span class='line'>        <span class="na">android:text=</span><span class="s">&quot;execute&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Button</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/cancel&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;fill_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+</span><span class='line'>        <span class="na">android:enabled=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>        <span class="na">android:text=</span><span class="s">&quot;cancel&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ProgressBar</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/progress_bar&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;fill_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+</span><span class='line'>        <span class="na">android:progress=</span><span class="s">&quot;0&quot;</span>
+</span><span class='line'>        <span class="na">android:max=</span><span class="s">&quot;100&quot;</span>
+</span><span class='line'>        <span class="na">style=</span><span class="s">&quot;?android:attr/progressBarStyleHorizontal&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ScrollView</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;fill_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;TextView</span>
+</span><span class='line'>            <span class="na">android:id=</span><span class="s">&quot;@+id/text_view&quot;</span>
+</span><span class='line'>            <span class="na">android:layout_width=</span><span class="s">&quot;fill_parent&quot;</span>
+</span><span class='line'>            <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/ScrollView&gt;</span>
+</span><span class='line'><span class="nt">&lt;/LinearLayout&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为需要访问网络，所以我们还需要在AndroidManifest.xml中加入访问网络的权限：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">&quot;android.permission.INTERNET&quot;</span><span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们来看一下运行时的界面：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_13080489541W1Z.gif"></p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_13080489733363.gif"></p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_1308048991Z5Tt.gif"></p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_1308049389SZzs.gif"></p>
+
+<p>以上几个截图分别是初始界面、执行异步任务时界面、执行成功后界面、取消任务后界面。执行成功后，整个过程日志打印如下：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_1308049139BtIC.gif"></p>
+
+<p>如果我们在执行任务时按下了“cancel”按钮，日志打印如下：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/14/0_1308049210lt0u.gif"></p>
+
+<p>可以看到onCancelled()方法将会被调用，onPostExecute(Result result)方法将不再被调用。</p>
+
+<p>上面介绍了AsyncTask的基本应用，有些朋友也许会有疑惑，AsyncTask内部是怎么执行的呢，它执行的过程跟我们使用Handler又有什么区别呢？答案是：AsyncTask是对Thread+Handler良好的封装，在android.os.AsyncTask代码里仍然可以看到Thread和Handler的踪迹。下面就向大家详细介绍一下AsyncTask的执行原理。</p>
+
+<p>我们先看一下AsyncTask的大纲视图：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201106/13/0_13079649384Zjf.gif"></p>
+
+<p>我们可以看到关键几个步骤的方法都在其中，doInBackground(Params&#8230; params)是一个抽象方法，我们继承AsyncTask时必须覆写此方法；onPreExecute()、onProgressUpdate(Progress&#8230; values)、onPostExecute(Result result)、onCancelled()这几个方法体都是空的，我们需要的时候可以选择性的覆写它们；publishProgress(Progress&#8230; values)是final修饰的，不能覆写，只能去调用，我们一般会在doInBackground(Params&#8230; params)中调用此方法；另外，我们可以看到有一个Status的枚举类和getStatus()方法，Status枚举类代码段如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>        <span class="c1">//初始状态</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">Status</span> <span class="n">mStatus</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="na">PENDING</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">enum</span> <span class="n">Status</span> <span class="o">{</span>
+</span><span class='line'>        <span class="cm">/**</span>
+</span><span class='line'><span class="cm">         * Indicates that the task has not been executed yet.</span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="n">PENDING</span><span class="o">,</span>
+</span><span class='line'>        <span class="cm">/**</span>
+</span><span class='line'><span class="cm">         * Indicates that the task is running.</span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="n">RUNNING</span><span class="o">,</span>
+</span><span class='line'>        <span class="cm">/**</span>
+</span><span class='line'><span class="cm">         * Indicates that {@link AsyncTask#onPostExecute} has finished.</span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>        <span class="n">FINISHED</span><span class="o">,</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Returns the current status of this task.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * @return The current status.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">final</span> <span class="n">Status</span> <span class="nf">getStatus</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">mStatus</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到，AsyncTask的初始状态为PENDING，代表待定状态，RUNNING代表执行状态，FINISHED代表结束状态，这几种状态在AsyncTask一次生命周期内的很多地方被使用，非常重要。</p>
+
+<p>介绍完大纲视图相关内容之后，接下来，我们会从execute(Params&#8230; params)作为入口，重点分析一下AsyncTask的执行流程，我们来看一下execute(Params&#8230; params)方法的代码段：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">final</span> <span class="n">AsyncTask</span><span class="o">&lt;</span><span class="n">Params</span><span class="o">,</span> <span class="n">Progress</span><span class="o">,</span> <span class="n">Result</span><span class="o">&gt;</span> <span class="n">execute</span><span class="o">(</span><span class="n">Params</span><span class="o">...</span> <span class="n">params</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">mStatus</span> <span class="o">!=</span> <span class="n">Status</span><span class="o">.</span><span class="na">PENDING</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">switch</span> <span class="o">(</span><span class="n">mStatus</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">RUNNING:</span>
+</span><span class='line'>                  <span class="c1">//如果该任务正在被执行则抛出异常</span>
+</span><span class='line'>                  <span class="c1">//值得一提的是,在调用cancel取消任务后,状态仍未RUNNING</span>
+</span><span class='line'>                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">&quot;Cannot execute task:&quot;</span>
+</span><span class='line'>                            <span class="o">+</span> <span class="s">&quot; the task is already running.&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">FINISHED:</span>
+</span><span class='line'>                  <span class="c1">//如果该任务已经执行完成则抛出异常</span>
+</span><span class='line'>                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">&quot;Cannot execute task:&quot;</span>
+</span><span class='line'>                            <span class="o">+</span> <span class="s">&quot; the task has already been executed &quot;</span>
+</span><span class='line'>                            <span class="o">+</span> <span class="s">&quot;(a task can be executed only once)&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="c1">//改变状态为RUNNING</span>
+</span><span class='line'>        <span class="n">mStatus</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="na">RUNNING</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//调用onPreExecute方法</span>
+</span><span class='line'>        <span class="n">onPreExecute</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">mWorker</span><span class="o">.</span><span class="na">mParams</span> <span class="o">=</span> <span class="n">params</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">sExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">mFuture</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>代码中涉及到三个陌生的变量：mWorker、sExecutor、mFuture，我们也会看一下他们的庐山真面目：</p>
+
+<p>关于sExecutor，它是java.util.concurrent.ThreadPoolExecutor的实例，用于管理线程的执行。代码如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CORE_POOL_SIZE</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MAXIMUM_POOL_SIZE</span> <span class="o">=</span> <span class="mi">128</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">KEEP_ALIVE</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//新建一个队列用来存放线程</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">sWorkQueue</span> <span class="o">=</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">LinkedBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;(</span><span class="mi">10</span><span class="o">);</span>
+</span><span class='line'>  <span class="c1">//新建一个线程工厂</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadFactory</span> <span class="n">sThreadFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadFactory</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">private</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">mCount</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>      <span class="c1">//新建一个线程</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">Thread</span> <span class="nf">newThread</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">r</span><span class="o">,</span> <span class="s">&quot;AsyncTask #&quot;</span> <span class="o">+</span> <span class="n">mCount</span><span class="o">.</span><span class="na">getAndIncrement</span><span class="o">());</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">};</span>
+</span><span class='line'>  <span class="c1">//新建一个线程池执行器,用于管理线程的执行</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadPoolExecutor</span> <span class="n">sExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">(</span><span class="n">CORE_POOL_SIZE</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">MAXIMUM_POOL_SIZE</span><span class="o">,</span> <span class="n">KEEP_ALIVE</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">,</span> <span class="n">sWorkQueue</span><span class="o">,</span> <span class="n">sThreadFactory</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>mWorker实际上是AsyncTask的一个的抽象内部类的实现对象实例，它实现了Callable<Result>接口中的call()方法，代码如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">WorkerRunnable</span><span class="o">&lt;</span><span class="n">Params</span><span class="o">,</span> <span class="n">Result</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Params</span><span class="o">[]</span> <span class="n">mParams</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而mFuture实际上是java.util.concurrent.FutureTask的实例，下面是它的FutureTask类的相关信息：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * A cancellable asynchronous computation.</span>
+</span><span class='line'><span class="cm"> * ...</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FutureTask</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">RunnableFuture</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RunnableFuture</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">Runnable</span><span class="o">,</span> <span class="n">Future</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Sets this Future to the result of its computation</span>
+</span><span class='line'><span class="cm">     * unless it has been cancelled.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">run</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到FutureTask是一个可以中途取消的用于异步计算的类。</p>
+
+<p>下面是mWorker和mFuture实例在AsyncTask中的体现：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">WorkerRunnable</span><span class="o">&lt;</span><span class="n">Params</span><span class="o">,</span> <span class="n">Result</span><span class="o">&gt;</span> <span class="n">mWorker</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">FutureTask</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;</span> <span class="n">mFuture</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">AsyncTask</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mWorker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WorkerRunnable</span><span class="o">&lt;</span><span class="n">Params</span><span class="o">,</span> <span class="n">Result</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//call方法被调用后,将设置优先级为后台级别,然后调用AsyncTask的doInBackground方法</span>
+</span><span class='line'>          <span class="kd">public</span> <span class="n">Result</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">Process</span><span class="o">.</span><span class="na">setThreadPriority</span><span class="o">(</span><span class="n">Process</span><span class="o">.</span><span class="na">THREAD_PRIORITY_BACKGROUND</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nf">doInBackground</span><span class="o">(</span><span class="n">mParams</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//在mFuture实例中,将会调用mWorker做后台任务,完成后会调用done方法</span>
+</span><span class='line'>        <span class="n">mFuture</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FutureTask</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;(</span><span class="n">mWorker</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nd">@Override</span>
+</span><span class='line'>            <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">done</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">Message</span> <span class="n">message</span><span class="o">;</span>
+</span><span class='line'>                <span class="n">Result</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">result</span> <span class="o">=</span> <span class="n">get</span><span class="o">();</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">android</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Log</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">LOG_TAG</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ExecutionException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;An error occured while executing doInBackground()&quot;</span><span class="o">,</span>
+</span><span class='line'>                            <span class="n">e</span><span class="o">.</span><span class="na">getCause</span><span class="o">());</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">CancellationException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                  <span class="c1">//发送取消任务的消息</span>
+</span><span class='line'>                    <span class="n">message</span> <span class="o">=</span> <span class="n">sHandler</span><span class="o">.</span><span class="na">obtainMessage</span><span class="o">(</span><span class="n">MESSAGE_POST_CANCEL</span><span class="o">,</span>
+</span><span class='line'>                            <span class="k">new</span> <span class="n">AsyncTaskResult</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;(</span><span class="n">AsyncTask</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="o">(</span><span class="n">Result</span><span class="o">[])</span> <span class="kc">null</span><span class="o">));</span>
+</span><span class='line'>                    <span class="n">message</span><span class="o">.</span><span class="na">sendToTarget</span><span class="o">();</span>
+</span><span class='line'>                    <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">&quot;An error occured while executing &quot;</span>
+</span><span class='line'>                            <span class="o">+</span> <span class="s">&quot;doInBackground()&quot;</span><span class="o">,</span> <span class="n">t</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="c1">//发送显示结果的消息</span>
+</span><span class='line'>                <span class="n">message</span> <span class="o">=</span> <span class="n">sHandler</span><span class="o">.</span><span class="na">obtainMessage</span><span class="o">(</span><span class="n">MESSAGE_POST_RESULT</span><span class="o">,</span>
+</span><span class='line'>                        <span class="k">new</span> <span class="n">AsyncTaskResult</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;(</span><span class="n">AsyncTask</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">result</span><span class="o">));</span>
+</span><span class='line'>                <span class="n">message</span><span class="o">.</span><span class="na">sendToTarget</span><span class="o">();</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">};</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们看到上面的代码中，mFuture实例对象的done()方法中，如果捕捉到了CancellationException类型的异常，则发送一条“MESSAGE_POST_CANCEL”的消息；如果顺利执行，则发送一条“MESSAGE_POST_RESULT”的消息，而消息都与一个sHandler对象关联。这个sHandler实例实际上是AsyncTask内部类InternalHandler的实例，而InternalHandler正是继承了Handler，下面我们来分析一下它的代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MESSAGE_POST_RESULT</span> <span class="o">=</span> <span class="mh">0x1</span><span class="o">;</span>    <span class="c1">//显示结果</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MESSAGE_POST_PROGRESS</span> <span class="o">=</span> <span class="mh">0x2</span><span class="o">;</span>    <span class="c1">//更新进度</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">MESSAGE_POST_CANCEL</span> <span class="o">=</span> <span class="mh">0x3</span><span class="o">;</span>  <span class="c1">//取消任务</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">InternalHandler</span> <span class="n">sHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InternalHandler</span><span class="o">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">InternalHandler</span> <span class="kd">extends</span> <span class="n">Handler</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nd">@SuppressWarnings</span><span class="o">({</span><span class="s">&quot;unchecked&quot;</span><span class="o">,</span> <span class="s">&quot;RawUseOfParameterizedType&quot;</span><span class="o">})</span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">AsyncTaskResult</span> <span class="n">result</span> <span class="o">=</span> <span class="o">(</span><span class="n">AsyncTaskResult</span><span class="o">)</span> <span class="n">msg</span><span class="o">.</span><span class="na">obj</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">MESSAGE_POST_RESULT:</span>
+</span><span class='line'>                    <span class="c1">// There is only one result</span>
+</span><span class='line'>                  <span class="c1">//调用AsyncTask.finish方法</span>
+</span><span class='line'>                    <span class="n">result</span><span class="o">.</span><span class="na">mTask</span><span class="o">.</span><span class="na">finish</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">mData</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span><span class='line'>                    <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">MESSAGE_POST_PROGRESS:</span>
+</span><span class='line'>                    <span class="c1">//调用AsyncTask.onProgressUpdate方法</span>
+</span><span class='line'>                  <span class="n">result</span><span class="o">.</span><span class="na">mTask</span><span class="o">.</span><span class="na">onProgressUpdate</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">mData</span><span class="o">);</span>
+</span><span class='line'>                    <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">MESSAGE_POST_CANCEL:</span>
+</span><span class='line'>                  <span class="c1">//调用AsyncTask.onCancelled方法</span>
+</span><span class='line'>                    <span class="n">result</span><span class="o">.</span><span class="na">mTask</span><span class="o">.</span><span class="na">onCancelled</span><span class="o">();</span>
+</span><span class='line'>                    <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们看到，在处理消息时，遇到“MESSAGE_POST_RESULT”时，它会调用AsyncTask中的finish()方法，我们来看一下finish()方法的定义：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">void</span> <span class="nf">finish</span><span class="o">(</span><span class="n">Result</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">isCancelled</span><span class="o">())</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">onPostExecute</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>    <span class="c1">//调用onPostExecute显示结果</span>
+</span><span class='line'>        <span class="n">mStatus</span> <span class="o">=</span> <span class="n">Status</span><span class="o">.</span><span class="na">FINISHED</span><span class="o">;</span> <span class="c1">//改变状态为FINISHED</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>原来finish()方法是负责调用onPostExecute(Result result)方法显示结果并改变任务状态的啊。</p>
+
+<p>另外，在mFuture对象的done()方法里，构建一个消息时，这个消息包含了一个AsyncTaskResult类型的对象，然后在sHandler实例对象的handleMessage(Message msg)方法里，使用下面这种方式取得消息中附带的对象：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">AsyncTaskResult</span> <span class="n">result</span> <span class="o">=</span> <span class="o">(</span><span class="n">AsyncTaskResult</span><span class="o">)</span> <span class="n">msg</span><span class="o">.</span><span class="na">obj</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个AsyncTaskResult究竟是什么呢，它又包含什么内容呢？其实它也是AsyncTask的一个内部类，是用来包装执行结果的一个类，让我们来看一下它的代码结构：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="nd">@SuppressWarnings</span><span class="o">({</span><span class="s">&quot;RawUseOfParameterizedType&quot;</span><span class="o">})</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">AsyncTaskResult</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="n">AsyncTask</span> <span class="n">mTask</span><span class="o">;</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="n">Data</span><span class="o">[]</span> <span class="n">mData</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">AsyncTaskResult</span><span class="o">(</span><span class="n">AsyncTask</span> <span class="n">task</span><span class="o">,</span> <span class="n">Data</span><span class="o">...</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">mTask</span> <span class="o">=</span> <span class="n">task</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">mData</span> <span class="o">=</span> <span class="n">data</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看以看到这个AsyncTaskResult封装了一个AsyncTask的实例和某种类型的数据集，我们再来看一下构建消息时的代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//发送取消任务的消息</span>
+</span><span class='line'><span class="n">message</span> <span class="o">=</span> <span class="n">sHandler</span><span class="o">.</span><span class="na">obtainMessage</span><span class="o">(</span><span class="n">MESSAGE_POST_CANCEL</span><span class="o">,</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">AsyncTaskResult</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;(</span><span class="n">AsyncTask</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="o">(</span><span class="n">Result</span><span class="o">[])</span> <span class="kc">null</span><span class="o">));</span>
+</span><span class='line'><span class="n">message</span><span class="o">.</span><span class="na">sendToTarget</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//发送显示结果的消息</span>
+</span><span class='line'><span class="n">message</span> <span class="o">=</span> <span class="n">sHandler</span><span class="o">.</span><span class="na">obtainMessage</span><span class="o">(</span><span class="n">MESSAGE_POST_RESULT</span><span class="o">,</span>
+</span><span class='line'>         <span class="k">new</span> <span class="n">AsyncTaskResult</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">&gt;(</span><span class="n">AsyncTask</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">result</span><span class="o">));</span>
+</span><span class='line'><span class="n">message</span><span class="o">.</span><span class="na">sendToTarget</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在处理消息时是如何使用这个对象呢，我们再来看一下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">result</span><span class="o">.</span><span class="na">mTask</span><span class="o">.</span><span class="na">finish</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">mData</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">result</span><span class="o">.</span><span class="na">mTask</span><span class="o">.</span><span class="na">onProgressUpdate</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">mData</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>概括来说，当我们调用execute(Params&#8230; params)方法后，execute方法会调用onPreExecute()方法，然后由ThreadPoolExecutor实例sExecutor执行一个FutureTask任务，这个过程中doInBackground(Params&#8230; params)将被调用，如果被开发者覆写的doInBackground(Params&#8230; params)方法中调用了publishProgress(Progress&#8230; values)方法，则通过InternalHandler实例sHandler发送一条MESSAGE_POST_PROGRESS消息，更新进度，sHandler处理消息时onProgressUpdate(Progress&#8230; values)方法将被调用；如果遇到异常，则发送一条MESSAGE_POST_CANCEL的消息，取消任务，sHandler处理消息时onCancelled()方法将被调用；如果执行成功，则发送一条MESSAGE_POST_RESULT的消息，显示结果，sHandler处理消息时onPostExecute(Result result)方法被调用。</p>
+
+<p>经过上面的介绍，相信朋友们都已经认识到AsyncTask的本质了，它对Thread+Handler的良好封装，减少了开发者处理问题的复杂度，提高了开发效率，希望朋友们能多多体会一下。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-16T22:22:00+08:00" pubdate data-updated="true">Jun 16<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/16/notification/" title="Previous Post: NotificationManager和Notification的使用总结">&laquo; NotificationManager和Notification的使用总结</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/18/Command/" title="Next Post: Java之命令模式（Command Pattern）">Java之命令模式（Command Pattern） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/16/AsyncTask/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/16/AsyncTask/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,890 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JAVA中的JSON - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="http://blog.csdn.net/xiazdong/article/details/7059573 一、JSON介绍 JSON（JavaScript Object Notation），类似于XML，是一种数据交换格式，比如JAVA产生了一个数据想要给JavaScript，则除了利用XML外 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/13/JSON/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JAVA中的JSON</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-13T19:28:00+08:00" pubdate data-updated="true">Jun 13<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://blog.csdn.net/xiazdong/article/details/7059573">http://blog.csdn.net/xiazdong/article/details/7059573</a></p>
+
+<h2>一、JSON介绍</h2>
+
+<p>JSON（JavaScript Object Notation），类似于XML，是一种数据交换格式，比如JAVA产生了一个数据想要给JavaScript，则除了利用XML外，还可以利用JSON;</p>
+
+<p>JSON相比XML的优势是表达起来很简单；</p>
+
+<p>官网：<a href="http://www.json.org/">http://www.json.org/</a></p>
+
+<blockquote><p>JSON是AJAX中的X（就是可以取代XML）;          &#8212;&#8212;出自JSON创始人;</p></blockquote>
+
+<p>注意：JSON并不是一个文档格式，没有*.json的文档，一般JSON格式的文档存在txt中，而XML可以是一个标准；</p>
+
+<p>在线校验JSON结构的网站：<a href="http://www.bejson.com/go.html?u=http://www.bejson.com/jsonview2/">http://www.bejson.com/go.html?u=http://www.bejson.com/jsonview2/</a></p>
+
+<!-- more -->
+
+
+<h2>二、JSON数据结构</h2>
+
+<p>JSON有两种数据结构：</p>
+
+<ol>
+<li><p>Map，也称为对象；｛&#8230;.｝</p></li>
+<li><p>Array；[&#8230;&#8230;]</p></li>
+</ol>
+
+
+<p>也就是说所有的JSON对象都是要以这些形式表示；</p>
+
+<h3>1.Map</h3>
+
+<p>简单的说就是Java中的Map，名称-值对的形式给出，名称和值之间用“：”隔开，两个Map之间用“，”隔开，一般表示形式如下：</p>
+
+<p>{&#8216;key1&#8217;:&#8217;value1&#8217;,&#8217;key2&#8217;:&#8217;value2&#8217;}</p>
+
+<p>以下为官网的图：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201112/10/0_13234989385pO5.gif"></p>
+
+<h3>2.Array</h3>
+
+<p>就是普通意义上的数组，一般形式如下：</p>
+
+<p>[&#8216;arr1&#8217;,&#8217;arr2&#8217;,&#8217;arr3&#8217;];</p>
+
+<p>以下为官网的图：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201112/10/0_1323498954Pp6o.gif"></p>
+
+<p>图中的value可以是：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201112/10/0_1323498968ZgT5.gif"></p>
+
+<h3>总结：</h3>
+
+<p>(1)JSON的数据结构只有两种；</p>
+
+<p>(2)可以嵌套表示，比如Array中可以嵌套Object等；</p>
+
+<p>(3)记住：Object是以｛｝表示，Array是以[  ]表示；</p>
+
+<h2>三、JSON与XML互转示例</h2>
+
+<p>前面提到任何的XML都能够转换成JSON包；</p>
+
+<h3>1.简单XML</h3>
+
+<p>XML格式：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;person&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;name&gt;</span>xiazdong<span class="nt">&lt;/name&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;age&gt;</span>20<span class="nt">&lt;/age&gt;</span>
+</span><span class='line'><span class="nt">&lt;/person&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JSON格式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{  
+</span><span class='line'>    "name":"xiazdong",  
+</span><span class='line'>    "age":20  
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2.复杂XML</p>
+
+<p>XML格式：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;section&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;title&gt;</span>BOOK<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;signing&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;author</span> <span class="na">name=</span><span class="s">&quot;author-1&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">title=</span><span class="s">&quot;book1&quot;</span> <span class="na">price=</span><span class="s">&quot;$11&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/signing&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;signing&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;author</span> <span class="na">name=</span><span class="s">&quot;author-2&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">title=</span><span class="s">&quot;book2&quot;</span> <span class="na">price=</span><span class="s">&quot;$22&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/signing&gt;</span>
+</span><span class='line'><span class="nt">&lt;/section&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JSON格式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"section":{  
+</span><span class='line'>        "title":"BOOK",  
+</span><span class='line'>        "signing":[  
+</span><span class='line'>        {  
+</span><span class='line'>            "author":  
+</span><span class='line'>            {  
+</span><span class='line'>                "name":"author-1"  
+</span><span class='line'>            },  
+</span><span class='line'>            "book":  
+</span><span class='line'>            {  
+</span><span class='line'>                "title":"book1",  
+</span><span class='line'>                "price":"$11"  
+</span><span class='line'>            }  
+</span><span class='line'>        },  
+</span><span class='line'>        {  
+</span><span class='line'>            "author":  
+</span><span class='line'>            {  
+</span><span class='line'>                "name":"author-2"  
+</span><span class='line'>            },  
+</span><span class='line'>            "book":  
+</span><span class='line'>            {  
+</span><span class='line'>                "title":"book2",  
+</span><span class='line'>                "price":"$22"  
+</span><span class='line'>            }  
+</span><span class='line'>        }     
+</span><span class='line'>     ]}  
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：XML中的属性也是通过JSON的Map表示；</p>
+
+<h2>四、JSON包</h2>
+
+<p>如果我们想要使用JSON包，则可以下载JSON包的源代码，并将这些代码添加进Eclipse工程中，即可调用；</p>
+
+<p>如果想要看API文档，可以参见：<a href="http://www.JSON.org/java/index.html">http://www.JSON.org/java/index.html</a></p>
+
+<p>JSON包中最常用的两个类就是JSONObject和JSONArray，分别表示两种数据结构；</p>
+
+<h3>1.JSONObject代码实例</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">jsonobj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="s">&quot;{&#39;name&#39;:&#39;xiazdong&#39;,&#39;age&#39;:20}&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">jsonobj</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">jsonobj</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">name</span><span class="o">+</span><span class="s">&quot;:&quot;</span><span class="o">+</span><span class="n">age</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.JSONArray代码实例</h3>
+
+<p>JSONArray array = new JSONArray(String str);  //将String转为JSONArray</p>
+
+<p>int length = array.length(); //返回Array的长度；</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">JSONArray</span> <span class="n">jsonarray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="o">(</span><span class="s">&quot;[{&#39;name&#39;:&#39;xiazdong&#39;,&#39;age&#39;:20},{&#39;name&#39;:&#39;xzdong&#39;,&#39;age&#39;:15}]&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">jsonarray</span><span class="o">.</span><span class="na">length</span><span class="o">();</span><span class="n">i</span><span class="o">++){</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">jsonarray</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">jsonarray</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;name=&quot;</span><span class="o">+</span><span class="n">name</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;age=&quot;</span><span class="o">+</span><span class="n">age</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3.嵌套JSONObject和JSONArray代码实例</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;{&#39;name&#39;:&#39;xiazdong&#39;,&#39;age&#39;:20,&#39;book&#39;:[&#39;book1&#39;,&#39;book2&#39;]&quot;</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.JSONStringer代码示例</h3>
+
+<p>JSONStringer可以用来快速构建一个JSON格式的文本，并转换成String，可以写入文件；</p>
+
+<p>JSONStringer是JSONWriter的子类;</p>
+
+<p>JSONStringer一般通过object().key().value().key().value().endObject()进行构造;</p>
+
+<p>object()表明开始一个对象，即添加｛  ;</p>
+
+<p>endObject()表明结束一个对象，即添加 ｝ ;</p>
+
+<p>array()表明开始一个数组,即添加一个 [ ;</p>
+
+<p>endArray()表明结束一个数组，即添加一个 ] ;</p>
+
+<p>key()表示添加一个key;</p>
+
+<p>value()表示添加一个value;</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONStringer</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">JSONStringer</span> <span class="n">stringer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONStringer</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">stringer</span><span class="o">.</span><span class="na">object</span><span class="o">().</span><span class="na">key</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">).</span><span class="na">value</span><span class="o">(</span><span class="s">&quot;xiazdong&quot;</span><span class="o">).</span><span class="na">key</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">).</span><span class="na">value</span><span class="o">(</span><span class="mi">20</span><span class="o">).</span><span class="na">endObject</span><span class="o">().</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>复杂JSON格式写入</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONStringer</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONTokener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">JSONStringer</span> <span class="n">js</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONStringer</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj4</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">obj4</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">,</span> <span class="s">&quot;book1&quot;</span><span class="o">).</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;price&quot;</span><span class="o">,</span> <span class="s">&quot;$11&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">obj3</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">,</span> <span class="n">obj4</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">obj3</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;author&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;author-1&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj5</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj6</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">obj6</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">,</span> <span class="s">&quot;book2&quot;</span><span class="o">).</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;price&quot;</span><span class="o">,</span> <span class="s">&quot;$22&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">obj5</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">,</span> <span class="n">obj6</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">obj5</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;author&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;author-2&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">JSONArray</span> <span class="n">obj7</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">obj7</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">obj3</span><span class="o">).</span><span class="na">put</span><span class="o">(</span><span class="n">obj5</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">obj2</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">,</span><span class="s">&quot;BOOK&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">obj2</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;signing&quot;</span><span class="o">,</span> <span class="n">obj7</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">js</span><span class="o">.</span><span class="na">object</span><span class="o">().</span><span class="na">key</span><span class="o">(</span><span class="s">&quot;session&quot;</span><span class="o">).</span><span class="na">value</span><span class="o">(</span><span class="n">obj2</span><span class="o">).</span><span class="na">endObject</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">js</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">PrintWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PrintWriter</span><span class="o">(</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="mi">1</span><span class="o">.</span><span class="na">txt</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">js</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上代码生成了如下JSON格式：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">{</span><span class="s">&quot;section&quot;</span><span class="o">:{</span>
+</span><span class='line'>        <span class="s">&quot;title&quot;</span><span class="o">:</span><span class="s">&quot;BOOK&quot;</span><span class="o">,</span>
+</span><span class='line'>        <span class="s">&quot;signing&quot;</span><span class="o">:[</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="s">&quot;author&quot;</span><span class="o">:</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="s">&quot;name&quot;</span><span class="o">:</span><span class="s">&quot;author-1&quot;</span>
+</span><span class='line'>            <span class="o">},</span>
+</span><span class='line'>            <span class="s">&quot;book&quot;</span><span class="o">:</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="s">&quot;title&quot;</span><span class="o">:</span><span class="s">&quot;book1&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;price&quot;</span><span class="o">:</span><span class="s">&quot;$11&quot;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">},</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="s">&quot;author&quot;</span><span class="o">:</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="s">&quot;name&quot;</span><span class="o">:</span><span class="s">&quot;author-2&quot;</span>
+</span><span class='line'>            <span class="o">},</span>
+</span><span class='line'>            <span class="s">&quot;book&quot;</span><span class="o">:</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="s">&quot;title&quot;</span><span class="o">:</span><span class="s">&quot;book2&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="s">&quot;price&quot;</span><span class="o">:</span><span class="s">&quot;$22&quot;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="o">]}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5.JSONTokener代码示例</h3>
+
+<p>JSONTokener是用来读取JSON格式的文件;</p>
+
+<p>JSONObject obj = new JSONObject( new JSONTokener(java.io.Reader));可以从文件中读取一个JSONObject;</p>
+
+<p>JSONArray obj = new JSONArray( new JSONTokener(java.io.Reader)); 可以从文件中读取一个JSONArray;</p>
+
+<p>1.txt</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{  
+</span><span class='line'>    'name':'xiazdong',  
+</span><span class='line'>    'book':['book1','book2']  
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONTokener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="k">new</span> <span class="n">JSONTokener</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">&quot;1.txt&quot;</span><span class="o">))));</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span> <span class="c1">//可以读取book2  </span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>复杂JSON格式的读取代码：</p>
+
+<h3>1.txt</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"section":{  
+</span><span class='line'>        "title":"BOOK",  
+</span><span class='line'>        "signing":[  
+</span><span class='line'>        {  
+</span><span class='line'>            "author":  
+</span><span class='line'>            {  
+</span><span class='line'>                "name":"author-1"  
+</span><span class='line'>            },  
+</span><span class='line'>            "book":  
+</span><span class='line'>            {  
+</span><span class='line'>                "title":"book1",  
+</span><span class='line'>                "price":"$11"  
+</span><span class='line'>            }  
+</span><span class='line'>        },  
+</span><span class='line'>        {  
+</span><span class='line'>            "author":  
+</span><span class='line'>            {  
+</span><span class='line'>                "name":"author-2"  
+</span><span class='line'>            },  
+</span><span class='line'>            "book":  
+</span><span class='line'>            {  
+</span><span class='line'>                "title":"book2",  
+</span><span class='line'>                "price":"$22"  
+</span><span class='line'>            }  
+</span><span class='line'>        }     
+</span><span class='line'>        ]}  
+</span><span class='line'>    }  
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONTokener</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="k">new</span> <span class="n">JSONTokener</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">&quot;1.txt&quot;</span><span class="o">))));</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;section&quot;</span><span class="o">).</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;signing&quot;</span><span class="o">).</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;author&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">));</span> <span class="o">&lt;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;white-space:pre&quot;</span><span class="o">&gt;</span>     <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;</span><span class="c1">//获取author-1  </span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>总结：</h3>
+
+<ol>
+<li><p>在Java中JSON格式的String最好用单引号表示;</p></li>
+<li><p>利用JSONObject+JSONTokener能够读取JSON格式文件对象;</p></li>
+<li><p>利用PrintWriter+JSONStringer可以写入JSON文件;</p></li>
+</ol>
+
+
+<p>注：由于原本想要试图用JSONWriter写入，但是没有成功；所以只能利用JSONStringer+PrintWriter写入;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-13T19:28:00+08:00" pubdate data-updated="true">Jun 13<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/11/listview/" title="Previous Post: 利用convertView优化ListView性能">&laquo; 利用convertView优化ListView性能</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/15/UML/" title="Next Post: Java UML类图">Java UML类图 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/13/JSON/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/13/JSON/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

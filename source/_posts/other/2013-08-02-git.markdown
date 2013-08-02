@@ -1,0 +1,8 @@
+---
+layout: post
+title: "git add . 无法添加文件夹下的文件"
+date: 2013-08-02 17:50
+comments: true
+categories: 其他
+---
+今天提交版本时遇到了git目录无法添加文件夹下的文件。比如要提交A文件夹，而程序代码在A/B文件夹下。使用git add . 只能加入一个空的B文件夹。这个原因是B文件夹是从别的git库拉下来的，只要把B下的隐藏文件.git删掉就可以了。

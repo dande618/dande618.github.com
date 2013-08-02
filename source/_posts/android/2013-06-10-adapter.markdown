@@ -1,0 +1,115 @@
+---
+layout: post
+title: "Android 适配器模式"
+date: 2013-06-10 19:28
+comments: true
+categories: 
+---
+对于android开发者来说起，适配器模式简直太熟悉不过，有很多应用可以说是天天在直接或者间接的用到适配器模式，比如ListView。
+
+ListView用于显示列表数据，但是作为列表数据集合有很多形式，有Array，有Cursor，我们需要对应的适配器作为桥梁，处理相应的数据（并能形成ListView所需要的视图）。
+
+正是因为定义了这些适配器接口和适配器类，才能使我们的数据简单灵活而又正确的显示到了adapterview的实现类上。
+
+适配器模式，Adapter Pattern，勇敢的去适配，大量的资源可以重用。
+
+<http://www.cnblogs.com/qianxudetianxia/archive/2012/02/27/2010965.html>
+<!-- more -->
+
+###1.意图
+
+适配器模式，把一个类的接口变换成客户端所期待的另一种接口，从而使原本不匹配而无法在一起工作的两个，类能够在一起工作。
+
+适配器模式分为类适配器模式和对象适配器模式。
+
+关于类适配器模式，因为java的单继承，如果继承一个类，另外的则只能是接口，需要手动实现相应的方法。
+
+热门词汇：类的适配器模式 对象的适配器模式 缺省适配器模式 源类 目标接口
+
+###2.结构图和代码
+
+{% img center http://pic002.cnblogs.com/images/2012/31770/2012022722350660.jpg %}
+
+为了简明直接，我省略了相关的其他适配器 ，只以此两个适配器为例。
+
+ListViews做为client，他所需要的目标接口(target interface)就是ListAdapter，包含getCount(),getItem(),getView()等几个基本的方法，为了兼容List<T>,Cursor等数据类型作为数据源，我们专门定义两个适配器来适配他们：ArrayAdapter和CursorAdapter。这两个适配器，说白了，就是针对目标接口对数据源进行兼容修饰。
+
+这就是适配器模式。
+
+其中BaseAdapter实现了如isEmpty()方法,使子类在继承BaseAdapter后不需要再实现此方法，这就是缺省适配器，这也是缺省适配器的一个最明显的好处。 
+
+我们以最简单的若干个方法举例如下，ListAdapter接口如下（，为了简单，我省略了继承自Adapter接口）：
+
+{% codeblock lang:java %}
+public interface ListAdapter {
+    int getCount();
+    Object getItem(int position);
+    long getItemId(int position);
+    View getView(int position, View convertView, ViewGroup parent);
+    boolean isEmpty();
+}
+{% endcodeblock %}
+
+抽象类BaseAdapter,我省略其他代码，只列出两个方法，以作示意:
+
+{% codeblock lang:java %}
+public abstract class BaseAdapter implements ListAdapter, SpinnerAdapter {
+    // ... ...
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        return getView(position, convertView, parent);
+    }
+    public boolean isEmpty() {
+        return getCount() == 0;
+    }
+}
+{% endcodeblock %}
+
+ArrayAdapter对List<T>进行封装成ListAdapter的实现，满足ListView的调用：
+
+{% codeblock lang:java %}
+public class ArrayAdapter<T> extends BaseAdapter implements Filterable {
+    private List<T> mObjects;
+    //我只列出这一个构造函数，大家懂这个意思就行
+    public ArrayAdapter(Context context, int textViewResourceId, T[] objects) {
+        init(context, textViewResourceId, 0, Arrays.asList(objects));
+    }
+    private void init(Context context, int resource, int textViewResourceId, List<T> objects) {
+        mContext = context;
+        mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mResource = mDropDownResource = resource;
+        mObjects = objects; //引用对象，也是表达了组合优于继承的意思
+        mFieldId = textViewResourceId;
+    }
+    public int getCount() {
+        return mObjects.size();
+    }
+   public T getItem(int position) {
+        return mObjects.get(position);
+    }
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return createViewFromResource(position, convertView, parent, mResource);
+    }
+    // ... ...
+}
+{% endcodeblock %}
+
+
+我们就如此成功的把List<T>作为数据源以ListView想要的目标接口的样子传给了ListView，同理CursorAdapter也是一模一样的道理，就不写具体代码了。
+
+适配器本身倒是不难，但是提供了解决不兼容问题的惯用模式。 
+
+关于什么时候使用适配器模式,大概有三种情况：
+
+(1). 你想使用一个已经存在的类，而它的接口不符合你的需求，这个在处理旧系统时比较常见。
+
+(2). 你想创建一个可以复用的类，该类可以和其他不相关的类或不可预见的累协同工作，这就是我们android开发者经常碰到的情况：我们常常自定义一个新的Adapter。
+
+(3). 你想使用一些已经存在的子类，但是不可能对每一个都进行子类化以匹配他们的接口，对象适配器可以适配他的父类接口。 
+
+###3.效果
+
+1. 结构性模式 
+
+2. 上面论述的主要是对象适配器，关于类适配器除了实现目标端口外，还要实现你要兼容的源类，这样可以少写几行代码，但是从组合优于继承的角度看，它总则没有那么的干净。
+
+3. 对同一个适配器（即同一个对象）对同样的源进行双向甚至多向的适配，则能使其适用两个甚至多个客户调用。

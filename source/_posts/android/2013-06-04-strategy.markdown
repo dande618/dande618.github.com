@@ -1,0 +1,225 @@
+---
+layout: post
+title: "Strategy策略模式"
+date: 2013-06-03 14:43
+comments: true
+categories: android
+---
+> 策略模式定义了一系列的算法，并将每一个算法封装起来，而且使它们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化。
+
+> 原文：The Strategy Pattern defines a family of algorithms,encapsulates each one,and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it.
+
+{% img center http://image142.poco.cn/mypoco/myphoto/20130604/15/4309479020130604154048093.gif %}
+
+###策略模式中体现了两个非常基本的面向对象设计的原则：
+
+- 封装变化的概念
+
+- 编程中使用接口，而不是对接口的实现
+
+面向接口的编程，实现类之间的弱耦合
+
+###Context(应用场景):
+
+1. 需要使用ConcreteStrategy提供的算法。
+
+2. 内部维护一个Strategy的实例。
+
+3. 负责动态设置运行时Strategy具体的实现算法。
+
+4. 负责跟Strategy之间的交互和数据传递。
+
+###Strategy(抽象策略类)：
+
+1. 定义了一个公共接口，各种不同的算法以不同的方式实现这个接口，Context使用这个接口调用不同的算法，一般使用接口或抽象类实现。
+
+###ConcreteStrategy(具体策略类)：
+
+2. 实现了Strategy定义的接口，提供具体的算法实现。
+
+<!-- more -->
+##组成：
+
+- 抽象策略角色： 策略类，通常由一个接口或者抽象类实现。
+
+- 具体策略角色：包装了相关的算法和行为。
+
+- 环境角色：持有一个策略类的引用，最终给客户端调用。
+
+##应用场景：
+
+1. 多个类只区别在表现行为不同，可以使用Strategy模式，在运行时动态选择具体要执行的行为。
+
+2. 需要在不同情况下使用不同的策略(算法)，或者策略还可能在未来用其它方式来实现。
+
+3. 对客户隐藏具体策略(算法)的实现细节，彼此完全独立。
+
+##优缺点：
+
+###优点：
+
+1. 提供了一种替代继承的方法，而且既保持了继承的优点(代码重用)还比继承更灵活(算法独立，可以任意扩展)。
+
+2. 避免程序中使用多重条件转移语句，使系统更灵活，并易于扩展。
+
+3. 遵守大部分GRASP原则和常用设计原则，高内聚、低偶合。
+
+###缺点：
+
+1. 因为每个具体策略类都会产生一个新类，所以会增加系统需要维护的类的数量。（解决方案：工厂方法）
+
+#在android中使用
+
+listView.setAdapter(),里面的Adapter ，一般都是自定义的Adapter ，继承自BaseAdapter ，这就是典型的策略模式，当ListView 的Item呈现不同形式，在getView方法中，就得不同的实现。
+
+##Android中的动画是如何使用策略模式的
+
+<http://www.cnblogs.com/qianxudetianxia/archive/2013/04/19/3030235.html>
+
+###1. 意图
+
+定义一系列的算法，把它们一个个封装起来，并且使它们可互相替换。
+
+策略模式使得算法可独立于使用它的客户而变化。
+
+###2. 结构图和代码
+
+{% img center http://image142.poco.cn/mypoco/myphoto/20130604/15/4309479020130604154211019.jpg %}
+
+Animation不同动画的实现，主要是依靠Interpolator的不同实现而变。
+
+定义接口Interpolator：
+
+{% codeblock lang:java %}
+package android.animation;
+ 
+/**
+ * A time interpolator defines the rate of change of an animation. This allows animations
+ * to have non-linear motion, such as acceleration and deceleration.
+ */
+public interface Interpolator {
+ 
+    /**
+     * Maps a value representing the elapsed fraction of an animation to a value that represents
+     * the interpolated fraction. This interpolated value is then multiplied by the change in
+     * value of an animation to derive the animated value at the current elapsed animation time.
+     *
+     * @param input A value between 0 and 1.0 indicating our current point
+     *        in the animation where 0 represents the start and 1.0 represents
+     *        the end
+     * @return The interpolation value. This value can be more than 1.0 for
+     *         interpolators which overshoot their targets, or less than 0 for
+     *         interpolators that undershoot their targets.
+     */
+    float getInterpolation(float input);
+}
+{% endcodeblock %}
+
+我们以AccelerateInterpolator为例，实现具体的策略，代码如下：
+
+{% codeblock lang:java %}
+package android.view.animation;
+ 
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+ 
+/**
+ * An interpolator where the rate of change starts out slowly and
+ * and then accelerates.
+ *
+ */
+public class AccelerateInterpolator implements Interpolator {
+    private final float mFactor;
+    private final double mDoubleFactor;
+ 
+    public AccelerateInterpolator() {
+        mFactor = 1.0f;
+        mDoubleFactor = 2.0;
+    }
+ 
+    /**
+     * Constructor
+     *
+     * @param factor Degree to which the animation should be eased. Seting
+     *        factor to 1.0f produces a y=x^2 parabola. Increasing factor above
+     *        1.0f  exaggerates the ease-in effect (i.e., it starts even
+     *        slower and ends evens faster)
+     */
+    public AccelerateInterpolator(float factor) {
+        mFactor = factor;
+        mDoubleFactor = 2 * mFactor;
+    }
+ 
+    public AccelerateInterpolator(Context context, AttributeSet attrs) {
+        TypedArray a =
+            context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.AccelerateInterpolator);
+ 
+        mFactor = a.getFloat(com.android.internal.R.styleable.AccelerateInterpolator_factor, 1.0f);
+        mDoubleFactor = 2 * mFactor;
+ 
+        a.recycle();
+    }
+ 
+    public float getInterpolation(float input) {
+        if (mFactor == 1.0f) {
+            return input * input;
+        } else {
+            return (float)Math.pow(input, mDoubleFactor);
+        }
+    }
+}
+{% endcodeblock %}
+
+其他的Interpolator实现在此不列举了。
+
+如何在Animation模块实现不同的动画呢？
+
+在这里我想提一个应用很广的概念：依赖注入。
+
+在Animation模块里实现不同的动画，就是需要我们把各个Interpolator以父类或者接口的形式注入进去。
+
+注入的方法一般是构造函数，set方法，注释等等。
+
+我们看看animation类是怎么做的：
+
+{% codeblock lang:java %}
+public abstract class Animation implements Cloneable {
+    Interpolator mInterpolator;
+    // 通过set方法注入    
+    public void setInterpolator(Interpolator i) {
+         mInterpolator = i;
+     }
+ 
+    public boolean getTransformation(long currentTime, Transformation outTransformation) {
+        // ... ...
+        // 具体调用
+        final float interpolatedTime = mInterpolator.getInterpolation(normalizedTime);
+        applyTransformation(interpolatedTime, outTransformation);
+       // ... ...
+    }
+ 
+     // 缺省实现，是个小技巧，顺便提下，这个不是重点
+     protected void ensureInterpolator() {
+         if (mInterpolator == null) {
+             mInterpolator = new AccelerateDecelerateInterpolator();
+         }
+     }
+ 
+}
+{% endcodeblock %}
+
+
+策略模式其实就是多态的一个淋漓精致的体现。
+
+###3. 效果
+
+1. 行为型模式
+
+2. 消除了一些if...else...的条件语句
+
+3. 客户可以对实现进行选择,但是客户必须要了解这个不同策略的实现(这句话好像是废话，总而言之，客户需要学习成本)
+
+4. 代码注释中提到了缺省实现，可以让客户不了解策略，也能实现默认的策略
+
+5. 注入的方式有多种：构造函数，set方法，注释。配置解析等等

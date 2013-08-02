@@ -1,0 +1,217 @@
+---
+layout: post
+title: "4.2.2_r1版本源码的launcher2布局介绍"
+date: 2013-07-15 18:20
+comments: true
+categories: android
+---
+{% img center http://image142.poco.cn/mypoco/myphoto/20130714/18/4309479020130714181905068.jpg %}
+
+AndroidManifest.xml里面，有两个Activity，其中一个是Launcher，一个是壁纸选择。
+
+<!-- more -->
+{% codeblock lang:xml %}
+<manifest
+    <!-- ...省略掉... -->
+    <application>
+        <activity
+            android:name="com.android.launcher2.Launcher"
+            android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.MONKEY"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.android.launcher2.WallpaperChooser"
+        </activity>
+    <!-- ...省略掉... -->
+    </application>
+</manifest>
+{% endcodeblock %}
+
+/res/layout-land、/res/layout-port下分别定义了横竖屏的布局。
+
+以横屏为例，省略属性的代码:
+
+{% codeblock lang:xml %}
+<FrameLayout>
+    <com.android.launcher2.DragLayer>   
+        <com.android.launcher2.Workspace>
+            <include android:id="@+id/cell1" layout="@layout/workspace_screen" />
+            <include android:id="@+id/cell2" layout="@layout/workspace_screen" />
+            <include android:id="@+id/cell3" layout="@layout/workspace_screen" />
+            <include android:id="@+id/cell4" layout="@layout/workspace_screen" />
+            <include android:id="@+id/cell5" layout="@layout/workspace_screen" />
+        </com.android.launcher2.Workspace>
+
+        <include android:id="@+id/qsb_divider" />
+        <include android:id="@+id/dock_divider" />
+        <include android:id="@+id/paged_view_indicator" />
+
+        <include android:id="@+id/hotseat" />
+
+        <include android:id="@+id/qsb_bar" />
+
+        <include android:id="@+id/workspace_cling" />
+        <include android:id="@+id/folder_cling" />
+        <com.android.launcher2.DrawableStateProxyView android:id="@+id/voice_button_proxy" />
+
+        <include android:id="@+id/apps_customize_pane" />
+    </com.android.launcher2.DragLayer>
+</FrameLayout>
+{% endcodeblock %}
+
+每一个组件都会对应一个layout文件。
+
+- DragLayer：继承FrameLayout,并在此基础上组合了DragController实现拖放功能。
+
+- Workspace：继承了viewgroup，只接收CellLayout类型的child。在这里可以修改padding、默认屏幕下标，横向竖向的图标数量。
+
+- qsb_divider：左侧的分割线。
+
+- dock_divider：右侧的分割线。
+
+- paged_view_indicator：下方的页数指示器。
+
+- hotseat：在右侧，包含一个AllAppsButton。
+
+- qsb_bar：搜索删除栏，横屏时在左侧，拖动图标时，根据情况出现不同的图标。
+
+- workspace_cling、folder_cling：第一次使用launcher时显示的帮助提示画面。
+
+- apps_customize_pane：点击AllAppsButton后会显示的所有程序界面，开始时是invisible。
+
+### CellLayout
+
+Workspace下有五个CellLayout，CellLayout继承自viewgroup。以/res/layout/work_screen.xml为布局文件，在这里可以修改padding、格子的宽高、widthGap、heightGap、maxGap。
+
+图标的大小在/res/values-sw600dp/dimens.xml里定义
+
+{% codeblock lang:xml %}
+    <!-- 图标大小 -->
+    <dimen name="app_icon_size">64dp</dimen>
+    <!-- 图标与文字间距 -->
+    <dimen name="app_icon_drawable_padding">3dp</dimen>
+    <!-- 图标与格子顶部间距 -->
+    <dimen name="app_icon_padding_top">4dp</dimen>
+{% endcodeblock %}
+
+所有图标，包括AllAppsButton都是BubbleTextView的实例，使用/res/layout-land(port)/application.xml作为布局，属性可在/res/values/styles.xml里面修改，主要是padding。
+
+### Hotseat
+
+Hotseat以/res/layout-land(port)hotseat.xml为布局。
+
+{% codeblock lang:xml %}
+<com.android.launcher2.Hotseat>
+    <com.android.launcher2.CellLayout
+        android:id="@+id/layout" />
+</com.android.launcher2.Hotseat>
+{% endcodeblock %}
+
+可以看到里面包含了一个CellLayout，所以整个Launcher包含6个CellLayout。
+
+同样在这里，可以在这里可以修改padding、格子的宽高、widthGap、heightGap、maxGap。
+
+在Nexus7这中屏幕大小上，默认的hotseat上的图标较小，原因是设定了一个缩放参数。
+
+在CellLayout.java里，有
+
+{% codeblock %}
+mHotseatScale = (res.getInteger(R.integer.hotseat_item_scale_percentage) / 100f);
+{% endcodeblock %}
+
+/res/values-sw600dp/config.xml
+
+找到这个参数，可以看到默认是80。在这里还可以修改AllAppsButton在Hotseat的下标。
+
+###qsb_bar
+
+以/res/layout/qsb_bar.xml为布局文件：
+
+{% codeblock lang:xml %}
+<com.android.launcher2.SearchDropTargetBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/QSBBar"
+    android:focusable="false">
+
+    <!-- Search buttons container -->
+    <include android:id="@+id/qsb_search_bar"
+        layout="@layout/search_bar" />
+
+    <!-- Drag specific targets container -->
+    <LinearLayout
+        style="@style/SearchDropTargetBar"
+        android:id="@+id/drag_target_bar">
+
+        <include
+            layout="@layout/drop_target_bar" />
+    </LinearLayout>
+</com.android.launcher2.SearchDropTargetBar>
+{% endcodeblock %}
+
+属性可以在对应的资源文件修改。
+
+竖屏显示垃圾箱的动画在SearchDropTargetBar.java里定义。
+
+在/src/com/android/launcher2/DeleteDropTarget.java的onDragStart方法里，会根据拖动图标的信息来判断，显示[删除]、[卸载和信息]、[信息]其中的一种
+
+####资源查找顺序
+
+对于Nexus7，values的查找顺序是：
+
+/res/values-sw600dp-land(port) -> values-sw600dp -> values-land(port) -> values
+
+drawable的查找顺序是：
+
+/res/drawable-sw600dp-land-mdpi -> drawable-sw600dp-mdpi -> drawable-land-mdpi -> drawable-mdpi -> drawable
+
+####去掉标题栏
+
+默认显示系统标题栏，如果要去掉，在/res/values/styles.xml里对应的Theme设置为
+
+{% codeblock lang:xml %}
+    <style name="Theme" parent="@android:style/Theme.Holo.Wallpaper.NoTitleBar">
+
+        <item name="android:windowFullscreen">true</item>
+    </style>
+{% endcodeblock %}
+
+####去掉左右两侧的渐变阴影
+
+删除launcher.xml里<FrameLayout>下的
+
+{% codeblock lang:java %}
+android:background="@drawable/workspace_bg"
+{% endcodeblock %}
+
+然后在Launcher.java中，找到以下相关代码注释掉
+
+{% codeblock lang:java %}
+    private Drawable mWorkspaceBackgroundDrawable;
+    private Drawable mBlackBackgroundDrawable;
+{% endcodeblock %}
+
+####去掉左右分割线
+
+在launcher.xml里将对应组件添加属性：
+
+{% codeblock %}
+android:visibility="gone"
+{% endcodeblock %}
+
+然后在Workspace.java中，找到以下相关代码注释掉
+
+{% codeblock lang:java %}
+    private View mQsbDivider;
+    private View mDockDivider;
+{% endcodeblock %}

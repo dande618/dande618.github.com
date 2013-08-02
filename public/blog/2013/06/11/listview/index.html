@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>利用convertView优化ListView性能 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="http://johncookie.iteye.com/blog/1250049
+这里提到的ListView只是作为一个典型代表 其实在Android中 采用类似Adapter机制的GridView等都是可以适用的 而ListView应该是用得最多的 所以就以它来举例 大家都知道 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/11/listview/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">利用convertView优化ListView性能</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-11T10:00:00+08:00" pubdate data-updated="true">Jun 11<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://johncookie.iteye.com/blog/1250049">http://johncookie.iteye.com/blog/1250049</a>
+这里提到的ListView只是作为一个典型代表 其实在Android中 采用类似Adapter机制的GridView等都是可以适用的 而ListView应该是用得最多的 所以就以它来举例</p>
+
+<p>大家都知道 将ListView和Adapter绑定以后 其实也就是将数据源和控件显示绑定在一起 而每次需要显示ListView的时候 里面的item其实是Adapter提供的 通过的就是重要的getView()方法 而做法也是在这上面进行。</p>
+
+<!-- more -->
+
+
+<p>先来看一下基本的getView写法</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">View</span> <span class="n">view</span> <span class="o">=</span> <span class="k">new</span> <span class="n">View</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//通过inflate等找到布局 然后findViewById等 设置各个显示的item  </span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">view</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而在ListView滑动的过程中 很容易就会发现每次getView被执行 都会new出一个View对象 长此以往会产生很大的消耗 特别当item中还有Bitmap等 甚至会造成OOM的错误导致程序崩溃</p>
+
+<p>在看getView提供的参数时 可能已经注意到了 有一个参数View convertView 而这个convertView其实就是最关键的部分了 原理上讲 当ListView滑动的过程中 会有item被滑出屏幕 而不再被使用 这时候Android会回收这个条目的view 这个view也就是这里的convertView</p>
+
+<p>在上面的做法中 当item1被移除屏幕的时候 我们会重新new一个View给新显示的item_new 而如果使用了这个convertView 我们其实可以复用它 这样就省去了new View的大量开销</p>
+
+<p>下面就是使用convertView后的情况</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">View</span> <span class="n">view</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">view</span> <span class="o">=</span> <span class="n">convertView</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">//复用了回收的view 只需要直接作内容填充的修改就好了  </span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">view</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Xxx</span><span class="o">(...);</span>
+</span><span class='line'>    <span class="c1">//没有供复用的view 按一般的做法新建view  </span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">view</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样一来 就避免了反复创建大量view的问题了</p>
+
+<p>但是上面的仍然有缺陷 当我们的ListView中填充的item有多种形式时 比如微博中 有的item中包含图片 有的item包含视频 那么必然的 我们需要用到2种item的布局方式</p>
+
+<p>此时如果只是单纯判断convert是否存在 会造成回收的view不符合你当前需要的布局 而类似转换失败出错退出</p>
+
+<p>这里要提到Adapter中的另外2个方法：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getItemViewType</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">)</span> <span class="o">{}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getViewTypeCount</span><span class="o">()</span> <span class="o">{}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从方法名上 就可以比较明显的明白这2个的作用</p>
+
+<p>下面附上一个demo代码</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">MyAdapter</span> <span class="kd">extends</span> <span class="n">BaseAdapter</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">Context</span> <span class="n">mContext</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">LinearLayout</span> <span class="n">linearLayout</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">LayoutInflater</span> <span class="n">inflater</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">TextView</span> <span class="n">tex</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">VIEW_TYPE</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">TYPE_1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">TYPE_2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">MyAdapter</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mContext</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">inflater</span> <span class="o">=</span> <span class="n">LayoutInflater</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="n">mContext</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getCount</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">listString</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//每个convert view都会调用此方法，获得当前所需要的view样式  </span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getItemViewType</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">p</span> <span class="o">=</span> <span class="n">position</span><span class="o">%</span><span class="mi">6</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">p</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">TYPE_1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">else</span> <span class="nf">if</span><span class="o">(</span><span class="n">p</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">TYPE_2</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">TYPE_1</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getViewTypeCount</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">2</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getItem</span><span class="o">(</span><span class="kt">int</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">listString</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">arg0</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getItemId</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">position</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">viewHolder1</span> <span class="n">holder1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">viewHolder2</span> <span class="n">holder2</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">type</span> <span class="o">=</span> <span class="n">getItemViewType</span><span class="o">(</span><span class="n">position</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//无convertView，需要new出各个控件  </span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">convertView</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//按当前所需的样式，确定new的布局  </span>
+</span><span class='line'>            <span class="k">switch</span><span class="o">(</span><span class="n">type</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">TYPE_1:</span>
+</span><span class='line'>                <span class="n">convertView</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">listitem1</span><span class="o">,</span> <span class="n">parent</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">holder1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">viewHolder1</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">holder1</span><span class="o">.</span><span class="na">textView</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span><span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">textview1</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">holder1</span><span class="o">.</span><span class="na">checkBox</span> <span class="o">=</span> <span class="o">(</span><span class="n">CheckBox</span><span class="o">)</span><span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">checkbox</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">convertView</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="n">holder1</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">TYPE_2:</span>
+</span><span class='line'>                <span class="n">convertView</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">listitem2</span><span class="o">,</span> <span class="n">parent</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">holder2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">viewHolder2</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">holder2</span><span class="o">.</span><span class="na">textView</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span><span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">textview2</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">holder2</span><span class="o">.</span><span class="na">imageView</span> <span class="o">=</span> <span class="o">(</span><span class="n">ImageView</span><span class="o">)</span><span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">imageview</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">convertView</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="n">holder2</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="c1">//有convertView，按样式，取得不用的布局  </span>
+</span><span class='line'>            <span class="k">switch</span><span class="o">(</span><span class="n">type</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">TYPE_1:</span>
+</span><span class='line'>                <span class="n">holder1</span> <span class="o">=</span> <span class="o">(</span><span class="n">viewHolder1</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">TYPE_2:</span>
+</span><span class='line'>                <span class="n">holder2</span> <span class="o">=</span> <span class="o">(</span><span class="n">viewHolder2</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>                <span class="c1">//设置资源  </span>
+</span><span class='line'>            <span class="k">switch</span><span class="o">(</span><span class="n">type</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">TYPE_1:</span>
+</span><span class='line'>                <span class="n">holder1</span><span class="o">.</span><span class="na">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">position</span><span class="o">));</span>
+</span><span class='line'>                <span class="n">holder1</span><span class="o">.</span><span class="na">checkBox</span><span class="o">.</span><span class="na">setChecked</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">case</span> <span class="nl">TYPE_2:</span>
+</span><span class='line'>                <span class="n">holder2</span><span class="o">.</span><span class="na">textView</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">position</span><span class="o">));</span>
+</span><span class='line'>                <span class="n">holder2</span><span class="o">.</span><span class="na">imageView</span><span class="o">.</span><span class="na">setBackgroundResource</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">icon</span><span class="o">);</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">convertView</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c1">//各个布局的控件资源  </span>
+</span><span class='line'><span class="kd">class</span> <span class="nc">viewHolder1</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">CheckBox</span> <span class="n">checkBox</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">TextView</span> <span class="n">textView</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">class</span> <span class="nc">viewHolder2</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">ImageView</span> <span class="n">imageView</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">TextView</span> <span class="n">textView</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里对于每个View使用了一个viewHolder来控制其内部的子item</p>
+
+<p>还有一个需要注意的地方是使用了setTag和getTag的方法 将holder绑定到了view上 也算一种技巧</p>
+
+<p>以上基本就是主要的内容了 下面再补充实际操作当中的一些Tips</p>
+
+<ul>
+<li><p>如果convertView上用Type区分有些繁琐 或者不需要那么复杂 只是很少有出现不同的情况 那么还可以在取得convertView后 通过java提供的 instanceof 来判断是否可以强转 如果不能强转 就去新建一个View的做法 但是其实这种做法并不规范 所以还是推荐上面的做法</p></li>
+<li><p>第二个是关于ListView 对于纯色的item背景 其实可以直接设置BackgroundColor 而不要使用图片 这一部分其实可以有不小的提升 同样的 对于任何纯色的背景 应该尽量去设置RGB颜色 而不是全用一张图片做背景</p></li>
+</ul>
+
+
+<p>在做类型强转的时候 这里用type作为区分类型的判断 但是实际情况下 很可能出现系统回收的convertView与要创建的并不相符 所以在强转处的type判断是不保险的 考虑了下还是应该使用instanceof做一下判断 或者再为每个View绑定一个type的标记 然后再决定是重用还是重新创建</p>
+
+<h2>convertView与ViewHolder有什么区别，好处在哪里</h2>
+
+<p><a href="http://blog.sina.com.cn/s/blog_664f163401011e7d.html">http://blog.sina.com.cn/s/blog_664f163401011e7d.html</a></p>
+
+<p>convertView 在API中的解释是The old view to reuse, if possible， 第一次getView时还没有convertView，这时你便创建了一个新的view，下次getView时就有这个“旧的”convertView了。setTag的作用才是把查找的view通过ViewHolder封装好缓存起来方便多次重用，当需要时可以getTag拿出来。</p>
+
+<p>当你的listview里布局多样化的时候 viewholder的作用就有比较明显的体现了。 当然了，单一模式的布局一样有性能优化的作用 只是不直观。  假如你2种模式的布局 当发生回收的时候 你会用setTag分别记录是哪两种。这两种模式会被封装到viewholder中进行保存方便你下次使用。</p>
+
+<h2>convertView&amp;setTag方法的一点理解</h2>
+
+<p><a href="http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/">http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/</a></p>
+
+<p>前言</p>
+
+<p>首先我们要知道setTag方法是干什么的，SDK解释为</p>
+
+<blockquote><p><strong>Tags</strong></p>
+
+<p>Unlike IDs, tags are not used to identify views. Tags are essentially an extra piece of information that can be associated with a view. They are most often used as a convenience to store data related to views in the views themselves rather than by putting them in a separate structure.</p></blockquote>
+
+<p>Tag不像ID是用标示view的。Tag从本质上来讲是就是相关联的view的额外的信息。它们经常用来存储一些view的数据，这样做非常方便而不用存入另外的单独结构。</p>
+
+<p>convertView中的TAG</p>
+
+<p>1.对于使用了LayoutInflater对象进行View扩充的Tag的使用</p>
+
+<p> 在之前，在adapter中，我们在getView中是这么些的代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="n">ViewHolder</span> <span class="n">holder</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>       <span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">holder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ViewHolder</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">convertView</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">vlist2</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">holder</span><span class="o">.</span><span class="na">img</span> <span class="o">=</span> <span class="o">(</span><span class="n">ImageView</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">img</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">holder</span><span class="o">.</span><span class="na">title</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">title</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">holder</span><span class="o">.</span><span class="na">info</span> <span class="o">=</span> <span class="o">(</span><span class="n">TextView</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">convertView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">info</span><span class="o">);</span>
+</span><span class='line'>          <span class="c1">// setTag的妙用</span>
+</span><span class='line'>          <span class="n">convertView</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="n">holder</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>          <span class="c1">// setTag的妙用</span>
+</span><span class='line'>          <span class="n">holder</span> <span class="o">=</span> <span class="o">(</span><span class="n">ViewHolder</span><span class="o">)</span> <span class="n">convertView</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//……略</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意标红的地方，他们是使用了Tag的。</p>
+
+<p>首先我们要知道setTag方法是干什么的，他是给View对象的一个标签，标签可以是任何内容，我们这里把他设置成了一个对象，因为我们是把vlist2.xml的元素抽象出来成为一个类ViewHolder，用了setTag，这个标签就是ViewHolder实例化后对象的一个属性。我们之后对于ViewHolder实例化的对象holder的操作，都会因为java的引用机制而一直存活并改变convertView的内容，而不是每次都是去new一个。我们就这样达到的重用——我希望我说清楚了。如果有更简单的解释，请指教。</p>
+
+<p>这是我们在Adapter中的使用，那么我们在这里不使用Tag标签会怎么样呢？</p>
+
+<p>我们试想，如果我们不用Tag标签，那么我们的对象如何与convertView缓存结合并达到合理的效率利用？貌似答案并不明朗——所以使用Tag是比较明智的做法。</p>
+
+<p>2.对于没有使用LayoutInflater对象进行View扩充的Tag的使用。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">convertView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">view</span> <span class="o">=</span> <span class="n">convertView</span><span class="o">;</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">view</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Xxx</span><span class="o">(...);</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是我们的程序，我们看到，貌似没有用Tag——是的，当没有使用LayoutInflater进行View的扩充的时候，是没有必要用的，虽然也可以用。</p>
+
+<p>3.对于其他View的Tag使用</p>
+
+<p>我们可以对所有的View对象进行操作，至于怎么用，就看作者怎么想的了，下面举例说一个View的子类button对于tag的一个使用。</p>
+
+<p>直接贴代码了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ButtonTagTestActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="kd">implements</span> <span class="n">OnClickListener</span> <span class="o">{</span>
+</span><span class='line'>    <span class="cm">/** Called when the activity is first created. */</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="n">Button</span> <span class="n">button1</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button1</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">Button</span> <span class="n">button2</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button2</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">Button</span> <span class="n">button3</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">button3</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="n">button1</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">button2</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+</span><span class='line'>       <span class="n">button3</span><span class="o">.</span><span class="na">setTag</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="n">button1</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="c1">// TODO Auto-generated method stub</span>
+</span><span class='line'>       <span class="kt">int</span> <span class="n">tag</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">arg0</span><span class="o">.</span><span class="na">getTag</span><span class="o">();</span>
+</span><span class='line'>       <span class="k">switch</span> <span class="o">(</span><span class="n">tag</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button1&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'>           <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="k">case</span> <span class="mi">2</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button2&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'>           <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="k">case</span> <span class="mi">3</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;我是button3&quot;</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'>           <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="k">default</span><span class="o">:</span> <span class="o">{</span>
+</span><span class='line'>           <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>       <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Xml页面代码就不贴了。这个例子是点击界面上的3个button然后会显示用户点击的按钮。我们的程序是实现了页面全局监听，在监听前设置了每个button的tag，之后我们在switch的时候，使用getTag取出的标签来看是什么操作。</p>
+
+<p>这样做的好处是可以将监听集中管理，提高代码的易读性——当然，这是我的自我理解。</p>
+
+<p>后记</p>
+
+<p>看了这么多的实例，我想已经明白了Tag以及convertView。</p>
+
+<p>对我们知道了Tag的作用就是设置标签，标签可以是任意玩意。</p>
+
+<p>以及convertView是如何在程序中使代码运行变的效率的：利用缓存convertView尽可能少实例化同样结构体的对象；</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-11T10:00:00+08:00" pubdate data-updated="true">Jun 11<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/10/singleton/" title="Previous Post: JAVA单例模式">&laquo; JAVA单例模式</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/13/JSON/" title="Next Post: JAVA中的JSON">JAVA中的JSON &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/11/listview/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/11/listview/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

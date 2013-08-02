@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: android | 初心]]></title>
+  <title><![CDATA[Category: Android | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-05-27T20:27:33+08:00</updated>
+  <updated>2013-08-02T20:47:44+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -14,136 +14,134 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Android Context]]></title>
-    <link href="http://dande618.github.com/blog/2013/05/27/android-context/"/>
-    <updated>2013-05-27T20:59:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/05/27/android-context</id>
-    <content type="html"><![CDATA[<p><a href="http://blog.csdn.net/qinjuning/article/details/7310620">http://blog.csdn.net/qinjuning/article/details/7310620</a></p>
+    <title type="html"><![CDATA[Android之SQlite存储]]></title>
+    <link href="http://dande618.github.com/blog/2013/06/01/sqlite/"/>
+    <updated>2013-06-01T19:24:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/06/01/sqlite</id>
+    <content type="html"><![CDATA[<p>使用嵌入式关系型SQLite数据库存储数据</p>
 
-<p><img src="http://img.my.csdn.net/uploads/201203/1/0_1330607569Vj4c.gif"></p>
+<p>除了可以使用文件或SharedPreferences存储数据，还可以选择使用SQLite数据库存储数据。</p>
 
-<p>Context，中文直译为“上下文”，SDK中对其说明如下：</p>
-
-<blockquote><p>Interface to global information about an application environment. This is an abstract class whose implementation is provided by the Android system. It allows access to application-specific resources and classes, as well as up-calls for application-level operations such as launching activities, broadcasting and receiving intents, etc.</p></blockquote>
-
-<p>从上可知一下三点,即：</p>
+<p>在Android平台上，集成了一个嵌入式关系型数据库——SQLite，</p>
 
 <ol>
-<li><p>它描述的是一个应用程序环境的信息，即上下文。</p></li>
-<li><p>该类是一个抽象(abstract class)类，Android提供了该抽象类的具体实现类(后面我们会讲到是ContextIml类)。</p></li>
-<li><p>通过它我们可以获取应用程序的资源和类，也包括一些应用级别操作，例如：启动一个Activity，发送广播，接受Intent信息 等。。</p></li>
+<li><p>SQLite3支持 NULL、INTEGER、REAL（浮点数字）、TEXT(字符串文本)和BLOB(二进制对象)数据类型，虽然它支持的类型虽然只有五种，但实际上sqlite3也接受varchar(n)、char(n)、decimal(p,s) 等数据类型，只不过在运算或保存时会转成对应的五种数据类型。</p></li>
+<li><p>SQLite最大的特点是你可以保存任何类型的数据到任何字段中，无论这列声明的数据类型是什么。例如：可以在Integer字段中存放字符串，或者在布尔型字段中存放浮点数，或者在字符型字段中存放日期型值。</p></li>
+<li><p>但有一种情况例外：定义为INTEGER PRIMARY KEY的字段只能存储64位整数， 当向这种字段中保存除整数以外的数据时，将会产生错误。</p></li>
+<li><p>另外， SQLite 在解析CREATE TABLE 语句时，会忽略 CREATE TABLE 语句中跟在字段名后面的数据类型信息，如下面语句会忽略 name字段的类型信息：</p></li>
 </ol>
 
-
-<p>于是，我们可以利用该Context对象去构建应用级别操作(application-level operations) 。</p>
-
-<p><strong>Context类</strong>    路径： /frameworks/base/core/java/android/content/Context.java</p>
-
-<p>说明：  抽象类，提供了一组通用的API。</p>
-
-<p>源代码(部分)如下：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Context</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="c1">//...</span>
-</span><span class='line'> <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">Object</span> <span class="nf">getSystemService</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>  <span class="c1">//获得系统级服务</span>
-</span><span class='line'> <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">startActivity</span><span class="o">(</span><span class="n">Intent</span> <span class="n">intent</span><span class="o">);</span>     <span class="c1">//通过一个Intent启动Activity</span>
-</span><span class='line'> <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">ComponentName</span> <span class="nf">startService</span><span class="o">(</span><span class="n">Intent</span> <span class="n">service</span><span class="o">);</span>  <span class="c1">//启动Service</span>
-</span><span class='line'> <span class="c1">//根据文件名得到SharedPreferences对象</span>
-</span><span class='line'> <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">SharedPreferences</span> <span class="nf">getSharedPreferences</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span><span class="kt">int</span> <span class="n">mode</span><span class="o">);</span>
-</span><span class='line'> <span class="c1">//...</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>Activity类 、Service类 、Application类本质上都是Context子类。</p>
-
-<p>应用程序创建Context实例的情况有如下几种情况：</p>
-
-<ol>
-<li><p>创建Application对象时， 而且整个App共一个Application对象</p></li>
-<li><p>创建Service对象时</p></li>
-<li><p>创建Activity对象时</p></li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[android Service]]></title>
-    <link href="http://dande618.github.com/blog/2013/05/26/android-service/"/>
-    <updated>2013-05-26T19:00:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/05/26/android-service</id>
-    <content type="html"><![CDATA[<p>android中服务是运行在后台的东西，级别与activity差不多。既然说service是运行在后台的服务，那么它就是不可见的，没有界面的东西。你可以启动一个服务Service来播放音乐，或者记录你地理信息位置的改变，或者启动一个服务来运行并一直监听某种动作。</p>
-
-<p>Service和其他组件一样，都是运行在主线程中，因此不能用它来做耗时的请求或者动作。你可以在服务中开一一个线程，在线程中做耗时动作。</p>
-
-<p><a href="http://www.cnblogs.com/zhangdongzi/archive/2012/01/08/2316711.html">http://www.cnblogs.com/zhangdongzi/archive/2012/01/08/2316711.html</a></p>
 
 <!-- more -->
 
 
-<h2>如何使用Service</h2>
-
-<p>使用Service，需要定义一个继承android.app.Service的子类；</p>
-
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestService</span> <span class="kd">extends</span> <span class="n">Service</span> <span class="o">{}</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">person</span> <span class="p">(</span><span class="n">personid</span> <span class="nb">integer</span> <span class="k">primary</span> <span class="k">key</span> <span class="n">autoincrement</span><span class="p">,</span> <span class="n">name</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>然后在AndroidManifest.xml文件中的<application>节点里对服务进行配置:</p>
+<p>SQLite可以解析大部分标准SQL语句，如：</p>
+
+<p>查询语句：select * from 表名 where 条件子句 group by 分组字句 having ... order by 排序子句</p>
+
+<p>如：</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;service</span> <span class="na">android:name=</span><span class="s">&quot;.TestService&quot;</span> <span class="nt">/&gt;</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">person</span>
+</span><span class='line'><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">person</span> <span class="k">order</span> <span class="k">by</span> <span class="n">id</span> <span class="k">desc</span>
+</span><span class='line'><span class="k">select</span> <span class="n">name</span> <span class="k">from</span> <span class="n">person</span> <span class="k">group</span> <span class="k">by</span> <span class="n">name</span> <span class="k">having</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>并通过调用Context.startService()或Context.bindService()方法启动服务。</p>
+<p>分页SQL与mysql类似，下面SQL语句获取5条记录，跳过前面3条记录</p>
 
-<ol>
-<li><p>使用startService()方法启用服务，调用者与服务之间没有关连，即使调用者退出了，服务仍然运行。</p></li>
-<li><p>使用bindService()方法启用服务，调用者与服务绑定在了一起，调用者一旦退出，服务也就终止。</p></li>
-</ol>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">Account</span> <span class="k">limit</span> <span class="mi">5</span> <span class="k">offset</span> <span class="mi">3</span> <span class="err">或者</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">Account</span> <span class="k">limit</span> <span class="mi">3</span><span class="p">,</span><span class="mi">5</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
+<p>插入语句：insert into 表名(字段列表) values(值列表)。如：</p>
 
-<p>服务一般分为这两种：</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">insert</span> <span class="k">into</span> <span class="n">person</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">age</span><span class="p">)</span> <span class="k">values</span><span class="p">(</span><span class="err">‘传智’</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<ol>
-<li><p>本地服务， Local Service 用于应用程序内部。在Service可以调用Context.startService()启动，调用Context.stopService()结束。在内部可以调用Service.stopSelf() 或 Service.stopSelfResult()来自己停止。无论调用了多少次startService()，都只需调用一次stopService()来停止。</p></li>
-<li><p>远程服务， Remote Service 用于android系统内部的应用程序之间。可以定义接口并把接口暴露出来，以便其他应用进行操作。客户端建立到服务对象的连接，并通过那个连接来调用服务。调用Context.bindService()方法建立连接，并启动，以调用 Context.unbindService()关闭连接。多个客户端可以绑定至同一个服务。如果服务此时还没有加载，bindService()会先加载它。</p></li>
-</ol>
+<p>更新语句：update 表名 set 字段名=值 where 条件子句。如：</p>
 
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">update</span> <span class="n">person</span> <span class="k">set</span> <span class="n">name</span><span class="o">=</span><span class="err">‘传智‘</span> <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>提供给可被其他应用复用，比如定义一个天气预报服务，提供与其他应用调用即可。</p>
+<p>删除语句：delete from 表名 where 条件子句。如：</p>
 
-<h2>Service的生命周期</h2>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">delete</span> <span class="k">from</span> <span class="n">person</span>  <span class="k">where</span> <span class="n">id</span><span class="o">=</span><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><img class="center" src="http://img.my.csdn.net/uploads/201203/20/0_13322041884wH4.gif"></p>
+<h3>使用SQLiteDatabase操作SQLite数据库</h3>
 
-<p>context.startService() -> onCreate() -> onStart() -> Service running -- 调用context.stopService() -> onDestroy()</p>
+<p>Android提供了一个名为SQLiteDatabase的类，该类封装了一些操作数据库的API。</p>
 
-<p>context.bindService() -> onCreate() -> onBind() -> Service running -- 调用>onUnbind() -> onDestroy()</p>
+<p>可以调用SQLiteDatabase的静态方法：</p>
 
-<ul>
-<li><p>onCreate() 该方法在服务被创建时调用，该方法只会被调用一次，无论调用多少次startService()或bindService()方法，服务也只被创建一次。 onDestroy()该方法在服务被终止时调用。</p></li>
-<li><p>onStart() 只有采用Context.startService()方法启动服务时才会回调该方法。该方法在服务开始运行时被调用。多次调用startService()方法尽管不会多次创建服务，但onStart() 方法会被多次调用。</p></li>
-<li><p>onBind()只有采用Context.bindService()方法启动服务时才会回调该方法。该方法在调用者与服务绑定时被调用，当调用者与服务已经绑定，多次调用Context.bindService()方法并不会导致该方法被多次调用。onUnbind()只有采用Context.bindService()方法启动服务时才会回调该方法。该方法在调用者与服务解除绑定时被调用。</p></li>
-</ul>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public static SQLiteDatabase openDatabase(String path,SQLiteDatabase.CursorFactory factory,int flags)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
+<p>flags参数可以是 OPEN_READWRITE， OPEN_READONLY ，CREATE_IF_NECESSARY， NO_LOCALIZED_COLLATORS四个的一个或多个（多个模式组合用|隔离）.</p>
 
-<p>1 采用startService()启动服务</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public static SQLiteDatabase openOrCreateDatabase(File file,SQLiteDatabase.CursorFactory factory)
+</span><span class='line'>public static SQLiteDatabase openOrCreateDatabase(String path,SQLiteDatabase.CursorFactory factory)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>来打开文件系统中位于绝对路径path的数据库。</p>
+
+<p>还可以通过Context对象调用</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public abstract SQLiteDatabase openOrCreateDatabase(String name,int mode,SQLiteDatabase.CursorFactory factory)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>直接在私有数据库目录创建或打开一个名为name的数据库，</p>
+
+<p>注意：mode只的是 MODE_PRIVATE , MODE_WORLD_READABLE， MODE_WORLD_WRITEABLE。</p>
+
+<p>Context还有：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public abstract String[] databaseList();//返回私有数据库目录所有数据库名字
+</span><span class='line'>public abstract boolean deleteDatabase(String name);//删除私有数据库目录内文件名为name的数据库。</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>除了在文件系统中创建SQLite数据库，android还支持SQLite内存数据库。在某些需要临时创建数据库，并且对操作速率相对要求高的情况下，SQLite内存数据库就发挥作用了，用SQLiteDatabase的静态方法：</p>
+
+<p>public static SQLiteDatabase create(SQLiteDatabase.CursorFactory factory)</p>
+
+<p>来创建，创建失败返回null。</p>
+
+<p>最后记住，不管用何种方式打开了数据库，获得的SQLite对象不再使用时，都要调用close()来关闭打开的数据库，否则抛出IllegalStateException异常。</p>
+
+<p>使用SQLiteDatabase对象可以完成对数据进行添加(Create)、查询(Retrieve)、更新(Update)和删除(Delete)操作（这些操作简称为CRUD）。对SQLiteDatabase的学习，我们应该重点掌握execSQL()和rawQuery()方法。 execSQL()方法可以执行insert、delete、update和CREATE TABLE之类有更改行为的SQL语句； rawQuery()方法可以执行select语句。</p>
+
+<p>execSQL()方法的使用例子：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SQLiteDatabase db = ....;
+</span><span class='line'>db.execSQL("insert into person(name, age) values('传智播客', 4)");
+</span><span class='line'>db.close();</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>执行上面SQL语句会往person表中添加进一条记录，在实际应用中， 语句中的“传智播客”这些参数值应该由用户输入界面提供，如果把用户输入的内容原样组拼到上面的insert语句， 当用户输入的内容含有单引号时，组拼出来的SQL语句就会存在语法错误。要解决这个问题需要对单引号进行转义，也就是把单引号转换成两个单引号。有些时候用户往往还会输入像“ &amp; ”这些特殊SQL符号，为保证组拼好的SQL语句语法正确，必须对SQL语句中的这些特殊SQL符号都进行转义，显然，对每条SQL语句都做这样的处理工作是比较烦琐的。 SQLiteDatabase类提供了一个重载后的execSQL(String sql, Object[] bindArgs)方法，使用这个方法可以解决前面提到的问题，因为这个方法支持使用占位符参数(?)。使用例子如下：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//SQLiteDatabase db = ....;
+</span><span class='line'>db.execSQL("insert into person(name, age) values(?,?)", new Object[]{"传智播客", 4});
+</span><span class='line'>db.close();</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>execSQL(String sql, Object[] bindArgs)方法的第一个参数为SQL语句，第二个参数为SQL语句中占位符参数的值，参数值在数组中的顺序要和占位符的位置对应。</p>
+
+<p>SQLiteDatabase的rawQuery() 用于执行select语句，使用例子如下：</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -152,70 +150,73 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">DemoActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">DemoService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'> <span class="n">startService</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//SQLiteDatabase db = ....;</span>
+</span><span class='line'><span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">rawQuery</span><span class="o">(</span><span class="err">“</span><span class="n">select</span> <span class="o">*</span> <span class="n">from</span> <span class="n">person</span><span class="err">”</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">personid</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">//获取第一列的值,第一列的索引从0开始</span>
+</span><span class='line'><span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span><span class="c1">//获取第二列的值</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span><span class="c1">//获取第三列的值</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>2 采用bindService()启动</p>
+<p>rawQuery()方法的第一个参数为select语句；第二个参数为select语句中占位符参数的值，如果select语句没有使用占位符，该参数可以设置为null。带占位符参数的select语句使用例子如下：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Cursor cursor = db.rawQuery("select * from person where name like ? and age=?", new String[]{"%传智%", "4"});</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Cursor是结果集游标，用于对结果集进行随机访问，如果大家熟悉jdbc， 其实Cursor与JDBC中的ResultSet作用很相似。使用moveToNext()方法可以将游标从当前行移动到下一行，如果已经移过了结果集的最后一行，返回结果为false，否则为true。另外Cursor 还有常用的moveToPrevious()方法（用于将游标从当前行移动到上一行，如果已经移过了结果集的第一行，返回值为false，否则为true ）、moveToFirst()方法（用于将游标移动到结果集的第一行，如果结果集为空，返回值为false，否则为true ）和moveToLast()方法（用于将游标移动到结果集的最后一行，如果结果集为空，返回值为false，否则为true ） 。</p>
+
+<p>除了前面给大家介绍的execSQL()和rawQuery()方法， SQLiteDatabase还专门提供了对应于添加、删除、更新、查询的操作方法： insert()、delete()、update()和query() 。这些方法实际上是给那些不太了解SQL语法的人使用的，对于熟悉SQL语法的程序员而言，直接使用execSQL()和rawQuery()方法执行SQL语句就能完成数据的添加、删除、更新、查询操作。</p>
+
+<p>Insert()方法用于添加数据，各个字段的数据使用ContentValues进行存放。 ContentValues类似于MAP，相对于MAP，它提供了存取数据对应的put(String key, Xxx value)和getAsXxx(String key)方法，  key为字段名称，value为字段值，Xxx指的是各种常用的数据类型，如：String、Integer等。</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">DemoActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">DemoService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">bindService</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span> <span class="n">conn</span><span class="o">,</span> <span class="n">Context</span><span class="o">.</span><span class="na">BIND_AUTO_CREATE</span><span class="o">);</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>   <span class="c1">//unbindService(conn);//解除绑定</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="n">databaseHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'><span class="n">ContentValues</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'><span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;传智播客&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+</span><span class='line'><span class="kt">long</span> <span class="n">rowid</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="err">“</span><span class="n">person</span><span class="err">”</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span><span class="c1">//返回新添记录的行号，与主键id无关</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><a href="http://blog.csdn.net/bobbybear/article/details/7798043">http://blog.csdn.net/bobbybear/article/details/7798043</a></p>
+<p>不管第三个参数是否包含数据，执行Insert()方法必然会添加一条记录，如果第三个参数为空，会添加一条除主键之外其他字段值为Null的记录。Insert()方法内部实际上通过构造insert语句完成数据的添加，Insert()方法的第二个参数用于指定空值字段的名称，相信大家对此参数会感到疑惑，此参数的作用是干嘛的？是这样的：如果第三个参数values 为Null或者元素个数为0， Insert()方法必然要添加一条除了主键之外其它字段为Null值的记录，为了满足这条insert语句的语法， insert语句必须给定一个字段名，如：insert into person(name) values(NULL)，倘若不给定字段名 ， insert语句就成了这样： insert into person() values()，显然这不满足标准SQL的语法。对于字段名，建议使用主键之外的字段，如果使用了INTEGER类型的主键字段，执行类似insert into person(personid) values(NULL)的insert语句后，该主键字段值也不会为NULL。如果第三个参数values 不为Null并且元素的个数大于0 ，可以把第二个参数设置为null。</p>
 
-<h2>intentService的使用</h2>
-
-<p><a href="http://android.tgbus.com/Android/tutorial/201106/355229.shtml">http://android.tgbus.com/Android/tutorial/201106/355229.shtml</a></p>
-
-<p><a href="http://rainbow702.iteye.com/blog/1143286">http://rainbow702.iteye.com/blog/1143286</a></p>
-
-<p>IntentService是Service类的子类，用来处理异步请求。客户端可以通过startService(Intent)方法传递请求给IntentService，IntentService通过worker thread处理每个Intent对象，执行完所有的工作之后自动停止Service。</p>
-
-<p>说明：worker thread处理所有通过传递过来的请求，创建一个worker queue，一次只传递一个intent到onHandleIntent中，从而不必担心多线程带来的问题。处理完毕之后自动调用stopSelf()方法；默认实现了Onbind()方法，返回值为null；</p>
-
-<p>模式实现了OnStartCommand()方法，这个方法会放到worker queue中，然后在onHandleIntent()中执行。</p>
-
-<p>使用IntentService需要两个步骤：</p>
-
-<ol>
-<li><p>写构造函数</p></li>
-<li><p>复写onHandleIntent()方法</p></li>
-</ol>
-
-
-<p>好处：处理异步请求的时候可以减少写代码的工作量，比较轻松地实现项目的需求</p>
-
-<h2>与Service通信的方法</h2>
-
-<p><a href="http://zhangyan1158.blog.51cto.com/2487362/491358">http://zhangyan1158.blog.51cto.com/2487362/491358</a></p>
-
-<p>在android中Activity负责前台界面展示，service负责后台的需要长期运行的任务。Activity和Service之间的通信主要由IBinder负责。在需要和Service通信的Activity中实现ServiceConnection接口，并且实现其中的onServiceConnected和onServiceDisconnected方法。然后在这个Activity中还要通过如下代码绑定服务:</p>
+<p>delete()方法的使用：</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">().</span><span class="na">setClass</span><span class="o">(</span><span class="k">this</span><span class="o">,</span><span class="n">IHRService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">bindService</span><span class="o">(</span><span class="n">intent</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="n">Context</span><span class="o">.</span><span class="na">BIND_AUTO_CREATE</span><span class="o">);</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="n">databaseHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="s">&quot;personid&amp;lt;?&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;2&quot;</span><span class="o">});</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>当调用bindService方法后就会回调Activity的onServiceConnected，在这个方法中会向Activity中传递一个IBinder的实例，Acitity需要保存这个实例。代码如下:</p>
+<p>上面代码用于从person表中删除personid小于2的记录。</p>
+
+<p>update()方法的使用：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="n">databaseHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'><span class="n">ContentValues</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'><span class="n">values</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="err">“</span><span class="n">name</span><span class="err">”</span><span class="o">,</span> <span class="err">“传智播客”</span><span class="o">);</span><span class="c1">//key为字段名，value为值</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="n">values</span><span class="o">,</span> <span class="s">&quot;personid=?&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;1&quot;</span><span class="o">});</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>上面代码用于把person表中personid等于1的记录的name字段的值改为“传智播客”。</p>
+
+<p>query()方法实际上是把select语句拆分成了若干个组成部分，然后作为方法的输入参数：</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -229,21 +230,43 @@
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onServiceConnected</span><span class="o">(</span> <span class="n">ComponentName</span> <span class="n">inName</span> <span class="o">,</span> <span class="n">IBinder</span> <span class="n">serviceBinder</span><span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">SQLiteDatabase</span> <span class="n">db</span> <span class="o">=</span> <span class="n">databaseHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'><span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;personid,name,age&quot;</span><span class="o">},</span> <span class="s">&quot;name like ?&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&quot;%溧阳%&quot;</span><span class="o">},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&quot;personid desc&quot;</span><span class="o">,</span> <span class="s">&quot;1,2&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="k">while</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="o">(</span> <span class="n">inName</span><span class="o">.</span><span class="na">getShortClassName</span><span class="o">().</span><span class="na">endsWith</span><span class="o">(</span> <span class="s">&quot;IHRService&quot;</span> <span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
-</span><span class='line'><span class="k">try</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">serviceBinder</span><span class="o">=</span> <span class="n">serviceBinder</span><span class="o">;</span>
-</span><span class='line'>    <span class="n">mService</span> <span class="o">=</span> <span class="o">(</span> <span class="o">(</span><span class="n">IHRService</span><span class="o">.</span><span class="na">MyBinder</span><span class="o">)</span> <span class="n">serviceBinder</span><span class="o">).</span><span class="na">getService</span><span class="o">();</span>
-</span><span class='line'>    <span class="c1">//mTracker = mService.mConfiguration.mTracker;  </span>
-</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{}</span>
-</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="kt">int</span> <span class="n">personid</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">//获取第一列的值,第一列的索引从0开始</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span><span class="c1">//获取第二列的值</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span><span class="c1">//获取第三列的值</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span><span class='line'><span class="n">cursor</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>在Service中需要创建一个实现IBinder的内部类(这个内部类不一定在Service中实现，但必须在Service中创建它)。</p>
+<p>上面代码用于从person表中查找name字段含有“传智”的记录，匹配的记录按personid降序排序，对排序后的结果略过第一条记录，只获取2条记录。</p>
+
+<p>query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit)方法各参数的含义：</p>
+
+<ul>
+<li><p>table：表名。相当于select语句from关键字后面的部分。如果是多表联合查询，可以用逗号将两个表名分开。</p></li>
+<li><p>columns：要查询出来的列名。相当于select语句select关键字后面的部分。</p></li>
+<li><p>selection：查询条件子句，相当于select语句where关键字后面的部分，在条件子句允许使用占位符“?”</p></li>
+<li><p>selectionArgs：对应于selection语句中占位符的值，值在数组中的位置与占位符在语句中的位置必须一致，否则就会有异常。</p></li>
+<li><p>groupBy：相当于select语句group by关键字后面的部分</p></li>
+<li><p>having：相当于select语句having关键字后面的部分</p></li>
+<li><p>orderBy：相当于select语句order by关键字后面的部分，如：personid desc, age asc;</p></li>
+<li><p>limit：指定偏移量和获取的记录数，相当于select语句limit关键字后面的部分。</p></li>
+</ul>
+
+
+<h3>使用SQLiteOpenHelper对数据库进行版本管理</h3>
+
+<p>如果应用使用到了SQLite数据库，在用户初次使用软件时，需要创建应用使用到的数据库表结构及添加一些初始化记录，另外在软件升级的时候，也需要对数据表结构进行更新。在Android系统，为我们提供了一个名为SQLiteOpenHelper的类，该类用于对数据库版本进行管理，该类是一个抽象类，必须继承它才能使用。 为了实现对数据库版本进行管理，SQLiteOpenHelper类有两种重要的方法，分别是onCreate(SQLiteDatabase db)和onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)。还可以实现public abstract void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion)方法，它在每次成功打开数据库后首先被执行，默认情况下此方法的实现为空。</p>
+
+<p>当调用SQLiteOpenHelper的getWritableDatabase()或者getReadableDatabase()方法获取用于操作数据库的SQLiteDatabase实例的时候，如果数据库不存在，Android系统会自动生成一个数据库，接着调用onCreate()方法，onCreate()方法在初次生成数据库时才会被调用，在onCreate()方法里可以生成数据库表结构及添加一些应用使用到的初始化数据。onUpgrade()方法在数据库的版本发生变化时会被调用，数据库的版本是由程序员控制的，假设数据库现在的版本是1，由于业务的需要，修改了数据库表的结构，这时候就需要升级软件，升级软件时希望更新用户手机里的数据库表结构，为了实现这一目的，可以把原来的数据库版本设置为2(有同学问设置为3行不行？当然可以，如果你愿意，设置为100也行)，并且在onUpgrade()方法里面实现表结构的更新。当软件的版本升级次数比较多，这时在onUpgrade()方法里面可以根据原版号和目标版本号进行判断，然后作出相应的表结构及数据更新。</p>
+
+<p>getWritableDatabase()和getReadableDatabase()方法都可以获取一个用于操作数据库的SQLiteDatabase实例。但getWritableDatabase() 方法以读写方式打开数据库，一旦数据库的磁盘空间满了，数据库就只能读而不能写，倘若使用的是getWritableDatabase() 方法就会出错。getReadableDatabase()方法先以读写方式打开数据库，如果数据库的磁盘空间满了，就会打开失败，当打开失败后会继续尝试以只读方式打开数据库。但若随后再次调用此方法时，问题已经被解决，只读的SQLiteDatabase对象会被关闭，而重新返回一个可读写的SQLiteDatabase数据库对象。</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -262,26 +285,103 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyBinder</span> <span class="kd">extends</span> <span class="n">Binder</span> <span class="o">{&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="c1">//此方法是为了可以在Acitity中获得服务的实例&lt;/p&gt;</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DatabaseHelper</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="n">IHRService</span> <span class="n">getService</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">IHRService</span><span class="o">.</span><span class="na">this</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">//类没有实例化,是不能用作父类构造器的参数,必须声明为静态</span>
+</span><span class='line'>     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;itcast&quot;</span><span class="o">;</span> <span class="c1">//数据库名称</span>
+</span><span class='line'>     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">version</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">//数据库版本</span>
+</span><span class='line'>     <span class="kd">public</span> <span class="nf">DatabaseHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">//第三个参数CursorFactory指定在执行查询时获得一个游标实例的工厂类,设置为null,代表使用系统默认的工厂类</span>
+</span><span class='line'>            <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">version</span><span class="o">);</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;CREATE TABLE IF NOT EXISTS person (personid integer primary key autoincrement, name varchar(20), age INTEGER)&quot;</span><span class="o">);</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">onUpgrade</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">,</span> <span class="kt">int</span> <span class="n">oldVersion</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newVersion</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>           <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS person&quot;</span><span class="o">);</span>
+</span><span class='line'>           <span class="n">onCreate</span><span class="o">(</span><span class="n">db</span><span class="o">);</span>
+</span><span class='line'>     <span class="o">}</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//这个方法主要是接收Activity发向服务的消息，data为发送消息时向服务传入的对象，replay是由服务返回的对象&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">boolean</span> <span class="n">onTransact</span><span class="o">(</span> <span class="kt">int</span> <span class="n">code</span> <span class="o">,</span> <span class="n">Parcel</span> <span class="n">data</span> <span class="o">,</span> <span class="n">Parcel</span> <span class="n">reply</span> <span class="o">,</span> <span class="kt">int</span> <span class="n">flags</span> <span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="c1">//called when client calls transact on returned Binder  </span>
-</span><span class='line'>    <span class="k">return</span> <span class="nf">handleTransactions</span><span class="o">(</span> <span class="n">code</span> <span class="o">,</span> <span class="n">data</span> <span class="o">,</span> <span class="n">reply</span> <span class="o">,</span> <span class="n">flags</span> <span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>然后在Service中创建这个类的实例：</p>
+<p>上面onUpgrade()方法在数据库版本每次发生变化时都会把用户手机上的数据库表删除，然后再重新创建。一般在实际项目中是不能这样做的，正确的做法是在更新数据库表结构时，还要考虑用户存放于数据库中的数据不会丢失。</p>
+
+<p>使用SQLiteOpenHelper获取用于操作数据库的SQLiteDatabase实例</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public class DatabaseHelper extends SQLiteOpenHelper {&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>     private static final String name = "itcast"; //数据库名称
+</span><span class='line'>
+</span><span class='line'>     private static final int version = 1; //数据库版本
+</span><span class='line'>
+</span><span class='line'>     // ......略
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>public class HelloActivity extends Activity {&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>@Override public void onCreate(Bundle savedInstanceState) {
+</span><span class='line'>    //......
+</span><span class='line'>    Button button =(Button) this.findViewById(R.id.button);
+</span><span class='line'>    button.setOnClickListener(new View.OnClickListener(){
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>public void onClick(View v) {
+</span><span class='line'>DatabaseHelper databaseHelper = new DatabaseHelper(HelloActivity.this);
+</span><span class='line'>SQLiteDatabase db = databaseHelper.getWritableDatabase();
+</span><span class='line'>db.execSQL("insert into person(name, age) values(?,?)", new Object[]{"传智播客", 4});
+</span><span class='line'>db.close();
+</span><span class='line'>}});&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>}
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>第一次调用getWritableDatabase()或getReadableDatabase()方法后，SQLiteOpenHelper会缓存当前的SQLiteDatabase实例，SQLiteDatabase实例正常情况下会维持数据库的打开状态，所以在你不再需要SQLiteDatabase实例时，请及时调用close()方法释放资源。一旦SQLiteDatabase实例被缓存，多次调用getWritableDatabase()或getReadableDatabase()方法得到的都是同一实例。</p>
+
+<h3>使用事务操作SQLite数据库</h3>
+
+<p>使用SQLiteDatabase的beginTransaction()方法可以开启一个事务，程序执行到endTransaction() 方法时会检查事务的标志是否为成功，如果为成功则提交事务，否则回滚事务。当应用需要提交事务，必须在程序执行到endTransaction()方法之前使用setTransactionSuccessful() 方法设置事务的标志为成功，如果不调用setTransactionSuccessful() 方法，默认会回滚事务。使用例子如下：</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -291,300 +391,1201 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">IBinder</span> <span class="nf">onBind</span><span class="o">(</span> <span class="n">Intent</span> <span class="n">intent</span> <span class="o">)</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//SQLiteDatabase db = ....;</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span><span class="c1">//开始事务</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">IBinder</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">(</span> <span class="kc">null</span> <span class="o">==</span> <span class="n">result</span> <span class="o">)</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyBinder</span><span class="o">();</span>
-</span><span class='line'><span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;insert into person(name, age) values(?,?)&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&quot;传智播客&quot;</span><span class="o">,</span> <span class="mi">4</span><span class="o">});</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;update person set name=? where personid=?&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">&quot;传智&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">});</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">setTransactionSuccessful</span><span class="o">();</span><span class="c1">//调用此方法会在执行到endTransaction() 时提交当前事务，如果不调用此方法会回滚事务</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span> <span class="k">finally</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">db</span><span class="o">.</span><span class="na">endTransaction</span><span class="o">();</span><span class="c1">//由事务的标志决定是提交事务，还是回滚事务</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span><span class='line'><span class="n">db</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>这时候如果Activity向服务发送消息，就可以调用如下代码向服务端发送消息：</p>
+<p>上面两条SQL语句在同一个事务中执行。</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">inSend</span> <span class="o">=</span> <span class="n">Parcel</span><span class="o">.</span><span class="na">obtain</span><span class="o">();</span>
-</span><span class='line'><span class="n">serviceBinder</span><span class="o">.</span><span class="na">transact</span><span class="o">(</span> <span class="n">inCode</span> <span class="o">,</span> <span class="n">inSend</span> <span class="o">,</span> <span class="kc">null</span> <span class="o">,</span> <span class="n">IBinder</span><span class="o">.</span><span class="na">FLAG_ONEWAY</span> <span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<h3>SQLite示例程序</h3>
 
-<p>这种方式是只向服务端发送消息,没有返回值的。如果需要从服务端返回某些值则可用如下代码：</p>
+<p>   1.创建Android工程</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="n">Parcel</span><span class="o">.</span><span class="na">obtain</span><span class="o">();</span>
-</span><span class='line'><span class="n">serviceBinder</span><span class="o">.</span><span class="na">transact</span><span class="o">(</span> <span class="n">inCode</span> <span class="o">,</span> <span class="n">inSend</span> <span class="o">,</span> <span class="n">result</span> <span class="o">,</span> <span class="mi">0</span> <span class="o">);</span>
-</span><span class='line'><span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<pre><code>   Project name: db
 
-<p>发送消息后IBinder接口中的onTransact将会被调用。在服务中如果有结果返回(比如下载数据)则将结果写入到result参数中。在Activity中从result中读取服务执行的结果。</p>
+   BuildTarget:Android2.2
 
-<p>上面只是描述了如何由Acitity向Service发送消息，如果Service向Activity发送消息则可借助于BroadcastReceiver实现。</p>
+   Application name: 数据库应用
 
-<h2>跨进程调用Service</h2>
+   Package name: com.jbridge.db
 
-<p>跨进程调用Service，需要先定义一个远程调用接口，然后为该接口提供一个实现类。使用AIDL（Android Interface Definition Language）来定义远程接口。</p>
+   Create Activity: DBActivity
+
+   Min SDK Version:8、
+</code></pre>
 
 <ol>
-<li><p>在Eclipse Android工程的Java包目录中建立一个扩展名为aidl的文件。该文件的语法类似于Java代码，但会稍有不同。</p></li>
-<li><p>如果aidl文件的内容是正确的，ADT会自动生成一个Java接口文件（*.java）。</p></li>
-<li><p>建立一个服务类（Service的子类）。</p></li>
-<li><p>实现由aidl文件生成的Java接口。</p></li>
-<li><p>在AndroidManifest.xml文件中配置AIDL服务，尤其要注意的是，<action>标签中android:name的属性值就是客户端要引用该服务的ID，也就是Intent类的参数值。</p></li>
+<li>Person实体</li>
 </ol>
 
-
-<h2>调用系统Service</h2>
-
-<h3>Android电话信息相关API</h3>
-
-<p><a href="http://blog.csdn.net/leixingjing/article/details/6860337">http://blog.csdn.net/leixingjing/article/details/6860337</a></p>
-
-<p>Android平台提供的电话信息系统管理功能，主要包括：获取电话信息（设备信息、SIM信息以及网络信息）、侦听电话状态（呼叫状态、服务状态、信号强度状态等）和调用电话拨号器。</p>
-
-<h3>TelephoneManager类</h3>
-
-<p>在Manifest中添加Permission ：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;uses-permission android:name="android.permission.READ_PHONE_STATE" /></span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//TelephonyManager的获得：</span>
-</span><span class='line'><span class="n">TelephonyManager</span> <span class="n">tm</span> <span class="o">=</span> <span class="o">(</span><span class="n">TelephonyManager</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">getSystemService</span><span class="o">(</span><span class="n">TELEPHONY_SERVICE</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h3>SmsManager</h3>
-
-<p>在Manifest中添加Permission ：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">&quot;android.permission.SEND_SMS&quot;</span><span class="nt">/&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">SmsManager</span> <span class="n">manager</span> <span class="o">=</span> <span class="n">SmsManager</span><span class="o">.</span><span class="na">getDefault</span><span class="o">();</span>   <span class="c1">//获得默认的消息管理器</span>
-</span><span class='line'><span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="na">divideMessage</span><span class="o">(</span><span class="n">String</span> <span class="n">txt</span><span class="o">);</span>  <span class="c1">//拆分长短信</span>
-</span><span class='line'><span class="n">manager</span><span class="o">.</span><span class="na">sendTextMessage</span><span class="o">(</span><span class="n">String</span> <span class="n">phone</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="n">String</span> <span class="n">content</span><span class="o">,</span><span class="kc">null</span><span class="o">,</span><span class="kc">null</span><span class="o">);</span>  <span class="c1">//发送短信</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p><a href="http://home.cnblogs.com/group/topic/49026.html">http://home.cnblogs.com/group/topic/49026.html</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[LogCat的用法]]></title>
-    <link href="http://dande618.github.com/blog/2013/05/26/log/"/>
-    <updated>2013-05-26T16:16:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/05/26/log</id>
-    <content type="html"><![CDATA[<p>Logcat是Android中一个命令行工具可以用于得到程序的log信息。</p>
-
-<p><a href="http://weizhulin.blog.51cto.com/1556324/311692">http://weizhulin.blog.51cto.com/1556324/311692</a></p>
-
-<p>android.util.Log常用的方法有以下5个：Log.v() Log.d() Log.i() Log.w() 以及 Log.e() 。根据首字母对应VERBOSE，DEBUG,INFO, WARN，ERROR。</p>
-
-<ol>
-<li><p>Log.v 的调试颜色为黑色的，任何消息都会输出，这里的v代表verbose啰嗦的意思，平时使用就是Log.v("","");</p></li>
-<li><p>Log.d 的输出颜色是蓝色的，仅输出debug调试的意思，但他会输出上层的信息，过滤起来可以通过DDMS的Logcat标签来选择.</p></li>
-<li><p>Log.i 的输出为绿色，一般提示性的消息information，它不会输出Log.v和Log.d的信息，但会显示i、w和e的信息</p></li>
-<li><p>Log.w 的意思为橙色，可以看作为warning警告，一般需要我们注意优化Android代码，同时选择它后还会输出Log.e的信息。</p></li>
-<li><p>Log.e 为红色，可以想到error错误，这里仅显示红色的错误信息，这些错误就需要我们认真的分析，查看栈的信息了。</p></li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[android Activity]]></title>
-    <link href="http://dande618.github.com/blog/2013/05/24/android-activity/"/>
-    <updated>2013-05-24T11:00:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/05/24/android-activity</id>
-    <content type="html"><![CDATA[<p>Activity是Android组件中最基本也是最为常见用的四大组件之一，通常是一个单独的屏幕，它上面可以显示一些控件也可以监听并处理用户的事件做出响应。Activity之间通过Intent进行通信。</p>
-
-<!-- more -->
-
-
-<h2>【1】生命周期</h2>
-
-<p><a href="http://blog.csdn.net/liuhe688/article/details/6733407">http://blog.csdn.net/liuhe688/article/details/6733407</a></p>
-
-<p><img class="center" src="http://dl.iteye.com/upload/picture/pic/92402/eec1c58c-4034-3e02-bf24-80300bb08df8.png"></p>
-
-<ol>
-<li><p>启动Activity：系统会先调用onCreate方法，然后调用onStart方法，最后调用onResume，Activity进入运行状态。</p></li>
-<li><p>当前Activity被其他Activity覆盖其上或被锁屏：系统会调用onPause方法，暂停当前Activity的执行。</p></li>
-<li><p>当前Activity由被覆盖状态回到前台或解锁屏：系统会调用onResume方法，再次进入运行状态。</p></li>
-<li><p>当前Activity转到新的Activity界面或按Home键回到主屏，自身退居后台：系统会先调用onPause方法，然后调用onStop方法，进入停滞状态。</p></li>
-<li><p>用户后退回到此Activity：系统会先调用onRestart方法，然后调用onStart方法，最后调用onResume方法，再次进入运行状态。</p></li>
-<li><p>当前Activity处于被覆盖状态或者后台不可见状态，即第2步和第4步，系统内存不足，杀死当前Activity，而后用户退回当前Activity：再次调用onCreate方法、onStart方法、onResume方法，进入运行状态。</p></li>
-<li><p>用户退出当前Activity：系统先调用onPause方法，然后调用onStop方法，最后调用onDestory方法，结束当前Activity。</p></li>
-</ol>
-
-
-<h2>【2】关于onSaveInstanceState()</h2>
-
-<p><a href="http://www.cnblogs.com/hanyonglu/archive/2012/03/28/2420515.html">http://www.cnblogs.com/hanyonglu/archive/2012/03/28/2420515.html</a></p>
-
-<blockquote><p>Android calls onSaveInstanceState() before the activitybecomes vulnerable to being destroyed by the system, but does not bothercalling it when the instance is actually being destroyed by a user action (suchas pressing the BACK key).</p></blockquote>
-
-<p>当某个activity变得"容易"被系统销毁时，该activity的onSaveInstanceState()就会被执行，除非该activity是被用户主动销毁的，例如当用户按BACK键的时候。
-1. 当用户按下HOME键时。</p>
-
-<ol>
-<li><p>长按HOME键，选择运行其他的程序时。</p></li>
-<li><p>按下电源按键（关闭屏幕显示）时。</p></li>
-<li><p>从activity A中启动一个新的activity时。</p></li>
-<li><p>屏幕方向切换时，例如从竖屏切换到横屏时。</p></li>
-</ol>
-
-
-<h2>【3】如何将一个Activity设置成窗口样式。</h2>
-
-<p>在AndroidManifext.xml中Activity定义处添加</p>
-
-<p>android:theme="@android:style/Theme.Dialog"</p>
-
-<p>android:theme="@android:style/Theme.Translucent"。 </p>
-
-<p>打开这种Activity时，前一个Activity只调用onPause()方法。</p>
-
-<h2>【4】Activity之间的数据交换</h2>
-
-<p>Activity之间通过Intent进行通信。</p>
-
-<p>比如打开第二个Activity</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">ComponentName</span> <span class="n">comp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ComponentName</span><span class="o">(</span><span class="n">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">SecondActivity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
-</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">setComponent</span><span class="o">(</span><span class="n">comp</span><span class="o">);</span>
-</span><span class='line'><span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jbridge</span><span class="o">.</span><span class="na">domain</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">android.R.string</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">Integer</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">Short</span> <span class="n">age</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="nf">Person</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">Short</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="nf">Person</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">Short</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Short</span> <span class="nf">getAge</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">age</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setAge</span><span class="o">(</span><span class="n">Short</span> <span class="n">age</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">age</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s">&quot;Person [id=&quot;</span> <span class="o">+</span> <span class="n">id</span> <span class="o">+</span> <span class="s">&quot;, name=&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&quot;, age=&quot;</span> <span class="o">+</span> <span class="n">age</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>可以简化写成</p>
+<p>  3.编写DataBaseOpenHelper类</p>
+
+<pre><code>  DataBaseOpenHelper继承自SQLiteOpenHelper类。我们需要创建数据表，必须重写onCreate（更新时重写onUpgrade方法）方法，在这个方法中创建数据表。
+</code></pre>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">MainActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span><span class="n">SecondActivity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="n">startActivity</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jbridge</span><span class="o">.</span><span class="na">service</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteDatabase</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteDatabase.CursorFactory</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteOpenHelper</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataBaseOpenHelper</span> <span class="kd">extends</span> <span class="n">SQLiteOpenHelper</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">// 类没有实例化,是不能用作父类构造器的参数,必须声明为静态  </span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">dbname</span> <span class="o">=</span> <span class="s">&quot;zyj&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">version</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'><span class="kd">public</span> <span class="nf">DataBaseOpenHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// 第一个参数是应用的上下文  </span>
+</span><span class='line'>    <span class="c1">// 第二个参数是应用的数据库名字  </span>
+</span><span class='line'>    <span class="c1">// 第三个参数CursorFactory指定在执行查询时获得一个游标实例的工厂类,设置为null,代表使用系统默认的工厂类  </span>
+</span><span class='line'>    <span class="c1">// 第四个参数是数据库版本，必须是大于0的int（即非负数）  </span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">dbname</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">version</span><span class="o">);</span>
+</span><span class='line'>    <span class="c1">// TODO Auto-generated constructor stub  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="nf">DataBaseOpenHelper</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span>
+</span><span class='line'>        <span class="n">CursorFactory</span> <span class="n">factory</span><span class="o">,</span> <span class="kt">int</span> <span class="n">version</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">factory</span><span class="o">,</span> <span class="n">version</span><span class="o">);</span>
+</span><span class='line'>    <span class="c1">// TODO Auto-generated constructor stub  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;CREATE TABLE IF NOT EXISTS person (personid integer primary key autoincrement, name varchar(20), age INTEGER)&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// onUpgrade()方法在数据库版本每次发生变化时都会把用户手机上的数据库表删除，然后再重新创建。  </span>
+</span><span class='line'><span class="c1">// 一般在实际项目中是不能这样做的，正确的做法是在更新数据库表结构时，还要考虑用户存放于数据库中的数据不会丢失,从版本几更新到版本几。  </span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onUpgrade</span><span class="o">(</span><span class="n">SQLiteDatabase</span> <span class="n">db</span><span class="o">,</span> <span class="kt">int</span> <span class="n">arg1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">arg2</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">db</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;DROP TABLE IF EXISTS person&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">onCreate</span><span class="o">(</span><span class="n">db</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>需要交换的数据需要放入intent里。即调用putExtra("key",value)方法。</p>
+<p>  4.编写PersonService类</p>
 
-<p>或者调用putExtras(Bundle data)放入一个数据便携包</p>
+<p>  PersonService类主要实现对业务逻辑和数据库的操作。</p>
 
-<p>或调用putSerializable(String key,Serializable data)，放入一个可序列化的对象。</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jbridge</span><span class="o">.</span><span class="na">service</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Currency</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.Cursor</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteDatabase</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.domain.Person</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonService</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">DataBaseOpenHelper</span> <span class="n">dbOpenHelper</span><span class="o">;</span>
+</span><span class='line'><span class="c1">// private Context context;  </span>
+</span><span class='line'><span class="kd">public</span> <span class="nf">PersonService</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// this.context = context;  </span>
+</span><span class='line'>    <span class="n">dbOpenHelper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataBaseOpenHelper</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span><span class="s">&quot;insert into person(name,age)values(?,?)&quot;</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">person</span><span class="o">.</span><span class="na">getAge</span><span class="o">()</span> <span class="o">});</span>
+</span><span class='line'>    <span class="c1">// database.close();可以不关闭数据库，他里面会缓存一个数据库对象，如果以后还要用就直接用这个缓存的数据库对象。但通过  </span>
+</span><span class='line'>    <span class="c1">// context.openOrCreateDatabase(arg0, arg1, arg2)打开的数据库必须得关闭  </span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">setTransactionSuccessful</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">endTransaction</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span>
+</span><span class='line'>            <span class="s">&quot;update person set name=?,age=? where personid=?&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Object</span><span class="o">[]</span> <span class="o">{</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">person</span><span class="o">.</span><span class="na">getAge</span><span class="o">(),</span>
+</span><span class='line'>                    <span class="n">person</span><span class="o">.</span><span class="na">getId</span><span class="o">()</span> <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Person</span> <span class="nf">find</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="na">rawQuery</span><span class="o">(</span>
+</span><span class='line'>            <span class="s">&quot;select * from person where personid=?&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <span class="o">});</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+</span><span class='line'>                <span class="n">cursor</span><span class="o">.</span><span class="na">getShort</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Integer</span><span class="o">...</span> <span class="n">ids</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">ids</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="n">Integer</span> <span class="n">id</span> <span class="o">:</span> <span class="n">ids</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="sc">&#39;?&#39;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="sc">&#39;,&#39;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">sb</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">database</span><span class="o">.</span><span class="na">execSQL</span><span class="o">(</span>
+</span><span class='line'>                <span class="s">&quot;delete from person where personid in(&quot;</span> <span class="o">+</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">()</span>
+</span><span class='line'>                        <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="o">,</span> <span class="n">ids</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">getScrollData</span><span class="o">(</span><span class="kt">int</span> <span class="n">startResult</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxResult</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">persons</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="na">rawQuery</span><span class="o">(</span>
+</span><span class='line'>            <span class="s">&quot;select * from person limit ?,?&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">startResult</span><span class="o">),</span>
+</span><span class='line'>                    <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">maxResult</span><span class="o">)</span> <span class="o">});</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">persons</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+</span><span class='line'>                <span class="n">cursor</span><span class="o">.</span><span class="na">getShort</span><span class="o">(</span><span class="mi">2</span><span class="o">)));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">persons</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c1">// 获取分页数据，提供给SimpleCursorAdapter使用。  </span>
+</span><span class='line'><span class="kd">public</span> <span class="n">Cursor</span> <span class="nf">getRawScrollData</span><span class="o">(</span><span class="kt">int</span> <span class="n">startResult</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxResult</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">persons</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">database</span><span class="o">.</span><span class="na">rawQuery</span><span class="o">(</span>
+</span><span class='line'>            <span class="s">&quot;select personid as _id ,name,age from person limit ?,?&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">startResult</span><span class="o">),</span>
+</span><span class='line'>                    <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">maxResult</span><span class="o">)</span> <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">long</span> <span class="nf">getCount</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="na">rawQuery</span><span class="o">(</span><span class="s">&quot;select count(*) from person&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>实现可传递的对象需要类实现Serializable接口或者Parcelable接口。</p>
+<p>下面是使用 insert()、delete()、update()和query()方法实现的业务类</p>
 
-<p><a href="http://blog.sina.com.cn/s/blog_6321ab240100ssxp.html">http://blog.sina.com.cn/s/blog_6321ab240100ssxp.html</a></p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jbridge</span><span class="o">.</span><span class="na">service</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Currency</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.R.string</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.ContentValues</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.Cursor</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.sqlite.SQLiteDatabase</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.domain.Person</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OtherPersonService</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">DataBaseOpenHelper</span> <span class="n">dbOpenHelper</span><span class="o">;</span>
+</span><span class='line'><span class="c1">// private Context context;  </span>
+</span><span class='line'><span class="kd">public</span> <span class="nf">OtherPersonService</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// this.context = context;  </span>
+</span><span class='line'>    <span class="n">dbOpenHelper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataBaseOpenHelper</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">getAge</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">contentValues</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="n">Person</span> <span class="n">person</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">ContentValues</span> <span class="n">contentValues</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">contentValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">getAge</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">database</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&quot;personid=?&quot;</span><span class="o">,</span>
+</span><span class='line'>    <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getId</span><span class="o">())</span> <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Person</span> <span class="nf">find</span><span class="o">(</span><span class="n">Integer</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;personid&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;age&quot;</span> <span class="o">},</span> <span class="s">&quot;personid=?&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">id</span><span class="o">)</span> <span class="o">},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">Person</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+</span><span class='line'>                <span class="n">cursor</span><span class="o">.</span><span class="na">getShort</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">delete</span><span class="o">(</span><span class="n">Integer</span><span class="o">...</span> <span class="n">ids</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">ids</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">String</span><span class="o">[]</span> <span class="n">strIds</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">ids</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+</span><span class='line'>        <span class="c1">// for (Integer id : ids) {  </span>
+</span><span class='line'>        <span class="c1">// sb.append(&#39;?&#39;).append(&#39;,&#39;);  </span>
+</span><span class='line'>        <span class="c1">// }  </span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="n">strIds</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="sc">&#39;?&#39;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="sc">&#39;,&#39;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">strIds</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">ids</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">sb</span><span class="o">.</span><span class="na">deleteCharAt</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getWritableDatabase</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">database</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="s">&quot;personid in(&quot;</span> <span class="o">+</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="o">,</span>
+</span><span class='line'>                <span class="n">strIds</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">getScrollData</span><span class="o">(</span><span class="kt">int</span> <span class="n">startResult</span><span class="o">,</span> <span class="kt">int</span> <span class="n">maxResult</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">persons</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;personid&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;age&quot;</span> <span class="o">},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="s">&quot;personid desc&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">startResult</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">maxResult</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">persons</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+</span><span class='line'>                <span class="n">cursor</span><span class="o">.</span><span class="na">getShort</span><span class="o">(</span><span class="mi">2</span><span class="o">)));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">persons</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">long</span> <span class="nf">getCount</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">SQLiteDatabase</span> <span class="n">database</span> <span class="o">=</span> <span class="n">dbOpenHelper</span><span class="o">.</span><span class="na">getReadableDatabase</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="s">&quot;person&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;count(*)&quot;</span> <span class="o">},</span>
+</span><span class='line'>            <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<h3>启动其他Activity并返回结果</h3>
+<pre><code>5.编写测试类 
 
-<p>使用startActivityForResult(Intent intent,int requestCode)方法来启动其他Activity，并获取第二个Activity返回的结果。</p>
+   编写一个针对PersonService的测试类，测试PersonService类中的各个方法是否正确。
+</code></pre>
 
-<ul>
-<li><p>第一个Activity需要重写 onActivityResult(int requestCode, int resultCode, Intent data)；</p></li>
-<li><p>在第二个Activity里调用setResut(int resultCode, Intent intent)，并finish()关闭Activity；</p></li>
-</ul>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jbridge</span><span class="o">.</span><span class="na">db</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.domain.Person</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.service.OtherPersonService</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.service.PersonService</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.test.AndroidTestCase</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonServiceTest</span> <span class="kd">extends</span> <span class="n">AndroidTestCase</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;PersonServiceTest&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="c1">// OtherPersonService personService = new  </span>
+</span><span class='line'><span class="c1">// OtherPersonService(this.getContext());  </span>
+</span><span class='line'><span class="c1">//不可以这么写，因为Android把context环境变量是在PersonServiceTest实例化后给他的  </span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSave</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'>    <span class="c1">// personService.save(new Person(&quot;老猪&quot;, (short) 11));  </span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">personService</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="k">new</span> <span class="n">Person</span><span class="o">(</span><span class="s">&quot;你&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">,</span> <span class="o">(</span><span class="kt">short</span><span class="o">)</span> <span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">10</span><span class="o">)));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testFind</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">personService</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testUpdate</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="n">personService</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;lv&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">personService</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testDelete</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">personService</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testGetCount</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">personService</span><span class="o">.</span><span class="na">getCount</span><span class="o">()));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testGetScrollData</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getContext</span><span class="o">());</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">persons</span> <span class="o">=</span> <span class="n">personService</span><span class="o">.</span><span class="na">getScrollData</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">Person</span> <span class="n">person</span> <span class="o">:</span> <span class="n">persons</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
+<pre><code>  启用测试功能，不要忘记在AndroidManifest.xml文件中加入测试环境。为application元素添加一个子元素：&lt;uses-library android:name="android.test.runner"/&gt;，为application元素添加一个兄弟元素：&lt;instrumentation android:name="android.test.InstrumentationTestRunner"     android:targetPackage="com.jbridge.db" android:label="Tests for My App" /&gt;。 
 
-<h2>【5】ANR问题</h2>
+   SQLite数据库以单个文件存储，就像微软的Access数据库。有一个查看SQLite数据库文件的工具——SQLite Developer，我们可以使用它来查看数据库。Android将创建的数据库存放在”/data/data/ com.jbridge.db/databases/person”，我们将它导出然后使用SQLite Developer打开。
+</code></pre>
 
-<p><a href="http://hi.baidu.com/xielingling20/item/882d1cd1176d1c03d90e44e3">http://hi.baidu.com/xielingling20/item/882d1cd1176d1c03d90e44e3</a></p>
+<p>6.分页显示数据</p>
 
-<p>anr问题的解析。</p>
+<pre><code>   我们在ContactsService类中，提供了一个获取分页数据的方法。我们将调用它获取的数据，使用ListView组件显示出来。
 
-<p>在Android中，活动管理器和窗口管理器这两个系统服务负责监视应用程序的响应。当出现下列情况时，Android就会显示ANR对话框了：</p>
+   编辑mail.xml：
+</code></pre>
 
-<p>对输入事件(如按键、触摸屏事件)的响应超过5秒</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+</span><span class='line'><span class="ni">&amp;lt;</span>LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>android:layout_width=&quot;fill_parent&quot;
+</span><span class='line'>android:layout_height=&quot;fill_parent&quot;
+</span><span class='line'>android:orientation=&quot;vertical&quot; <span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>RelativeLayout
+</span><span class='line'>    xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+</span><span class='line'>    android:layout_width=&quot;fill_parent&quot;
+</span><span class='line'>    android:layout_height=&quot;wrap_content&quot; <span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>TextView
+</span><span class='line'>        android:id=&quot;@+id/personidtitle&quot;
+</span><span class='line'>        android:layout_width=&quot;40px&quot;
+</span><span class='line'>        android:layout_height=&quot;wrap_content&quot;
+</span><span class='line'>        android:text=&quot;编号&quot;
+</span><span class='line'>        android:textSize=&quot;20px&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>TextView
+</span><span class='line'>        android:id=&quot;@+id/nametitle&quot;
+</span><span class='line'>        android:layout_width=&quot;200px&quot;
+</span><span class='line'>        android:layout_height=&quot;wrap_content&quot;
+</span><span class='line'>        android:layout_alignTop=&quot;@id/personidtitle&quot;
+</span><span class='line'>        android:layout_toRightOf=&quot;@id/personidtitle&quot;
+</span><span class='line'>        android:gravity=&quot;center_horizontal&quot;
+</span><span class='line'>        android:text=&quot;姓名&quot;
+</span><span class='line'>        android:textSize=&quot;20px&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>TextView
+</span><span class='line'>        android:id=&quot;@+id/agetitle&quot;
+</span><span class='line'>        android:layout_width=&quot;wrap_content&quot;
+</span><span class='line'>        android:layout_height=&quot;wrap_content&quot;
+</span><span class='line'>        android:layout_alignTop=&quot;@id/nametitle&quot;
+</span><span class='line'>        android:layout_toRightOf=&quot;@id/nametitle&quot;
+</span><span class='line'>        android:text=&quot;年龄&quot;
+</span><span class='line'>        android:textSize=&quot;20px&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/RelativeLayout<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>ListView
+</span><span class='line'>    android:id=&quot;@+id/listView&quot;
+</span><span class='line'>    android:layout_width=&quot;fill_parent&quot;
+</span><span class='line'>    android:layout_height=&quot;wrap_content&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/LinearLayout&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>意向接受器(intentReceiver)超过10秒钟仍未执行完毕</p>
+<p>在mail.xml所在目录里添加一个personitem.xml：</p>
 
-<p>Android应用程序完全运行在一个独立的线程中(例如main)。这就意味着，任何在主线程中运行的，需要消耗大量时间的操作都会引发ANR。因为此时，你的应用程序已经没有机会去响应输入事件和意向广播(Intent broadcast)。</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+</span><span class='line'><span class="ni">&amp;lt;</span>RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>android:layout_width=&quot;fill_parent&quot;
+</span><span class='line'>android:layout_height=&quot;wrap_content&quot; <span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>TextView
+</span><span class='line'>    android:id=&quot;@+id/personid&quot;
+</span><span class='line'>    android:layout_width=&quot;40px&quot;
+</span><span class='line'>    android:layout_height=&quot;wrap_content&quot;
+</span><span class='line'>    android:textSize=&quot;20px&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>TextView
+</span><span class='line'>    android:id=&quot;@+id/name&quot;
+</span><span class='line'>    android:layout_width=&quot;200px&quot;
+</span><span class='line'>    android:layout_height=&quot;wrap_content&quot;
+</span><span class='line'>    android:layout_alignTop=&quot;@id/personid&quot;
+</span><span class='line'>    android:layout_toRightOf=&quot;@id/personid&quot;
+</span><span class='line'>    android:gravity=&quot;center_horizontal&quot;
+</span><span class='line'>    android:textSize=&quot;20px&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>TextView
+</span><span class='line'>    android:id=&quot;@+id/age&quot;
+</span><span class='line'>    android:layout_width=&quot;wrap_content&quot;
+</span><span class='line'>    android:layout_height=&quot;wrap_content&quot;
+</span><span class='line'>    android:layout_alignTop=&quot;@id/name&quot;
+</span><span class='line'>    android:layout_toRightOf=&quot;@id/name&quot;
+</span><span class='line'>    android:textSize=&quot;20px&quot; /<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/RelativeLayout&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>因此，任何运行在主线程中的方法，都要尽可能的只做少量的工作。特别是活动生命周期中的重要方法如onCreate()和 onResume()等更应如此。潜在的比较耗时的操作，如访问网络和数据库;或者是开销很大的计算，比如改变位图的大小，需要在一个单独的子线程中完成(或者是使用异步请求，如数据库操作)。但这并不意味着你的主线程需要进入阻塞状态已等待子线程结束 -- 也不需要调用Therad.wait()或者Thread.sleep()方法。取而代之的是，主线程为子线程提供一个句柄(Handler)，让子线程在即将结束的时候调用它。使用这种方法涉及你的应用程序，能够保证你的程序对输入保持良好的响应，从而避免因为输入事件超过5秒钟不被处理而产生的ANR。这种实践需要应用到所有显示用户界面的线程，因为他们都面临着同样的超时问题。</p>
+<p>编辑 DBActivity 类：</p>
 
-<p>1、 什么是ANR？</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">jbridge</span><span class="o">.</span><span class="na">db</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.domain.Person</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.jbridge.service.PersonService</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.R.string</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.database.Cursor</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.provider.LiveFolders</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.Log</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.view.View</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.AdapterView</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.ArrayAdapter</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.ListView</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.SimpleAdapter</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.SimpleCursorAdapter</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.Toast</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DBActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="cm">/** Called when the activity is first created. */</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="s">&quot;DBActivity&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//实现方法一&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="nd">@Override</span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'> <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'> <span class="n">PersonService</span> <span class="n">personService</span><span class="o">=</span><span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'> <span class="n">ListView</span> <span class="n">listView</span> <span class="o">=</span> <span class="o">(</span><span class="n">ListView</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">listView</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span>
+</span><span class='line'> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'> <span class="c1">// HashMap&amp;lt;String, String&amp;gt; title = new HashMap&amp;lt;String, String&amp;gt;(); </span>
+</span><span class='line'> <span class="c1">// title.put(&quot;personid&quot;, &quot;编号&quot;); </span>
+</span><span class='line'> <span class="c1">// title.put(&quot;name&quot;, &quot;姓名&quot;); </span>
+</span><span class='line'> <span class="c1">// title.put(&quot;age&quot;, &quot;年龄&quot;); </span>
+</span><span class='line'> <span class="c1">// data.add(title); </span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">Person</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">persons</span><span class="o">=</span> <span class="n">personService</span><span class="o">.</span><span class="na">getScrollData</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
+</span><span class='line'> <span class="k">for</span> <span class="o">(</span><span class="n">Person</span> <span class="n">person</span> <span class="o">:</span> <span class="n">persons</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'> <span class="n">p</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;personid&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getId</span><span class="o">()));</span>
+</span><span class='line'> <span class="n">p</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="n">person</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'> <span class="n">p</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">,</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">person</span><span class="o">.</span><span class="na">getAge</span><span class="o">()));</span>
+</span><span class='line'> <span class="n">data</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">p</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">// 适配器有： </span>
+</span><span class='line'> <span class="c1">// ArrayAdapter&amp;lt;T&amp;gt; </span>
+</span><span class='line'> <span class="c1">// simpAdapter </span>
+</span><span class='line'> <span class="c1">// SimpleCursorAdapter </span>
+</span><span class='line'> <span class="n">SimpleAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleAdapter</span><span class="o">(</span><span class="n">DBActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span>
+</span><span class='line'> <span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">personitem</span><span class="o">,</span>
+</span><span class='line'> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;personid&quot;</span><span class="o">,</span> <span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;age&quot;</span> <span class="o">},</span>
+</span><span class='line'> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">personid</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">name</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">age</span> <span class="o">});</span>
+</span><span class='line'> <span class="n">listView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">listView</span><span class="o">.</span><span class="na">setOnItemClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">AdapterView</span><span class="o">.</span><span class="na">OnItemClickListener</span><span class="o">(){</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nd">@Override</span>
+</span><span class='line'> <span class="c1">// parent即为你点击的listView </span>
+</span><span class='line'> <span class="c1">// view为listview的外面布局 </span>
+</span><span class='line'> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onItemClick</span><span class="o">(</span><span class="n">AdapterView</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;?&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">parent</span><span class="o">,</span> <span class="n">View</span> <span class="n">view</span><span class="o">,</span> <span class="kt">int</span> <span class="n">position</span><span class="o">,</span>
+</span><span class='line'> <span class="kt">long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="n">ListView</span> <span class="n">listView</span><span class="o">=</span> <span class="o">(</span><span class="n">ListView</span><span class="o">)</span> <span class="n">parent</span><span class="o">;</span>
+</span><span class='line'> <span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">itemdata</span><span class="o">=</span> <span class="o">(</span><span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;)</span>
+</span><span class='line'> <span class="n">listView</span><span class="o">.</span><span class="na">getItemAtPosition</span><span class="o">(</span><span class="n">position</span><span class="o">);</span>
+</span><span class='line'> <span class="n">String</span> <span class="n">personid</span><span class="o">=</span><span class="n">itemdata</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;personid&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="n">String</span> <span class="n">name</span><span class="o">=</span><span class="n">itemdata</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="n">String</span> <span class="n">age</span><span class="o">=</span><span class="n">itemdata</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">);</span>
+</span><span class='line'> <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span><span class="n">view</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'> <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;personid: &quot;</span><span class="o">+</span><span class="n">personid</span><span class="o">+</span> <span class="s">&quot;   name: &quot;</span><span class="o">+</span><span class="n">name</span><span class="o">+</span><span class="s">&quot;   age:   &quot;</span><span class="o">+</span><span class="n">age</span><span class="o">);</span>
+</span><span class='line'> <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span><span class="s">&quot; position==id:&quot;</span><span class="o">+</span> <span class="o">(</span><span class="n">position</span><span class="o">==</span><span class="n">id</span><span class="o">));</span>
+</span><span class='line'><span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="n">DBActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'> <span class="o">});</span>
+</span><span class='line'> <span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>ANR:Application Not Responding，即应用无响应，就是说应用程序在5S内没有响应。</p>
-
-<p>2、 为什么会ANR？</p>
-
-<p>（1）当前的事物发生堵塞，没有被执行。比如说UI线程中处理耗时的操作，发生线程的堵塞</p>
-
-<p>（2）当前事物正在被执行，而没有被完全执行。</p>
-
-<p>3、 ANR的分类：</p>
-
-<p>（1）按键或触摸事件在5S内没有响应</p>
-
-<p>（2）BroadcastReceiver在特定时间内无法处理完成（BroadcastTimeout）</p>
-
-<p>（3）Service在特定的时间内无法处理完成（ServiceTimeout）</p>
-
-<p>4、 如何尽量去避免 ANR 的出现</p>
-
-<p>一般ANR多是因为线程堵塞照成的，比如说UI线程去处理很耗时的操作（数据库，网络的连接，下载等类似的操作），所以要避免此类问题的出现。</p>
-
-<p>（1）UI线程尽量只做跟UI相关的工作。</p>
-
-<p>（2）耗时的操作可以开启一个新的线程，或者是后台去处理。</p>
-
-<p>5、 有哪些UI线程？</p>
-
-<p>Activity:onCreate(), onResume(), onDestroy(), onKeyDown(), onClick()</p>
-
-<p>AsyncTask: onPreExecute(), onProgressUpdate(), onPostExecute(), onCancel,</p>
-
-<p>Mainthread handler: handleMessage(), post*(runnable r)</p>
-
-<p>子线程：</p>
-
-<p>Thread，intentservice、Asynctask</p>
-
-<h2>【6】使用Activity应该注意的问题</h2>
-
-<p>Activity几乎承接着用户对应用程序（Application）的所有操作，可以通过主题（Theme）改变样子的。</p>
-
-<ul>
-<li><p>Activity应该要注意它的生命周期（Lifecycle）、设备状态（Configuration）改变时的影响以及运行状态和数据的保存，这个在一个应用程序是否可靠和人性化上至关重要。</p></li>
-<li><p>Activity里还应该要申明一些许可（Permissions），以便使用Android的一些软硬件功能，这些申明可以由代码或者Manifest.xml给出。</p></li>
-<li><p>每个Activity（的入口）一定要在Manifest当中申明。</p></li>
-<li><p>耗时的操作应该放在UI线程外的其他线程里，以防阻塞操作。如在非UI线程更新UI需要使用Handler</p></li>
-<li><p>继承Activity，覆盖各个方法时需要注意调用super父类中的相同方法。</p></li>
-<li><p>要考虑多分辨率。至少为hdpi, mdpi, ldpi准备图片和布局。元素的单位也尽可能的使用dip而不要用px。</p></li>
-<li><p>考虑国际化和资源自适应。文本文字应该写入strings.xml并实现国际化。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[android studio 安装无法打开]]></title>
-    <link href="http://dande618.github.com/blog/2013/05/23/android-studio/"/>
-    <updated>2013-05-23T23:01:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/05/23/android-studio</id>
-    <content type="html"><![CDATA[<p>最近谷歌发布了Android Studio，是一个全新的Android开发环境，基于IntelliJIDEA。可以作为替代eclispe+adt的开发环境。</p>
-
-<p>下载地址 <a href="http://developer.android.com/sdk/installing/studio.html">http://developer.android.com/sdk/installing/studio.html</a></p>
-
-<!-- more -->
-
-
-<p>现在是0.1版，编写布局文件实时预览并适配多屏的功能是亮点。</p>
-
-<p>但是安装后出现可打开程序无反应的情况，似乎是系统变量中JAVA_HOME、CLASSPATH、PATH的配置问题。</p>
-
-<p>但修改后也没有解决。。最后重新安装JDK1.7后就没问题了（原来是1.6）。</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//  实现方法二（游标）&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">main</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">PersonService</span> <span class="n">personService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PersonService</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">ListView</span> <span class="n">listView</span> <span class="o">=</span> <span class="o">(</span><span class="n">ListView</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">listView</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">HashMap</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;&amp;</span><span class="n">gt</span><span class="o">;();</span>
+</span><span class='line'>    <span class="c1">// HashMap&amp;lt;String, String&amp;gt; title = new HashMap&amp;lt;String, String&amp;gt;();  </span>
+</span><span class='line'>    <span class="c1">// title.put(&quot;personid&quot;, &quot;编号&quot;);  </span>
+</span><span class='line'>    <span class="c1">// title.put(&quot;name&quot;, &quot;姓名&quot;);  </span>
+</span><span class='line'>    <span class="c1">// title.put(&quot;age&quot;, &quot;年龄&quot;);  </span>
+</span><span class='line'>    <span class="c1">// data.add(title);  </span>
+</span><span class='line'>    <span class="c1">// 适配器有：  </span>
+</span><span class='line'>    <span class="c1">// ArrayAdapter&amp;lt;T&amp;gt;  </span>
+</span><span class='line'>    <span class="c1">// simpAdapter  </span>
+</span><span class='line'>    <span class="c1">// SimpleCursorAdapter  </span>
+</span><span class='line'>    <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="n">personService</span><span class="o">.</span><span class="na">getRawScrollData</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">SimpleCursorAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleCursorAdapter</span><span class="o">(</span><span class="n">DBActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span>
+</span><span class='line'>            <span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">personitem</span><span class="o">,</span> <span class="n">cursor</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;_id&quot;</span><span class="o">,</span> <span class="s">&quot;name&quot;</span><span class="o">,</span>
+</span><span class='line'>                    <span class="s">&quot;age&quot;</span> <span class="o">},</span>
+</span><span class='line'>            <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">personid</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">name</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">age</span> <span class="o">});</span>
+</span><span class='line'>    <span class="n">listView</span><span class="o">.</span><span class="na">setAdapter</span><span class="o">(</span><span class="n">adapter</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">listView</span><span class="o">.</span><span class="na">setOnItemClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">AdapterView</span><span class="o">.</span><span class="na">OnItemClickListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="c1">// parent即为你点击的listView  </span>
+</span><span class='line'>        <span class="c1">// view为listview的外面布局  </span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onItemClick</span><span class="o">(</span><span class="n">AdapterView</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;?&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">parent</span><span class="o">,</span> <span class="n">View</span> <span class="n">view</span><span class="o">,</span>
+</span><span class='line'>                <span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">ListView</span> <span class="n">listView</span> <span class="o">=</span> <span class="o">(</span><span class="n">ListView</span><span class="o">)</span> <span class="n">parent</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="o">(</span><span class="n">Cursor</span><span class="o">)</span> <span class="n">listView</span><span class="o">.</span><span class="na">getItemAtPosition</span><span class="o">(</span><span class="n">position</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">personid</span> <span class="o">=</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">age</span> <span class="o">=</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getShort</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">view</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot;personid: &quot;</span> <span class="o">+</span> <span class="n">personid</span> <span class="o">+</span> <span class="s">&quot;   name: &quot;</span> <span class="o">+</span> <span class="n">name</span>
+</span><span class='line'>                    <span class="o">+</span> <span class="s">&quot;   age:   &quot;</span> <span class="o">+</span> <span class="n">age</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&quot; position==id:&quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">position</span> <span class="o">==</span> <span class="n">id</span><span class="o">));</span>
+</span><span class='line'>            <span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="n">DBActivity</span><span class="o">.</span><span class="na">this</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">Toast</span><span class="o">.</span><span class="na">LENGTH_LONG</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   

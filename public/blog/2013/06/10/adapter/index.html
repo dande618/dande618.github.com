@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Android 适配器模式 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="对于android开发者来说起，适配器模式简直太熟悉不过，有很多应用可以说是天天在直接或者间接的用到适配器模式，比如ListView。 ListView用于显示列表数据，但是作为列表数据集合有很多形式，有Array，有Cursor，我们需要对应的适配器作为桥梁，处理相应的数据（ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/10/adapter/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android 适配器模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-10T19:28:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>对于android开发者来说起，适配器模式简直太熟悉不过，有很多应用可以说是天天在直接或者间接的用到适配器模式，比如ListView。</p>
+
+<p>ListView用于显示列表数据，但是作为列表数据集合有很多形式，有Array，有Cursor，我们需要对应的适配器作为桥梁，处理相应的数据（并能形成ListView所需要的视图）。</p>
+
+<p>正是因为定义了这些适配器接口和适配器类，才能使我们的数据简单灵活而又正确的显示到了adapterview的实现类上。</p>
+
+<p>适配器模式，Adapter Pattern，勇敢的去适配，大量的资源可以重用。</p>
+
+<p><a href="http://www.cnblogs.com/qianxudetianxia/archive/2012/02/27/2010965.html">http://www.cnblogs.com/qianxudetianxia/archive/2012/02/27/2010965.html</a></p>
+
+<!-- more -->
+
+
+<h3>1.意图</h3>
+
+<p>适配器模式，把一个类的接口变换成客户端所期待的另一种接口，从而使原本不匹配而无法在一起工作的两个，类能够在一起工作。</p>
+
+<p>适配器模式分为类适配器模式和对象适配器模式。</p>
+
+<p>关于类适配器模式，因为java的单继承，如果继承一个类，另外的则只能是接口，需要手动实现相应的方法。</p>
+
+<p>热门词汇：类的适配器模式 对象的适配器模式 缺省适配器模式 源类 目标接口</p>
+
+<h3>2.结构图和代码</h3>
+
+<p><img class="center" src="http://pic002.cnblogs.com/images/2012/31770/2012022722350660.jpg"></p>
+
+<p>为了简明直接，我省略了相关的其他适配器 ，只以此两个适配器为例。</p>
+
+<p>ListViews做为client，他所需要的目标接口(target interface)就是ListAdapter，包含getCount(),getItem(),getView()等几个基本的方法，为了兼容List<T>,Cursor等数据类型作为数据源，我们专门定义两个适配器来适配他们：ArrayAdapter和CursorAdapter。这两个适配器，说白了，就是针对目标接口对数据源进行兼容修饰。</p>
+
+<p>这就是适配器模式。</p>
+
+<p>其中BaseAdapter实现了如isEmpty()方法,使子类在继承BaseAdapter后不需要再实现此方法，这就是缺省适配器，这也是缺省适配器的一个最明显的好处。</p>
+
+<p>我们以最简单的若干个方法举例如下，ListAdapter接口如下（，为了简单，我省略了继承自Adapter接口）：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ListAdapter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="nf">getCount</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Object</span> <span class="nf">getItem</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="nf">getItemId</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>抽象类BaseAdapter,我省略其他代码，只列出两个方法，以作示意:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">BaseAdapter</span> <span class="kd">implements</span> <span class="n">ListAdapter</span><span class="o">,</span> <span class="n">SpinnerAdapter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// ... ...</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">View</span> <span class="nf">getDropDownView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">getView</span><span class="o">(</span><span class="n">position</span><span class="o">,</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">parent</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isEmpty</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">getCount</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ArrayAdapter对List<T>进行封装成ListAdapter的实现，满足ListView的调用：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ArrayAdapter</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">BaseAdapter</span> <span class="kd">implements</span> <span class="n">Filterable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mObjects</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">//我只列出这一个构造函数，大家懂这个意思就行</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">ArrayAdapter</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="kt">int</span> <span class="n">textViewResourceId</span><span class="o">,</span> <span class="n">T</span><span class="o">[]</span> <span class="n">objects</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">init</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">textViewResourceId</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">objects</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="kt">int</span> <span class="n">resource</span><span class="o">,</span> <span class="kt">int</span> <span class="n">textViewResourceId</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">objects</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mContext</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">mInflater</span> <span class="o">=</span> <span class="o">(</span><span class="n">LayoutInflater</span><span class="o">)</span><span class="n">context</span><span class="o">.</span><span class="na">getSystemService</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">LAYOUT_INFLATER_SERVICE</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">mResource</span> <span class="o">=</span> <span class="n">mDropDownResource</span> <span class="o">=</span> <span class="n">resource</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">mObjects</span> <span class="o">=</span> <span class="n">objects</span><span class="o">;</span> <span class="c1">//引用对象，也是表达了组合优于继承的意思</span>
+</span><span class='line'>        <span class="n">mFieldId</span> <span class="o">=</span> <span class="n">textViewResourceId</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getCount</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">mObjects</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="n">T</span> <span class="nf">getItem</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">mObjects</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">position</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">View</span> <span class="nf">getView</span><span class="o">(</span><span class="kt">int</span> <span class="n">position</span><span class="o">,</span> <span class="n">View</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nf">createViewFromResource</span><span class="o">(</span><span class="n">position</span><span class="o">,</span> <span class="n">convertView</span><span class="o">,</span> <span class="n">parent</span><span class="o">,</span> <span class="n">mResource</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">// ... ...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们就如此成功的把List<T>作为数据源以ListView想要的目标接口的样子传给了ListView，同理CursorAdapter也是一模一样的道理，就不写具体代码了。</p>
+
+<p>适配器本身倒是不难，但是提供了解决不兼容问题的惯用模式。</p>
+
+<p>关于什么时候使用适配器模式,大概有三种情况：</p>
+
+<p>(1). 你想使用一个已经存在的类，而它的接口不符合你的需求，这个在处理旧系统时比较常见。</p>
+
+<p>(2). 你想创建一个可以复用的类，该类可以和其他不相关的类或不可预见的累协同工作，这就是我们android开发者经常碰到的情况：我们常常自定义一个新的Adapter。</p>
+
+<p>(3). 你想使用一些已经存在的子类，但是不可能对每一个都进行子类化以匹配他们的接口，对象适配器可以适配他的父类接口。</p>
+
+<h3>3.效果</h3>
+
+<ol>
+<li><p>结构性模式</p></li>
+<li><p>上面论述的主要是对象适配器，关于类适配器除了实现目标端口外，还要实现你要兼容的源类，这样可以少写几行代码，但是从组合优于继承的角度看，它总则没有那么的干净。</p></li>
+<li><p>对同一个适配器（即同一个对象）对同样的源进行双向甚至多向的适配，则能使其适用两个甚至多个客户调用。</p></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-10T19:28:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/10/viewpager/" title="Previous Post: Android的 ViewPager">&laquo; Android的 ViewPager</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/10/singleton/" title="Next Post: JAVA单例模式">JAVA单例模式 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/10/adapter/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/10/adapter/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

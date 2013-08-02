@@ -1,0 +1,335 @@
+---
+layout: post
+title: "利用convertView优化ListView性能"
+date: 2013-06-11 10:00
+comments: true
+categories: 
+---
+<http://johncookie.iteye.com/blog/1250049>
+这里提到的ListView只是作为一个典型代表 其实在Android中 采用类似Adapter机制的GridView等都是可以适用的 而ListView应该是用得最多的 所以就以它来举例
+
+大家都知道 将ListView和Adapter绑定以后 其实也就是将数据源和控件显示绑定在一起 而每次需要显示ListView的时候 里面的item其实是Adapter提供的 通过的就是重要的getView()方法 而做法也是在这上面进行。
+
+<!-- more -->
+
+先来看一下基本的getView写法
+
+{% codeblock lang:java %}
+public View getView(int position, View convertView, ViewGroup parent) {  
+    View view = new View();  
+  
+    //通过inflate等找到布局 然后findViewById等 设置各个显示的item  
+  
+    return view;  
+}  
+{% endcodeblock %}
+
+而在ListView滑动的过程中 很容易就会发现每次getView被执行 都会new出一个View对象 长此以往会产生很大的消耗 特别当item中还有Bitmap等 甚至会造成OOM的错误导致程序崩溃
+
+
+在看getView提供的参数时 可能已经注意到了 有一个参数View convertView 而这个convertView其实就是最关键的部分了 原理上讲 当ListView滑动的过程中 会有item被滑出屏幕 而不再被使用 这时候Android会回收这个条目的view 这个view也就是这里的convertView
+
+在上面的做法中 当item1被移除屏幕的时候 我们会重新new一个View给新显示的item_new 而如果使用了这个convertView 我们其实可以复用它 这样就省去了new View的大量开销
+
+下面就是使用convertView后的情况
+
+{% codeblock lang:java %} 
+public View getView(int position, View convertView, ViewGroup parent) {  
+    View view = null;  
+    if (convertView != null) {  
+    view = convertView;  
+    //复用了回收的view 只需要直接作内容填充的修改就好了  
+    } else {  
+    view = new Xxx(...);  
+    //没有供复用的view 按一般的做法新建view  
+    }  
+    return view;  
+}  
+{% endcodeblock %}
+
+这样一来 就避免了反复创建大量view的问题了
+
+但是上面的仍然有缺陷 当我们的ListView中填充的item有多种形式时 比如微博中 有的item中包含图片 有的item包含视频 那么必然的 我们需要用到2种item的布局方式
+
+此时如果只是单纯判断convert是否存在 会造成回收的view不符合你当前需要的布局 而类似转换失败出错退出
+
+这里要提到Adapter中的另外2个方法：
+
+{% codeblock lang:java %}
+public int getItemViewType(int position) {}
+{% endcodeblock %}
+
+{% codeblock lang:java %}
+public int getViewTypeCount() {}
+{% endcodeblock %}
+
+从方法名上 就可以比较明显的明白这2个的作用
+
+下面附上一个demo代码
+
+{% codeblock lang:java %}
+class MyAdapter extends BaseAdapter{  
+    Context mContext;  
+    LinearLayout linearLayout = null;  
+    LayoutInflater inflater;  
+    TextView tex;  
+    final int VIEW_TYPE = 2;  
+    final int TYPE_1 = 0;  
+    final int TYPE_2 = 1;  
+  
+    public MyAdapter(Context context) {  
+        mContext = context;  
+        inflater = LayoutInflater.from(mContext);  
+    }  
+  
+    @Override  
+    public int getCount() {  
+        return listString.size();  
+    }  
+  
+    //每个convert view都会调用此方法，获得当前所需要的view样式  
+    @Override  
+    public int getItemViewType(int position) {  
+        int p = position%6;  
+        if(p == 0)  
+            return TYPE_1;  
+        else if(p < 3)  
+            return TYPE_2;  
+        else  
+            return TYPE_1;  
+    }  
+  
+    @Override  
+    public int getViewTypeCount() {  
+        return 2;  
+    }  
+  
+    @Override  
+    public Object getItem(int arg0) {  
+        return listString.get(arg0);  
+    }  
+  
+    @Override  
+    public long getItemId(int position) {  
+        return position;  
+    }  
+  
+    @Override  
+    public View getView(int position, View convertView, ViewGroup parent) {  
+        viewHolder1 holder1 = null;  
+        viewHolder2 holder2 = null;  
+        int type = getItemViewType(position);  
+  
+        //无convertView，需要new出各个控件  
+        if(convertView == null)  
+        {   
+            //按当前所需的样式，确定new的布局  
+            switch(type)  
+            {  
+                case TYPE_1:  
+                convertView = inflater.inflate(R.layout.listitem1, parent, false);  
+                holder1 = new viewHolder1();  
+                holder1.textView = (TextView)convertView.findViewById(R.id.textview1);  
+                holder1.checkBox = (CheckBox)convertView.findViewById(R.id.checkbox);  
+                convertView.setTag(holder1);  
+                break;  
+                case TYPE_2:  
+                convertView = inflater.inflate(R.layout.listitem2, parent, false);  
+                holder2 = new viewHolder2();  
+                holder2.textView = (TextView)convertView.findViewById(R.id.textview2);  
+                holder2.imageView = (ImageView)convertView.findViewById(R.id.imageview);  
+                convertView.setTag(holder2);  
+                break;  
+            }  
+        }  
+        else  
+        {  
+            //有convertView，按样式，取得不用的布局  
+            switch(type)  
+            {  
+                case TYPE_1:  
+                holder1 = (viewHolder1) convertView.getTag();  
+                break;  
+                case TYPE_2:  
+                holder2 = (viewHolder2) convertView.getTag();  
+                break;  
+            }  
+                //设置资源  
+            switch(type)  
+            {  
+                case TYPE_1:  
+                holder1.textView.setText(Integer.toString(position));  
+                holder1.checkBox.setChecked(true);  
+                break;  
+                case TYPE_2:  
+                holder2.textView.setText(Integer.toString(position));  
+                holder2.imageView.setBackgroundResource(R.drawable.icon);  
+                break;  
+            }  
+        }  
+        return convertView;  
+    }  
+}  
+//各个布局的控件资源  
+class viewHolder1{  
+    CheckBox checkBox;  
+    TextView textView;  
+}  
+class viewHolder2{  
+    ImageView imageView;  
+    TextView textView;  
+}  
+{% endcodeblock %}
+
+这里对于每个View使用了一个viewHolder来控制其内部的子item
+
+还有一个需要注意的地方是使用了setTag和getTag的方法 将holder绑定到了view上 也算一种技巧
+
+以上基本就是主要的内容了 下面再补充实际操作当中的一些Tips
+
+* 如果convertView上用Type区分有些繁琐 或者不需要那么复杂 只是很少有出现不同的情况 那么还可以在取得convertView后 通过java提供的 instanceof 来判断是否可以强转 如果不能强转 就去新建一个View的做法 但是其实这种做法并不规范 所以还是推荐上面的做法
+
+* 第二个是关于ListView 对于纯色的item背景 其实可以直接设置BackgroundColor 而不要使用图片 这一部分其实可以有不小的提升 同样的 对于任何纯色的背景 应该尽量去设置RGB颜色 而不是全用一张图片做背景
+
+在做类型强转的时候 这里用type作为区分类型的判断 但是实际情况下 很可能出现系统回收的convertView与要创建的并不相符 所以在强转处的type判断是不保险的 考虑了下还是应该使用instanceof做一下判断 或者再为每个View绑定一个type的标记 然后再决定是重用还是重新创建
+
+##convertView与ViewHolder有什么区别，好处在哪里
+
+<http://blog.sina.com.cn/s/blog_664f163401011e7d.html>
+
+convertView 在API中的解释是The old view to reuse, if possible， 第一次getView时还没有convertView，这时你便创建了一个新的view，下次getView时就有这个“旧的”convertView了。setTag的作用才是把查找的view通过ViewHolder封装好缓存起来方便多次重用，当需要时可以getTag拿出来。
+
+当你的listview里布局多样化的时候 viewholder的作用就有比较明显的体现了。 当然了，单一模式的布局一样有性能优化的作用 只是不直观。  假如你2种模式的布局 当发生回收的时候 你会用setTag分别记录是哪两种。这两种模式会被封装到viewholder中进行保存方便你下次使用。
+
+##convertView&setTag方法的一点理解  
+
+<http://blog.163.com/freemanls@126/blog/static/164585061201171210504864/>
+
+前言
+
+首先我们要知道setTag方法是干什么的，SDK解释为
+
+>__Tags__
+
+>Unlike IDs, tags are not used to identify views. Tags are essentially an extra piece of information that can be associated with a view. They are most often used as a convenience to store data related to views in the views themselves rather than by putting them in a separate structure.
+
+Tag不像ID是用标示view的。Tag从本质上来讲是就是相关联的view的额外的信息。它们经常用来存储一些view的数据，这样做非常方便而不用存入另外的单独结构。
+
+convertView中的TAG
+
+1.对于使用了LayoutInflater对象进行View扩充的Tag的使用
+
+ 在之前，在adapter中，我们在getView中是这么些的代码：
+
+{% codeblock lang:java %}
+public View getView(int position, View convertView, ViewGroup parent) {
+
+       ViewHolder holder = null;
+       if (convertView == null) {
+
+          holder = new ViewHolder();
+
+          convertView = inflater.inflate(R.layout.vlist2, null);
+          holder.img = (ImageView) convertView.findViewById(R.id.img);
+          holder.title = (TextView) convertView.findViewById(R.id.title);
+          holder.info = (TextView)
+          convertView.findViewById(R.id.info);
+          // setTag的妙用
+          convertView.setTag(holder);
+
+       } else {
+          // setTag的妙用
+          holder = (ViewHolder) convertView.getTag();
+       }
+
+//……略
+
+}
+{% endcodeblock %}
+
+注意标红的地方，他们是使用了Tag的。
+
+首先我们要知道setTag方法是干什么的，他是给View对象的一个标签，标签可以是任何内容，我们这里把他设置成了一个对象，因为我们是把vlist2.xml的元素抽象出来成为一个类ViewHolder，用了setTag，这个标签就是ViewHolder实例化后对象的一个属性。我们之后对于ViewHolder实例化的对象holder的操作，都会因为java的引用机制而一直存活并改变convertView的内容，而不是每次都是去new一个。我们就这样达到的重用——我希望我说清楚了。如果有更简单的解释，请指教。
+
+这是我们在Adapter中的使用，那么我们在这里不使用Tag标签会怎么样呢？
+
+我们试想，如果我们不用Tag标签，那么我们的对象如何与convertView缓存结合并达到合理的效率利用？貌似答案并不明朗——所以使用Tag是比较明智的做法。
+
+2.对于没有使用LayoutInflater对象进行View扩充的Tag的使用。
+
+{% codeblock lang:java %}
+if (convertView != null) {
+  view = convertView;
+  //...
+  } else {
+  view = new Xxx(...);
+  //...
+  }
+{% endcodeblock %}
+
+这是我们的程序，我们看到，貌似没有用Tag——是的，当没有使用LayoutInflater进行View的扩充的时候，是没有必要用的，虽然也可以用。
+
+3.对于其他View的Tag使用
+
+我们可以对所有的View对象进行操作，至于怎么用，就看作者怎么想的了，下面举例说一个View的子类button对于tag的一个使用。
+
+直接贴代码了：
+
+{% codeblock lang:java %}
+public class ButtonTagTestActivity extends Activity implements OnClickListener {
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.main);
+
+       Button button1 = (Button) findViewById(R.id.button1);
+       Button button2 = (Button) findViewById(R.id.button2);
+       Button button3 = (Button) findViewById(R.id.button3);
+
+       button1.setTag(1);
+       button2.setTag(2);
+       button3.setTag(3);
+
+       button1.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View arg0) {
+       // TODO Auto-generated method stub
+       int tag = (Integer) arg0.getTag();
+       switch (tag) {
+       case 1: {
+           Toast.makeText(this, "我是button1", Toast.LENGTH_LONG).show();
+           break;
+       }
+
+       case 2: {
+           Toast.makeText(this, "我是button2", Toast.LENGTH_LONG).show();
+           break;
+       }
+
+       case 3: {
+           Toast.makeText(this, "我是button3", Toast.LENGTH_LONG).show();
+           break;
+       }
+
+       default: {
+           break;
+       }
+       }
+    }
+}
+{% endcodeblock %}
+
+Xml页面代码就不贴了。这个例子是点击界面上的3个button然后会显示用户点击的按钮。我们的程序是实现了页面全局监听，在监听前设置了每个button的tag，之后我们在switch的时候，使用getTag取出的标签来看是什么操作。
+
+这样做的好处是可以将监听集中管理，提高代码的易读性——当然，这是我的自我理解。
+
+后记
+
+看了这么多的实例，我想已经明白了Tag以及convertView。
+
+对我们知道了Tag的作用就是设置标签，标签可以是任意玩意。
+
+以及convertView是如何在程序中使代码运行变的效率的：利用缓存convertView尽可能少实例化同样结构体的对象；

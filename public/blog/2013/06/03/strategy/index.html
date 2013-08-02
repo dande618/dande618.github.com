@@ -1,0 +1,537 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Strategy策略模式 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="策略模式定义了一系列的算法，并将每一个算法封装起来，而且使它们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化。 原文：The Strategy Pattern defines a family of algorithms,encapsulates each one,and makes &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/03/strategy/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Strategy策略模式</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-03T14:43:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>策略模式定义了一系列的算法，并将每一个算法封装起来，而且使它们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化。</p>
+
+<p>原文：The Strategy Pattern defines a family of algorithms,encapsulates each one,and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it.</p></blockquote>
+
+<p><img class="center" src="http://image142.poco.cn/mypoco/myphoto/20130604/15/4309479020130604154048093.gif"></p>
+
+<h3>策略模式中体现了两个非常基本的面向对象设计的原则：</h3>
+
+<ul>
+<li><p>封装变化的概念</p></li>
+<li><p>编程中使用接口，而不是对接口的实现</p></li>
+</ul>
+
+
+<p>面向接口的编程，实现类之间的弱耦合</p>
+
+<h3>Context(应用场景):</h3>
+
+<ol>
+<li><p>需要使用ConcreteStrategy提供的算法。</p></li>
+<li><p>内部维护一个Strategy的实例。</p></li>
+<li><p>负责动态设置运行时Strategy具体的实现算法。</p></li>
+<li><p>负责跟Strategy之间的交互和数据传递。</p></li>
+</ol>
+
+
+<h3>Strategy(抽象策略类)：</h3>
+
+<ol>
+<li>定义了一个公共接口，各种不同的算法以不同的方式实现这个接口，Context使用这个接口调用不同的算法，一般使用接口或抽象类实现。</li>
+</ol>
+
+
+<h3>ConcreteStrategy(具体策略类)：</h3>
+
+<ol>
+<li>实现了Strategy定义的接口，提供具体的算法实现。</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>组成：</h2>
+
+<ul>
+<li><p>抽象策略角色： 策略类，通常由一个接口或者抽象类实现。</p></li>
+<li><p>具体策略角色：包装了相关的算法和行为。</p></li>
+<li><p>环境角色：持有一个策略类的引用，最终给客户端调用。</p></li>
+</ul>
+
+
+<h2>应用场景：</h2>
+
+<ol>
+<li><p>多个类只区别在表现行为不同，可以使用Strategy模式，在运行时动态选择具体要执行的行为。</p></li>
+<li><p>需要在不同情况下使用不同的策略(算法)，或者策略还可能在未来用其它方式来实现。</p></li>
+<li><p>对客户隐藏具体策略(算法)的实现细节，彼此完全独立。</p></li>
+</ol>
+
+
+<h2>优缺点：</h2>
+
+<h3>优点：</h3>
+
+<ol>
+<li><p>提供了一种替代继承的方法，而且既保持了继承的优点(代码重用)还比继承更灵活(算法独立，可以任意扩展)。</p></li>
+<li><p>避免程序中使用多重条件转移语句，使系统更灵活，并易于扩展。</p></li>
+<li><p>遵守大部分GRASP原则和常用设计原则，高内聚、低偶合。</p></li>
+</ol>
+
+
+<h3>缺点：</h3>
+
+<ol>
+<li>因为每个具体策略类都会产生一个新类，所以会增加系统需要维护的类的数量。（解决方案：工厂方法）</li>
+</ol>
+
+
+<h1>在android中使用</h1>
+
+<p>listView.setAdapter(),里面的Adapter ，一般都是自定义的Adapter ，继承自BaseAdapter ，这就是典型的策略模式，当ListView 的Item呈现不同形式，在getView方法中，就得不同的实现。</p>
+
+<h2>Android中的动画是如何使用策略模式的</h2>
+
+<p><a href="http://www.cnblogs.com/qianxudetianxia/archive/2013/04/19/3030235.html">http://www.cnblogs.com/qianxudetianxia/archive/2013/04/19/3030235.html</a></p>
+
+<h3>1. 意图</h3>
+
+<p>定义一系列的算法，把它们一个个封装起来，并且使它们可互相替换。</p>
+
+<p>策略模式使得算法可独立于使用它的客户而变化。</p>
+
+<h3>2. 结构图和代码</h3>
+
+<p><img class="center" src="http://image142.poco.cn/mypoco/myphoto/20130604/15/4309479020130604154211019.jpg"></p>
+
+<p>Animation不同动画的实现，主要是依靠Interpolator的不同实现而变。</p>
+
+<p>定义接口Interpolator：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">android</span><span class="o">.</span><span class="na">animation</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * A time interpolator defines the rate of change of an animation. This allows animations</span>
+</span><span class='line'><span class="cm"> * to have non-linear motion, such as acceleration and deceleration.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Interpolator</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Maps a value representing the elapsed fraction of an animation to a value that represents</span>
+</span><span class='line'><span class="cm">     * the interpolated fraction. This interpolated value is then multiplied by the change in</span>
+</span><span class='line'><span class="cm">     * value of an animation to derive the animated value at the current elapsed animation time.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * @param input A value between 0 and 1.0 indicating our current point</span>
+</span><span class='line'><span class="cm">     *        in the animation where 0 represents the start and 1.0 represents</span>
+</span><span class='line'><span class="cm">     *        the end</span>
+</span><span class='line'><span class="cm">     * @return The interpolation value. This value can be more than 1.0 for</span>
+</span><span class='line'><span class="cm">     *         interpolators which overshoot their targets, or less than 0 for</span>
+</span><span class='line'><span class="cm">     *         interpolators that undershoot their targets.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="nf">getInterpolation</span><span class="o">(</span><span class="kt">float</span> <span class="n">input</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们以AccelerateInterpolator为例，实现具体的策略，代码如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">animation</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.res.TypedArray</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.util.AttributeSet</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * An interpolator where the rate of change starts out slowly and</span>
+</span><span class='line'><span class="cm"> * and then accelerates.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccelerateInterpolator</span> <span class="kd">implements</span> <span class="n">Interpolator</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">float</span> <span class="n">mFactor</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">double</span> <span class="n">mDoubleFactor</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">AccelerateInterpolator</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mFactor</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">mDoubleFactor</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Constructor</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * @param factor Degree to which the animation should be eased. Seting</span>
+</span><span class='line'><span class="cm">     *        factor to 1.0f produces a y=x^2 parabola. Increasing factor above</span>
+</span><span class='line'><span class="cm">     *        1.0f  exaggerates the ease-in effect (i.e., it starts even</span>
+</span><span class='line'><span class="cm">     *        slower and ends evens faster)</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">AccelerateInterpolator</span><span class="o">(</span><span class="kt">float</span> <span class="n">factor</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mFactor</span> <span class="o">=</span> <span class="n">factor</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">mDoubleFactor</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mFactor</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">AccelerateInterpolator</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">AttributeSet</span> <span class="n">attrs</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">TypedArray</span> <span class="n">a</span> <span class="o">=</span>
+</span><span class='line'>            <span class="n">context</span><span class="o">.</span><span class="na">obtainStyledAttributes</span><span class="o">(</span><span class="n">attrs</span><span class="o">,</span> <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">styleable</span><span class="o">.</span><span class="na">AccelerateInterpolator</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">mFactor</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">getFloat</span><span class="o">(</span><span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">styleable</span><span class="o">.</span><span class="na">AccelerateInterpolator_factor</span><span class="o">,</span> <span class="mf">1.0f</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">mDoubleFactor</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mFactor</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">a</span><span class="o">.</span><span class="na">recycle</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">float</span> <span class="nf">getInterpolation</span><span class="o">(</span><span class="kt">float</span> <span class="n">input</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">mFactor</span> <span class="o">==</span> <span class="mf">1.0f</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">input</span> <span class="o">*</span> <span class="n">input</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span><span class="n">Math</span><span class="o">.</span><span class="na">pow</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">mDoubleFactor</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其他的Interpolator实现在此不列举了。</p>
+
+<p>如何在Animation模块实现不同的动画呢？</p>
+
+<p>在这里我想提一个应用很广的概念：依赖注入。</p>
+
+<p>在Animation模块里实现不同的动画，就是需要我们把各个Interpolator以父类或者接口的形式注入进去。</p>
+
+<p>注入的方法一般是构造函数，set方法，注释等等。</p>
+
+<p>我们看看animation类是怎么做的：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animation</span> <span class="kd">implements</span> <span class="n">Cloneable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Interpolator</span> <span class="n">mInterpolator</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">// 通过set方法注入    </span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setInterpolator</span><span class="o">(</span><span class="n">Interpolator</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>         <span class="n">mInterpolator</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">getTransformation</span><span class="o">(</span><span class="kt">long</span> <span class="n">currentTime</span><span class="o">,</span> <span class="n">Transformation</span> <span class="n">outTransformation</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// ... ...</span>
+</span><span class='line'>        <span class="c1">// 具体调用</span>
+</span><span class='line'>        <span class="kd">final</span> <span class="kt">float</span> <span class="n">interpolatedTime</span> <span class="o">=</span> <span class="n">mInterpolator</span><span class="o">.</span><span class="na">getInterpolation</span><span class="o">(</span><span class="n">normalizedTime</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">applyTransformation</span><span class="o">(</span><span class="n">interpolatedTime</span><span class="o">,</span> <span class="n">outTransformation</span><span class="o">);</span>
+</span><span class='line'>       <span class="c1">// ... ...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="c1">// 缺省实现，是个小技巧，顺便提下，这个不是重点</span>
+</span><span class='line'>     <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">ensureInterpolator</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>         <span class="k">if</span> <span class="o">(</span><span class="n">mInterpolator</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             <span class="n">mInterpolator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AccelerateDecelerateInterpolator</span><span class="o">();</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>     <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>策略模式其实就是多态的一个淋漓精致的体现。</p>
+
+<h3>3. 效果</h3>
+
+<ol>
+<li><p>行为型模式</p></li>
+<li><p>消除了一些if&#8230;else&#8230;的条件语句</p></li>
+<li><p>客户可以对实现进行选择,但是客户必须要了解这个不同策略的实现(这句话好像是废话，总而言之，客户需要学习成本)</p></li>
+<li><p>代码注释中提到了缺省实现，可以让客户不了解策略，也能实现默认的策略</p></li>
+<li><p>注入的方式有多种：构造函数，set方法，注释。配置解析等等</p></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-03T14:43:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/01/sqlite/" title="Previous Post: Android之SQlite存储">&laquo; Android之SQlite存储</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/04/stringbuffer/" title="Next Post: String,StringBuffer与StringBuilder">String,StringBuffer与StringBuilder &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/03/strategy/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/03/strategy/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

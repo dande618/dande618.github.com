@@ -1,0 +1,909 @@
+---
+
+layout: post
+
+title: "Android之SQlite存储"
+
+date: 2013-06-01 19:24
+
+comments: true
+
+categories: Android
+
+---
+
+使用嵌入式关系型SQLite数据库存储数据
+
+除了可以使用文件或SharedPreferences存储数据，还可以选择使用SQLite数据库存储数据。
+
+在Android平台上，集成了一个嵌入式关系型数据库——SQLite，
+
+1. SQLite3支持 NULL、INTEGER、REAL（浮点数字）、TEXT(字符串文本)和BLOB(二进制对象)数据类型，虽然它支持的类型虽然只有五种，但实际上sqlite3也接受varchar(n)、char(n)、decimal(p,s) 等数据类型，只不过在运算或保存时会转成对应的五种数据类型。
+
+2. SQLite最大的特点是你可以保存任何类型的数据到任何字段中，无论这列声明的数据类型是什么。例如：可以在Integer字段中存放字符串，或者在布尔型字段中存放浮点数，或者在字符型字段中存放日期型值。
+
+3. 但有一种情况例外：定义为INTEGER PRIMARY KEY的字段只能存储64位整数， 当向这种字段中保存除整数以外的数据时，将会产生错误。
+
+4. 另外， SQLite 在解析CREATE TABLE 语句时，会忽略 CREATE TABLE 语句中跟在字段名后面的数据类型信息，如下面语句会忽略 name字段的类型信息：
+<!-- more -->
+
+{% codeblock lang:sql %}
+CREATE TABLE person (personid integer primary key autoincrement, name varchar(20))
+{% endcodeblock %}
+
+SQLite可以解析大部分标准SQL语句，如：
+
+查询语句：select * from 表名 where 条件子句 group by 分组字句 having ... order by 排序子句
+
+如：
+
+{% codeblock lang:sql %}
+select * from person
+select * from person order by id desc
+select name from person group by name having count(*)>1
+{% endcodeblock %}
+
+分页SQL与mysql类似，下面SQL语句获取5条记录，跳过前面3条记录
+
+{% codeblock lang:sql %}
+select * from Account limit 5 offset 3 或者 select * from Account limit 3,5
+{% endcodeblock %}
+
+插入语句：insert into 表名(字段列表) values(值列表)。如：
+
+{% codeblock lang:sql %}
+insert into person(name, age) values(‘传智’,3)
+{% endcodeblock %}
+
+更新语句：update 表名 set 字段名=值 where 条件子句。如：
+
+{% codeblock lang:sql %}
+update person set name=‘传智‘ where id=10
+{% endcodeblock %}
+
+删除语句：delete from 表名 where 条件子句。如：
+
+{% codeblock lang:sql %}
+delete from person  where id=10
+{% endcodeblock %}
+
+###使用SQLiteDatabase操作SQLite数据库
+
+Android提供了一个名为SQLiteDatabase的类，该类封装了一些操作数据库的API。
+
+可以调用SQLiteDatabase的静态方法：
+
+{% codeblock %}
+public static SQLiteDatabase openDatabase(String path,SQLiteDatabase.CursorFactory factory,int flags)
+{% endcodeblock %}
+
+flags参数可以是 OPEN_READWRITE， OPEN_READONLY ，CREATE_IF_NECESSARY， NO_LOCALIZED_COLLATORS四个的一个或多个（多个模式组合用|隔离）.
+
+{% codeblock %}
+public static SQLiteDatabase openOrCreateDatabase(File file,SQLiteDatabase.CursorFactory factory)
+public static SQLiteDatabase openOrCreateDatabase(String path,SQLiteDatabase.CursorFactory factory)
+{% endcodeblock %}
+
+来打开文件系统中位于绝对路径path的数据库。
+
+还可以通过Context对象调用
+
+{% codeblock %}
+public abstract SQLiteDatabase openOrCreateDatabase(String name,int mode,SQLiteDatabase.CursorFactory factory)
+{% endcodeblock %}
+
+直接在私有数据库目录创建或打开一个名为name的数据库，
+
+注意：mode只的是 MODE_PRIVATE , MODE_WORLD_READABLE， MODE_WORLD_WRITEABLE。
+
+Context还有：
+
+{% codeblock %}
+public abstract String[] databaseList();//返回私有数据库目录所有数据库名字
+public abstract boolean deleteDatabase(String name);//删除私有数据库目录内文件名为name的数据库。
+{% endcodeblock %}
+
+除了在文件系统中创建SQLite数据库，android还支持SQLite内存数据库。在某些需要临时创建数据库，并且对操作速率相对要求高的情况下，SQLite内存数据库就发挥作用了，用SQLiteDatabase的静态方法：
+
+public static SQLiteDatabase create(SQLiteDatabase.CursorFactory factory)
+
+来创建，创建失败返回null。
+
+最后记住，不管用何种方式打开了数据库，获得的SQLite对象不再使用时，都要调用close()来关闭打开的数据库，否则抛出IllegalStateException异常。
+
+使用SQLiteDatabase对象可以完成对数据进行添加(Create)、查询(Retrieve)、更新(Update)和删除(Delete)操作（这些操作简称为CRUD）。对SQLiteDatabase的学习，我们应该重点掌握execSQL()和rawQuery()方法。 execSQL()方法可以执行insert、delete、update和CREATE TABLE之类有更改行为的SQL语句； rawQuery()方法可以执行select语句。
+
+execSQL()方法的使用例子：
+
+{% codeblock %}
+SQLiteDatabase db = ....;
+db.execSQL("insert into person(name, age) values('传智播客', 4)");
+db.close();
+{% endcodeblock %}
+
+执行上面SQL语句会往person表中添加进一条记录，在实际应用中， 语句中的“传智播客”这些参数值应该由用户输入界面提供，如果把用户输入的内容原样组拼到上面的insert语句， 当用户输入的内容含有单引号时，组拼出来的SQL语句就会存在语法错误。要解决这个问题需要对单引号进行转义，也就是把单引号转换成两个单引号。有些时候用户往往还会输入像“ & ”这些特殊SQL符号，为保证组拼好的SQL语句语法正确，必须对SQL语句中的这些特殊SQL符号都进行转义，显然，对每条SQL语句都做这样的处理工作是比较烦琐的。 SQLiteDatabase类提供了一个重载后的execSQL(String sql, Object[] bindArgs)方法，使用这个方法可以解决前面提到的问题，因为这个方法支持使用占位符参数(?)。使用例子如下：
+
+{% codeblock %}
+//SQLiteDatabase db = ....;
+db.execSQL("insert into person(name, age) values(?,?)", new Object[]{"传智播客", 4}); 
+db.close();
+{% endcodeblock %}
+
+execSQL(String sql, Object[] bindArgs)方法的第一个参数为SQL语句，第二个参数为SQL语句中占位符参数的值，参数值在数组中的顺序要和占位符的位置对应。
+
+SQLiteDatabase的rawQuery() 用于执行select语句，使用例子如下：
+
+{% codeblock lang:java %}
+//SQLiteDatabase db = ....;
+Cursor cursor = db.rawQuery(“select * from person”, null);
+while (cursor.moveToNext()) {
+int personid = cursor.getInt(0); //获取第一列的值,第一列的索引从0开始
+String name = cursor.getString(1);//获取第二列的值
+int age = cursor.getInt(2);//获取第三列的值
+}
+cursor.close();
+db.close(); 
+{% endcodeblock %}
+
+rawQuery()方法的第一个参数为select语句；第二个参数为select语句中占位符参数的值，如果select语句没有使用占位符，该参数可以设置为null。带占位符参数的select语句使用例子如下：
+
+{% codeblock %}
+Cursor cursor = db.rawQuery("select * from person where name like ? and age=?", new String[]{"%传智%", "4"});
+{% endcodeblock %}
+
+Cursor是结果集游标，用于对结果集进行随机访问，如果大家熟悉jdbc， 其实Cursor与JDBC中的ResultSet作用很相似。使用moveToNext()方法可以将游标从当前行移动到下一行，如果已经移过了结果集的最后一行，返回结果为false，否则为true。另外Cursor 还有常用的moveToPrevious()方法（用于将游标从当前行移动到上一行，如果已经移过了结果集的第一行，返回值为false，否则为true ）、moveToFirst()方法（用于将游标移动到结果集的第一行，如果结果集为空，返回值为false，否则为true ）和moveToLast()方法（用于将游标移动到结果集的最后一行，如果结果集为空，返回值为false，否则为true ） 。
+
+除了前面给大家介绍的execSQL()和rawQuery()方法， SQLiteDatabase还专门提供了对应于添加、删除、更新、查询的操作方法： insert()、delete()、update()和query() 。这些方法实际上是给那些不太了解SQL语法的人使用的，对于熟悉SQL语法的程序员而言，直接使用execSQL()和rawQuery()方法执行SQL语句就能完成数据的添加、删除、更新、查询操作。
+
+Insert()方法用于添加数据，各个字段的数据使用ContentValues进行存放。 ContentValues类似于MAP，相对于MAP，它提供了存取数据对应的put(String key, Xxx value)和getAsXxx(String key)方法，  key为字段名称，value为字段值，Xxx指的是各种常用的数据类型，如：String、Integer等。
+
+{% codeblock lang:java %}
+SQLiteDatabase db = databaseHelper.getWritableDatabase();
+ContentValues values = new ContentValues();
+values.put("name", "传智播客");
+values.put("age", 4);
+long rowid = db.insert(“person”, null, values);//返回新添记录的行号，与主键id无关
+{% endcodeblock %}
+
+不管第三个参数是否包含数据，执行Insert()方法必然会添加一条记录，如果第三个参数为空，会添加一条除主键之外其他字段值为Null的记录。Insert()方法内部实际上通过构造insert语句完成数据的添加，Insert()方法的第二个参数用于指定空值字段的名称，相信大家对此参数会感到疑惑，此参数的作用是干嘛的？是这样的：如果第三个参数values 为Null或者元素个数为0， Insert()方法必然要添加一条除了主键之外其它字段为Null值的记录，为了满足这条insert语句的语法， insert语句必须给定一个字段名，如：insert into person(name) values(NULL)，倘若不给定字段名 ， insert语句就成了这样： insert into person() values()，显然这不满足标准SQL的语法。对于字段名，建议使用主键之外的字段，如果使用了INTEGER类型的主键字段，执行类似insert into person(personid) values(NULL)的insert语句后，该主键字段值也不会为NULL。如果第三个参数values 不为Null并且元素的个数大于0 ，可以把第二个参数设置为null。
+
+delete()方法的使用：
+
+{% codeblock lang:java %}
+SQLiteDatabase db = databaseHelper.getWritableDatabase();
+db.delete("person", "personid<?", new String[]{"2"});
+db.close();
+{% endcodeblock %}
+
+上面代码用于从person表中删除personid小于2的记录。
+
+update()方法的使用：
+
+{% codeblock lang:java %}
+SQLiteDatabase db = databaseHelper.getWritableDatabase();
+ContentValues values = new ContentValues();
+values.put(“name”, “传智播客”);//key为字段名，value为值
+db.update("person", values, "personid=?", new String[]{"1"}); 
+db.close();
+{% endcodeblock %}
+
+上面代码用于把person表中personid等于1的记录的name字段的值改为“传智播客”。
+
+query()方法实际上是把select语句拆分成了若干个组成部分，然后作为方法的输入参数：
+
+{% codeblock lang:java %}
+SQLiteDatabase db = databaseHelper.getWritableDatabase();
+Cursor cursor = db.query("person", new String[]{"personid,name,age"}, "name like ?", new String[]{"%溧阳%"}, null, null, "personid desc", "1,2");
+while (cursor.moveToNext()) {
+        int personid = cursor.getInt(0); //获取第一列的值,第一列的索引从0开始
+        String name = cursor.getString(1);//获取第二列的值
+        int age = cursor.getInt(2);//获取第三列的值
+}
+cursor.close();
+db.close(); 
+{% endcodeblock %}
+
+上面代码用于从person表中查找name字段含有“传智”的记录，匹配的记录按personid降序排序，对排序后的结果略过第一条记录，只获取2条记录。
+
+query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit)方法各参数的含义：
+
+- table：表名。相当于select语句from关键字后面的部分。如果是多表联合查询，可以用逗号将两个表名分开。
+
+- columns：要查询出来的列名。相当于select语句select关键字后面的部分。
+
+- selection：查询条件子句，相当于select语句where关键字后面的部分，在条件子句允许使用占位符“?”
+
+- selectionArgs：对应于selection语句中占位符的值，值在数组中的位置与占位符在语句中的位置必须一致，否则就会有异常。
+
+- groupBy：相当于select语句group by关键字后面的部分
+
+- having：相当于select语句having关键字后面的部分
+
+- orderBy：相当于select语句order by关键字后面的部分，如：personid desc, age asc;
+
+- limit：指定偏移量和获取的记录数，相当于select语句limit关键字后面的部分。
+
+###使用SQLiteOpenHelper对数据库进行版本管理
+
+如果应用使用到了SQLite数据库，在用户初次使用软件时，需要创建应用使用到的数据库表结构及添加一些初始化记录，另外在软件升级的时候，也需要对数据表结构进行更新。在Android系统，为我们提供了一个名为SQLiteOpenHelper的类，该类用于对数据库版本进行管理，该类是一个抽象类，必须继承它才能使用。 为了实现对数据库版本进行管理，SQLiteOpenHelper类有两种重要的方法，分别是onCreate(SQLiteDatabase db)和onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)。还可以实现public abstract void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion)方法，它在每次成功打开数据库后首先被执行，默认情况下此方法的实现为空。
+
+当调用SQLiteOpenHelper的getWritableDatabase()或者getReadableDatabase()方法获取用于操作数据库的SQLiteDatabase实例的时候，如果数据库不存在，Android系统会自动生成一个数据库，接着调用onCreate()方法，onCreate()方法在初次生成数据库时才会被调用，在onCreate()方法里可以生成数据库表结构及添加一些应用使用到的初始化数据。onUpgrade()方法在数据库的版本发生变化时会被调用，数据库的版本是由程序员控制的，假设数据库现在的版本是1，由于业务的需要，修改了数据库表的结构，这时候就需要升级软件，升级软件时希望更新用户手机里的数据库表结构，为了实现这一目的，可以把原来的数据库版本设置为2(有同学问设置为3行不行？当然可以，如果你愿意，设置为100也行)，并且在onUpgrade()方法里面实现表结构的更新。当软件的版本升级次数比较多，这时在onUpgrade()方法里面可以根据原版号和目标版本号进行判断，然后作出相应的表结构及数据更新。
+
+getWritableDatabase()和getReadableDatabase()方法都可以获取一个用于操作数据库的SQLiteDatabase实例。但getWritableDatabase() 方法以读写方式打开数据库，一旦数据库的磁盘空间满了，数据库就只能读而不能写，倘若使用的是getWritableDatabase() 方法就会出错。getReadableDatabase()方法先以读写方式打开数据库，如果数据库的磁盘空间满了，就会打开失败，当打开失败后会继续尝试以只读方式打开数据库。但若随后再次调用此方法时，问题已经被解决，只读的SQLiteDatabase对象会被关闭，而重新返回一个可读写的SQLiteDatabase数据库对象。
+
+{% codeblock lang:java %}
+public class DatabaseHelper extends SQLiteOpenHelper {
+	//类没有实例化,是不能用作父类构造器的参数,必须声明为静态
+         private static final String name = "itcast"; //数据库名称
+         private static final int version = 1; //数据库版本
+         public DatabaseHelper(Context context) {
+	//第三个参数CursorFactory指定在执行查询时获得一个游标实例的工厂类,设置为null,代表使用系统默认的工厂类
+                super(context, name, null, version);
+         }
+
+        @Override public void onCreate(SQLiteDatabase db) {
+              db.execSQL("CREATE TABLE IF NOT EXISTS person (personid integer primary key autoincrement, name varchar(20), age INTEGER)");   
+         }
+
+        @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+               db.execSQL("DROP TABLE IF EXISTS person");
+               onCreate(db);
+         }
+}
+{% endcodeblock %}
+
+上面onUpgrade()方法在数据库版本每次发生变化时都会把用户手机上的数据库表删除，然后再重新创建。一般在实际项目中是不能这样做的，正确的做法是在更新数据库表结构时，还要考虑用户存放于数据库中的数据不会丢失。
+
+使用SQLiteOpenHelper获取用于操作数据库的SQLiteDatabase实例
+
+{% codeblock %}
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+         private static final String name = "itcast"; //数据库名称
+
+         private static final int version = 1; //数据库版本
+
+         // ......略
+}
+
+public class HelloActivity extends Activity {
+
+    @Override public void onCreate(Bundle savedInstanceState) {
+        //......
+        Button button =(Button) this.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener(){
+
+public void onClick(View v) {
+DatabaseHelper databaseHelper = new DatabaseHelper(HelloActivity.this);
+SQLiteDatabase db = databaseHelper.getWritableDatabase();
+db.execSQL("insert into person(name, age) values(?,?)", new Object[]{"传智播客", 4});
+db.close();
+}});        
+    }
+}
+{% endcodeblock %}
+
+第一次调用getWritableDatabase()或getReadableDatabase()方法后，SQLiteOpenHelper会缓存当前的SQLiteDatabase实例，SQLiteDatabase实例正常情况下会维持数据库的打开状态，所以在你不再需要SQLiteDatabase实例时，请及时调用close()方法释放资源。一旦SQLiteDatabase实例被缓存，多次调用getWritableDatabase()或getReadableDatabase()方法得到的都是同一实例。
+
+###使用事务操作SQLite数据库
+
+使用SQLiteDatabase的beginTransaction()方法可以开启一个事务，程序执行到endTransaction() 方法时会检查事务的标志是否为成功，如果为成功则提交事务，否则回滚事务。当应用需要提交事务，必须在程序执行到endTransaction()方法之前使用setTransactionSuccessful() 方法设置事务的标志为成功，如果不调用setTransactionSuccessful() 方法，默认会回滚事务。使用例子如下： 
+
+{% codeblock lang:java %}
+//SQLiteDatabase db = ....;
+db.beginTransaction();//开始事务
+try {
+    db.execSQL("insert into person(name, age) values(?,?)", new Object[]{"传智播客", 4});
+    db.execSQL("update person set name=? where personid=?", new Object[]{"传智", 1});
+    db.setTransactionSuccessful();//调用此方法会在执行到endTransaction() 时提交当前事务，如果不调用此方法会回滚事务
+} finally {
+    db.endTransaction();//由事务的标志决定是提交事务，还是回滚事务
+} 
+db.close(); 
+{% endcodeblock %}
+
+上面两条SQL语句在同一个事务中执行。
+
+###SQLite示例程序
+
+   1.创建Android工程
+
+       Project name: db
+
+       BuildTarget:Android2.2
+
+       Application name: 数据库应用
+
+       Package name: com.jbridge.db
+
+       Create Activity: DBActivity
+
+       Min SDK Version:8、
+
+2. Person实体
+
+{% codeblock lang:java %}
+
+package com.jbridge.domain;  
+
+import android.R.string;  
+
+public class Person {  
+    private Integer id;  
+    private String name;  
+    private Short age;  
+
+    public Person(String name, Short age) {  
+        this.name = name;  
+        this.age = age;  
+    }  
+
+    public Person(Integer id, String name, Short age) {  
+        super();  
+        this.id = id;  
+        this.name = name;  
+        this.age = age;  
+    }  
+    public Integer getId() {  
+        return id;  
+    }  
+    public void setId(Integer id) {  
+        this.id = id;  
+    } 
+    public String getName() {  
+        return name;  
+    }  
+    public void setName(String name) {  
+        this.name = name;  
+    }  
+    public Short getAge() {  
+        return age;  
+    }  
+    public void setAge(Short age) {  
+        this.age = age;  
+    }  
+
+    @Override  
+    public String toString() {  
+        return "Person [id=" + id + ", name=" + name + ", age=" + age + "]";  
+    }  
+}  
+{% endcodeblock %}
+
+
+  3.编写DataBaseOpenHelper类
+
+      DataBaseOpenHelper继承自SQLiteOpenHelper类。我们需要创建数据表，必须重写onCreate（更新时重写onUpgrade方法）方法，在这个方法中创建数据表。
+
+
+{% codeblock lang:java %}
+package com.jbridge.service;  
+import android.content.Context;  
+import android.database.sqlite.SQLiteDatabase;  
+import android.database.sqlite.SQLiteDatabase.CursorFactory;  
+import android.database.sqlite.SQLiteOpenHelper;  
+
+public class DataBaseOpenHelper extends SQLiteOpenHelper {  
+
+    // 类没有实例化,是不能用作父类构造器的参数,必须声明为静态  
+    private static String dbname = "zyj";  
+    private static int version = 1;  
+    public DataBaseOpenHelper(Context context) {  
+        // 第一个参数是应用的上下文  
+        // 第二个参数是应用的数据库名字  
+        // 第三个参数CursorFactory指定在执行查询时获得一个游标实例的工厂类,设置为null,代表使用系统默认的工厂类  
+        // 第四个参数是数据库版本，必须是大于0的int（即非负数）  
+        super(context, dbname, null, version);  
+        // TODO Auto-generated constructor stub  
+    }  
+
+    public DataBaseOpenHelper(Context context, String name,  
+            CursorFactory factory, int version) {  
+        super(context, name, factory, version);  
+        // TODO Auto-generated constructor stub  
+    }  
+
+    @Override  
+    public void onCreate(SQLiteDatabase db) {  
+        db.execSQL("CREATE TABLE IF NOT EXISTS person (personid integer primary key autoincrement, name varchar(20), age INTEGER)");  
+    }  
+
+    // onUpgrade()方法在数据库版本每次发生变化时都会把用户手机上的数据库表删除，然后再重新创建。  
+    // 一般在实际项目中是不能这样做的，正确的做法是在更新数据库表结构时，还要考虑用户存放于数据库中的数据不会丢失,从版本几更新到版本几。  
+
+    @Override  
+    public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) {  
+        db.execSQL("DROP TABLE IF EXISTS person");  
+        onCreate(db);  
+    }  
+}  
+{% endcodeblock %}
+
+  4.编写PersonService类 
+
+  PersonService类主要实现对业务逻辑和数据库的操作。
+
+
+{% codeblock lang:java %} 
+package com.jbridge.service;  
+
+import java.util.ArrayList;  
+import java.util.Currency;  
+import java.util.List;  
+import android.content.Context;  
+import android.database.Cursor;  
+import android.database.sqlite.SQLiteDatabase;  
+import com.jbridge.domain.Person;  
+
+public class PersonService {  
+    private DataBaseOpenHelper dbOpenHelper;  
+    // private Context context;  
+    public PersonService(Context context) {  
+        // this.context = context;  
+        dbOpenHelper = new DataBaseOpenHelper(context);  
+    }  
+
+    public void save(Person person) {  
+        SQLiteDatabase database = dbOpenHelper.getWritableDatabase();  
+        database.beginTransaction();  
+        database.execSQL("insert into person(name,age)values(?,?)",  
+        new Object[] { person.getName(), person.getAge() });  
+        // database.close();可以不关闭数据库，他里面会缓存一个数据库对象，如果以后还要用就直接用这个缓存的数据库对象。但通过  
+        // context.openOrCreateDatabase(arg0, arg1, arg2)打开的数据库必须得关闭  
+        database.setTransactionSuccessful();  
+        database.endTransaction();  
+    }  
+
+    public void update(Person person) {  
+        SQLiteDatabase database = dbOpenHelper.getWritableDatabase();  
+        database.execSQL(  
+                "update person set name=?,age=? where personid=?",  
+                new Object[] { person.getName(), person.getAge(),  
+                        person.getId() });  
+    }  
+
+    public Person find(Integer id) {  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        Cursor cursor = database.rawQuery(  
+                "select * from person where personid=?",  
+                new String[] { String.valueOf(id) });  
+        if (cursor.moveToNext()) {  
+            return new Person(cursor.getInt(0), cursor.getString(1),  
+                    cursor.getShort(2));  
+        }  
+        return null;  
+    }  
+
+    public void delete(Integer... ids) {  
+        if (ids.length > 0) {  
+            StringBuffer sb = new StringBuffer();  
+            for (Integer id : ids) {  
+                sb.append('?').append(',');  
+            }  
+            sb.deleteCharAt(sb.length() - 1);  
+            SQLiteDatabase database = dbOpenHelper.getWritableDatabase();  
+            database.execSQL(  
+                    "delete from person where personid in(" + sb.toString()  
+                            + ")", ids);  
+        }  
+    }  
+
+    public List<Person> getScrollData(int startResult, int maxResult) {  
+        List<Person> persons = new ArrayList<Person>();  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        Cursor cursor = database.rawQuery(  
+                "select * from person limit ?,?",  
+                new String[] { String.valueOf(startResult),  
+                        String.valueOf(maxResult) });  
+        while (cursor.moveToNext()) {  
+            persons.add(new Person(cursor.getInt(0), cursor.getString(1),  
+                    cursor.getShort(2)));  
+        }  
+        return persons;  
+    }  
+    // 获取分页数据，提供给SimpleCursorAdapter使用。  
+    public Cursor getRawScrollData(int startResult, int maxResult) {  
+        List<Person> persons = new ArrayList<Person>();  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        return database.rawQuery(  
+                "select personid as _id ,name,age from person limit ?,?",  
+                new String[] { String.valueOf(startResult),  
+                        String.valueOf(maxResult) });  
+    }  
+
+    public long getCount() {  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        Cursor cursor = database.rawQuery("select count(*) from person", null);  
+        if (cursor.moveToNext()) {  
+            return cursor.getLong(0);  
+        }  
+        return 0;  
+    }  
+}  
+{% endcodeblock %}
+
+下面是使用 insert()、delete()、update()和query()方法实现的业务类
+
+{% codeblock lang:java %}
+package com.jbridge.service;  
+
+import java.util.ArrayList;  
+import java.util.Currency;  
+import java.util.List;  
+import android.R.string;  
+import android.content.ContentValues;  
+import android.content.Context;  
+import android.database.Cursor;  
+import android.database.sqlite.SQLiteDatabase;  
+import com.jbridge.domain.Person;  
+public class OtherPersonService {  
+
+    private DataBaseOpenHelper dbOpenHelper;  
+    // private Context context;  
+    public OtherPersonService(Context context) {  
+        // this.context = context;  
+        dbOpenHelper = new DataBaseOpenHelper(context);  
+    }  
+
+    public void save(Person person) {  
+        SQLiteDatabase database = dbOpenHelper.getWritableDatabase();  
+        ContentValues contentValues = new ContentValues();  
+        contentValues.put("name", person.getName());  
+        contentValues.put("age", person.getAge());  
+        database.insert("person", null, contentValues);  
+    }  
+
+    public void update(Person person) {  
+        SQLiteDatabase database = dbOpenHelper.getWritableDatabase();  
+        ContentValues contentValues = new ContentValues();  
+        contentValues.put("name", person.getName());  
+        contentValues.put("age", person.getAge());  
+        database.update("person", null, "personid=?",  
+        new String[] { String.valueOf(person.getId()) });  
+    }  
+
+    public Person find(Integer id) {  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        Cursor cursor = database.query("person", new String[] { "personid",  
+                "name", "age" }, "personid=?",  
+                new String[] { String.valueOf(id) }, null, null, null);  
+        if (cursor.moveToNext()) {  
+            return new Person(cursor.getInt(0), cursor.getString(1),  
+                    cursor.getShort(2));  
+        }  
+        return null;  
+    }  
+
+    public void delete(Integer... ids) {  
+
+        if (ids.length > 0) {  
+            StringBuffer sb = new StringBuffer();  
+            String[] strIds = new String[ids.length];  
+            // for (Integer id : ids) {  
+            // sb.append('?').append(',');  
+            // }  
+            for (int i = 0; i < strIds.length; i++) {  
+                sb.append('?').append(',');  
+                strIds[i] = String.valueOf(ids[i]);  
+            }  
+            sb.deleteCharAt(sb.length() - 1);  
+            SQLiteDatabase database = dbOpenHelper.getWritableDatabase();  
+            database.delete("person", "personid in(" + sb.toString() + ")",  
+                    strIds);  
+        }  
+    }  
+
+    public List<Person> getScrollData(int startResult, int maxResult) {  
+        List<Person> persons = new ArrayList<Person>();  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        Cursor cursor = database.query("person", new String[] { "personid",  
+                "name", "age" }, null, null, null, null, "personid desc",  
+                startResult + "," + maxResult);  
+        while (cursor.moveToNext()) {  
+            persons.add(new Person(cursor.getInt(0), cursor.getString(1),  
+                    cursor.getShort(2)));  
+        }  
+        return persons;  
+    }  
+
+    public long getCount() {  
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();  
+        Cursor cursor = database.query("person", new String[] { "count(*)" },  
+                null, null, null, null, null);  
+        if (cursor.moveToNext()) {  
+            return cursor.getLong(0);  
+        }  
+        return 0;  
+    }  
+}  
+{% endcodeblock %}
+
+    5.编写测试类 
+
+       编写一个针对PersonService的测试类，测试PersonService类中的各个方法是否正确。
+
+
+{% codeblock lang:java %}
+package com.jbridge.db;  
+
+import java.util.List;  
+import com.jbridge.domain.Person;  
+import com.jbridge.service.OtherPersonService;  
+import com.jbridge.service.PersonService;  
+import android.test.AndroidTestCase;  
+import android.util.Log;  
+
+public class PersonServiceTest extends AndroidTestCase {  
+    private static String TAG = "PersonServiceTest";  
+    // OtherPersonService personService = new  
+    // OtherPersonService(this.getContext());  
+    //不可以这么写，因为Android把context环境变量是在PersonServiceTest实例化后给他的  
+    public void testSave() throws Exception {  
+        PersonService personService = new PersonService(this.getContext());  
+        // personService.save(new Person("老猪", (short) 11));  
+        for (int i = 0; i < 10; i++) {  
+            personService.save(new Person("你" + i, (short) (i + 10)));  
+        }  
+    }  
+
+    public void testFind() throws Exception {  
+        PersonService personService = new PersonService(this.getContext());  
+        Person person = personService.find(1);  
+        Log.i(TAG, person.toString());  
+    }  
+
+    public void testUpdate() throws Exception {  
+        PersonService personService = new PersonService(this.getContext());  
+        Person person = personService.find(1);  
+        person.setName("lv");  
+        personService.update(person);  
+    }  
+
+    public void testDelete() throws Exception {  
+        PersonService personService = new PersonService(this.getContext());  
+        personService.delete(1, 2, 3);  
+    }  
+
+    public void testGetCount() throws Exception {  
+        PersonService personService = new PersonService(this.getContext());  
+        Log.i(TAG, String.valueOf(personService.getCount()));  
+    }  
+
+    public void testGetScrollData() throws Exception {  
+        PersonService personService = new PersonService(this.getContext());  
+        List<Person> persons = personService.getScrollData(0, 3);  
+        for (Person person : persons) {  
+            Log.i(TAG, person.toString());  
+        }  
+    }  
+}  
+{% endcodeblock %}
+
+      启用测试功能，不要忘记在AndroidManifest.xml文件中加入测试环境。为application元素添加一个子元素：<uses-library android:name="android.test.runner"/>，为application元素添加一个兄弟元素：<instrumentation android:name="android.test.InstrumentationTestRunner"     android:targetPackage="com.jbridge.db" android:label="Tests for My App" />。 
+
+       SQLite数据库以单个文件存储，就像微软的Access数据库。有一个查看SQLite数据库文件的工具——SQLite Developer，我们可以使用它来查看数据库。Android将创建的数据库存放在”/data/data/ com.jbridge.db/databases/person”，我们将它导出然后使用SQLite Developer打开。
+
+6.分页显示数据
+
+       我们在ContactsService类中，提供了一个获取分页数据的方法。我们将调用它获取的数据，使用ListView组件显示出来。
+
+       编辑mail.xml：
+
+{% codeblock lang:xml %} 
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/personidtitle"
+            android:layout_width="40px"
+            android:layout_height="wrap_content"
+            android:text="编号"
+            android:textSize="20px" />
+
+        <TextView
+            android:id="@+id/nametitle"
+            android:layout_width="200px"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/personidtitle"
+            android:layout_toRightOf="@id/personidtitle"
+            android:gravity="center_horizontal"
+            android:text="姓名"
+            android:textSize="20px" />
+
+        <TextView
+            android:id="@+id/agetitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/nametitle"
+            android:layout_toRightOf="@id/nametitle"
+            android:text="年龄"
+            android:textSize="20px" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
+{% endcodeblock %}
+
+   
+
+在mail.xml所在目录里添加一个personitem.xml：
+
+
+{% codeblock lang:xml %}
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/personid"
+        android:layout_width="40px"
+        android:layout_height="wrap_content"
+        android:textSize="20px" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="200px"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/personid"
+        android:layout_toRightOf="@id/personid"
+        android:gravity="center_horizontal"
+        android:textSize="20px" />
+
+    <TextView
+        android:id="@+id/age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/name"
+        android:layout_toRightOf="@id/name"
+        android:textSize="20px" />
+
+</RelativeLayout>
+{% endcodeblock %}
+
+编辑 DBActivity 类：
+
+{% codeblock lang:java %}
+package com.jbridge.db;  
+import java.util.ArrayList;  
+import java.util.HashMap;  
+import java.util.List;  
+import com.jbridge.domain.Person;  
+import com.jbridge.service.PersonService;  
+import android.R.string;  
+import android.app.Activity;  
+import android.database.Cursor;  
+import android.os.Bundle;  
+import android.provider.LiveFolders;  
+import android.util.Log;  
+import android.view.View;  
+import android.widget.AdapterView;  
+import android.widget.ArrayAdapter;  
+import android.widget.ListView;  
+import android.widget.SimpleAdapter;  
+import android.widget.SimpleCursorAdapter;  
+import android.widget.Toast;  
+
+public class DBActivity extends Activity {  
+
+    /** Called when the activity is first created. */  
+    private static final String TAG = "DBActivity";  
+
+//实现方法一 
+
+     @Override 
+     public void onCreate(Bundle savedInstanceState) { 
+     super.onCreate(savedInstanceState); 
+     setContentView(R.layout.main); 
+     PersonService personService=new PersonService(this); 
+     ListView listView = (ListView) this.findViewById(R.id.listView); 
+
+     List<HashMap<String, String>> data = new ArrayList<HashMap<String, 
+     String>>(); 
+     // HashMap<String, String> title = new HashMap<String, String>(); 
+     // title.put("personid", "编号"); 
+     // title.put("name", "姓名"); 
+     // title.put("age", "年龄"); 
+     // data.add(title); 
+
+     List<Person> persons= personService.getScrollData(0, 10); 
+     for (Person person : persons) { 
+     HashMap<String, String> p = new HashMap<String, String>(); 
+     p.put("personid", String.valueOf(person.getId())); 
+     p.put("name", person.getName()); 
+     p.put("age",String.valueOf(person.getAge())); 
+     data.add(p); 
+     } 
+    
+     // 适配器有： 
+     // ArrayAdapter<T> 
+     // simpAdapter 
+     // SimpleCursorAdapter 
+     SimpleAdapter adapter = new SimpleAdapter(DBActivity.this, data, 
+     R.layout.personitem, 
+     new String[] { "personid", "name", "age" }, 
+     new int[] {R.id.personid, R.id.name, R.id.age }); 
+     listView.setAdapter(adapter); 
+   
+     listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){ 
+
+     @Override 
+     // parent即为你点击的listView 
+     // view为listview的外面布局 
+     public void onItemClick(AdapterView<?> parent, View view, int position, 
+     long id) { 
+     ListView listView= (ListView) parent; 
+     HashMap<String, String> itemdata= (HashMap<String, String>) 
+     listView.getItemAtPosition(position); 
+     String personid=itemdata.get("personid"); 
+     String name=itemdata.get("name"); 
+     String age=itemdata.get("age"); 
+     Log.i(TAG,view.getClass().getName()); 
+     Log.i(TAG, "personid: "+personid+ "   name: "+name+"   age:   "+age); 
+     Log.i(TAG," position==id:"+ (position==id)); 
+    Toast.makeText(DBActivity.this, name, Toast.LENGTH_LONG).show(); 
+     } 
+     }); 
+     } 
+{% endcodeblock %}
+
+{% codeblock lang:java %}
+//  实现方法二（游标）  
+
+    @Override  
+    public void onCreate(Bundle savedInstanceState) {  
+
+        super.onCreate(savedInstanceState);  
+        setContentView(R.layout.main);  
+        PersonService personService = new PersonService(this);  
+        ListView listView = (ListView) this.findViewById(R.id.listView);  
+        List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();  
+        // HashMap<String, String> title = new HashMap<String, String>();  
+        // title.put("personid", "编号");  
+        // title.put("name", "姓名");  
+        // title.put("age", "年龄");  
+        // data.add(title);  
+        // 适配器有：  
+        // ArrayAdapter<T>  
+        // simpAdapter  
+        // SimpleCursorAdapter  
+        Cursor cursor = personService.getRawScrollData(0, 10);  
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(DBActivity.this,  
+                R.layout.personitem, cursor, new String[] { "_id", "name",  
+                        "age" },  
+                new int[] { R.id.personid, R.id.name, R.id.age });  
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {  
+            @Override  
+            // parent即为你点击的listView  
+            // view为listview的外面布局  
+            public void onItemClick(AdapterView<?> parent, View view,  
+                    int position, long id) {  
+                ListView listView = (ListView) parent;  
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);  
+                String personid = String.valueOf(cursor.getInt(0));  
+                String name = String.valueOf(cursor.getString(1));  
+                String age = String.valueOf(cursor.getShort(2));  
+                Log.i(TAG, view.getClass().getName());  
+                Log.i(TAG, "personid: " + personid + "   name: " + name  
+                        + "   age:   " + age);  
+                Log.i(TAG, " position==id:" + (position == id));  
+                Toast.makeText(DBActivity.this, name, Toast.LENGTH_LONG).show();  
+            }  
+        });  
+    }  
+}  
+{% endcodeblock %}

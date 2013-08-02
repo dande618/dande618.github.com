@@ -47,7 +47,7 @@
   
 </ul>
   
-<form action="http://www.baidu.com/search" method="get">
+<form action="http://www.baidu.com/s?wd=" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:dande618.github.com" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
@@ -94,11 +94,14 @@
 
 <div class="entry-content"><p><a href="http://blog.csdn.net/qinjuning/article/details/7310620">http://blog.csdn.net/qinjuning/article/details/7310620</a></p>
 
-<p><img src="http://img.my.csdn.net/uploads/201203/1/0_1330607569Vj4c.gif"></p>
+<p><img class="center" src="http://img.my.csdn.net/uploads/201203/1/0_1330607569Vj4c.gif"></p>
 
 <p>Context，中文直译为“上下文”，SDK中对其说明如下：</p>
 
 <blockquote><p>Interface to global information about an application environment. This is an abstract class whose implementation is provided by the Android system. It allows access to application-specific resources and classes, as well as up-calls for application-level operations such as launching activities, broadcasting and receiving intents, etc.</p></blockquote>
+
+<!-- more -->
+
 
 <p>从上可知一下三点,即：</p>
 
@@ -148,6 +151,144 @@
 <li><p>创建Activity对象时</p></li>
 </ol>
 
+
+<p>========</p>
+
+<h2>Android context（Application/Activity）与内存泄露</h2>
+
+<p>android中的context可以做很多操作，但是最主要的功能是加载和访问资源。</p>
+
+<p>在android中有两种context，一种是 application context，一种是activity context，通常我们在各种类和方法间传递的是activity context。</p>
+
+<p>比如一个activity的onCreate：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">requestWindowFeature</span><span class="o">(</span><span class="n">Window</span><span class="o">.</span><span class="na">FEATURE_NO_TITLE</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">getWindow</span><span class="o">().</span><span class="na">setFlags</span><span class="o">(</span><span class="n">WindowManager</span><span class="o">.</span><span class="na">LayoutParams</span><span class="o">.</span><span class="na">FLAG_FULLSCREEN</span><span class="o">,</span><span class="n">WindowManager</span><span class="o">.</span><span class="na">LayoutParams</span><span class="o">.</span><span class="na">FLAG_FULLSCREEN</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">setRequestedOrientation</span><span class="o">(</span><span class="n">ActivityInfo</span><span class="o">.</span><span class="na">SCREEN_ORIENTATION_PORTRAIT</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mGameView</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GameView</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">setContentView</span><span class="o">(</span><span class="n">mGameView</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>把activity context传递给view，意味着view拥有一个指向activity的引用，进而引用activity UI占有的资源：view , resource, SensorManager等。</p>
+
+<p>但是这样如果context发生内存泄露的话，就会泄露很多内存，这里泄露的意思是gc没有办法回收activity的内存（当前Activity为活动或finish后还没来得及回收）。</p>
+
+<p>Leaking an entire activity是很容易的一件事。</p>
+
+<p>当屏幕旋转的时候，系统会销毁当前的activity，保存状态信息再创建一个新的。</p>
+
+<p>比如我们写了一个应用程序，需要加载一个很大的图片，我们不希望每次旋转屏幕的时候都销毁这个图片重新加载。</p>
+
+<p>实现这个要求的简单想法就是定义一个静态的Drawable，这样Activity 类创建销毁它始终保存在内存中，访问速度会很快。</p>
+
+<p><strong>实现类似：</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">myactivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Drawable</span> <span class="n">sBackground</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">state</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">state</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">TextView</span> <span class="n">label</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TextView</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">label</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Leaks are bad&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">sBackground</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">sBackground</span> <span class="o">=</span> <span class="n">getDrawable</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">drawable</span><span class="o">.</span><span class="na">large_bitmap</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">label</span><span class="o">.</span><span class="na">setBackgroundDrawable</span><span class="o">(</span><span class="n">sBackground</span><span class="o">);</span><span class="c1">//drawable attached to a view   </span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">setContentView</span><span class="o">(</span><span class="n">label</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段程序看起来很简单，但是却问题很大。当屏幕旋转的时候会有leak，即gc没法销毁activity</p>
+
+<p>我们刚才说过，屏幕旋转的时候系统会销毁当前的activity。但是当drawable和view关联后，drawable保存了view的 reference，即sBackground保存了label的引用，而label保存了activity的引用。既然drawable不能销毁，它所引用和间接引用的都不能销毁，这样系统就没有办法销毁当前的activity，于是造成了内存泄露。gc对这种类型的内存泄露是无能为力的。</p>
+
+<p>避免这种内存泄露的方法是避免activity中的任何对象的生命周期长过activity，避免由于对象对 activity的引用导致activity不能正常被销毁</p>
+
+<p>同时，我们可以使用application context</p>
+
+<p>application context伴随application的一生，与activity的生命周期无关。</p>
+
+<p>application context可以通过Context.getApplicationContext或者Activity.getApplication方法获取。</p>
+
+<p>使用Application，需要在 AndroidManifest.xml 文件注册，即android:name=&#8221;.GApplication&#8221;：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;application</span> <span class="na">android:icon=</span><span class="s">&quot;@drawable/icon&quot;</span>
+</span><span class='line'>             <span class="na">android:label=</span><span class="s">&quot;@string/app_name&quot;</span>
+</span><span class='line'>             <span class="na">android:name=</span><span class="s">&quot;.GApplication&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;activity</span> <span class="na">android:name=</span><span class="s">&quot;.WordSearch&quot;</span>
+</span><span class='line'>              <span class="na">android:label=</span><span class="s">&quot;@string/app_name&quot;</span>
+</span><span class='line'>              <span class="na">android:theme=</span><span class="s">&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot;</span>
+</span><span class='line'>              <span class="na">android:screenOrientation=</span><span class="s">&quot;portrait&quot;</span>
+</span><span class='line'>              <span class="na">android:configChanges=</span><span class="s">&quot;keyboardHidden|orientation|keyboard|screenLayout&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;intent-filter&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&quot;android.intent.action.MAIN&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&quot;android.intent.category.LAUNCHER&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/intent-filter&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/activity&gt;</span>
+</span><span class='line'><span class="nt">&lt;/application&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>避免context相关的内存泄露，记住以下几点：</strong></p>
+
+<ol>
+<li><p>不要让生命周期长的对象引用activity context，即保证引用activity的对象要与activity本身生命周期是一样的</p></li>
+<li><p>对于生命周期长的对象，可以使用application context （继承类：public class GApplication extends Application）</p></li>
+<li><p>尽量使用静态类（全局），避免非静态的内部类，避免生命周期问题，注意内部类对外部对象引用导致的生命周期变化</p></li>
+</ol>
+
 </div>
 
 
@@ -193,6 +334,8 @@
       
         <a class="basic-alignment left" href="/blog/2013/05/26/android-service/" title="Previous Post: android Service">&laquo; android Service</a>
       
+      
+        <a class="basic-alignment right" href="/blog/2013/05/28/android-broadcast/" title="Next Post: Android Broadcast">Android Broadcast &raquo;</a>
       
     </p>
   </footer>

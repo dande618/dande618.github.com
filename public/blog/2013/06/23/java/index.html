@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ubuntu搭建Java环境 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html 登录oracle的网站去下载JDK7 http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/23/java/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>——活在当下——</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.baidu.com/s?wd=" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:dande618.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ubuntu搭建Java环境</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-23T19:44:00+08:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html">http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html</a></p>
+
+<p>登录oracle的网站去下载JDK7</p>
+
+<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html</a></p>
+
+<p><img class="center" src="http://images.cnitblog.com/blog/311516/201301/30223821-19a73c9899094ce9a2ff640c751b9868.png"></p>
+
+<p>好吧！在下载之前我们要先选中“Accept License Agreement” 然后，才允许我们下载。</p>
+
+<p>等等有好几个linux版本的 JDK，那么应该选择那个呢？我们先来看看他们有什么不同。</p>
+
+<p>x86对应的是32位操作系统下的应用程序，x64对应的是64位操作系统下的应用程序，那我们在下载之前要先确定我的操作系统是32位的还是64位的。</p>
+
+<!-- more -->
+
+
+<p>ctrl+alt+t 调出ubuntu的终端。输入一下命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ getconf LONG_BIT //查看操作系统位数
+</span><span class='line'>
+</span><span class='line'>$ lsb_release -a //顺便看看操作系统信息</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每种位数操作系统又分了两种类型的安装包。</p>
+
+<ul>
+<li><p>rmp原本是RedHat Linux发行版专门用来管理Linux各项套件的程序，由于它遵循GPL规则且功能强大方便，因而广受欢迎。逐渐受到其他发行版的采用。RPM套件管理方式的出现，让Linux易于安装，升级，间接提升了Linux的适用度。</p></li>
+<li><p>tar.gz就是用tar和gzip压缩后的文件扩展名。 用winzip或winrar就可以打开。</p></li>
+</ul>
+
+
+<h3>解压</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo -i       //切换root权限</span></code></pre></td></tr></table></div></figure>
+
+
+<p>进入下载文件的文件夹。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>下载# ls       //查看下载的文件
+</span><span class='line'>
+</span><span class='line'>下载# sudo mkdir /usr/java       //创建目录
+</span><span class='line'>
+</span><span class='line'>下载# sudo tar zxvf jdk-7u11-linux-i586.tar.gz -C /usr/java //将下载的文件解压到/usr/java目录下
+</span><span class='line'>
+</span><span class='line'>下载# cd /usr/java/             //切换到创建的目录下
+</span><span class='line'>
+</span><span class='line'>/usr/java#             //查看目录</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>改名（非必须步骤）</h3>
+
+<p>为了便于书写，我们需要对JDK的解压目录进行改名。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>root@fnngj-H24X:/usr/java# sudo mv jdk1.7.0_11  java-7-sun
+</span><span class='line'>
+</span><span class='line'>root@fnngj-H24X:/usr/java# ls</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>修改配置文件</h3>
+
+<p>打开配置文件命令</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo gedit /etc/environment</span></code></pre></td></tr></table></div></figure>
+
+
+<p>配置内容如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$JAVA_HOME/bin"
+</span><span class='line'>
+</span><span class='line'>export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+</span><span class='line'>
+</span><span class='line'>export JAVA_HOME=/usr/java/java-7-sun</span></code></pre></td></tr></table></div></figure>
+
+
+<p>保存后关闭配置文件</p>
+
+<p>要使配置文件生效，需要输入一下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/java#  source /etc/environment</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>验证</h3>
+
+<p>在终端使用echo命令检查环境变量的设置情况</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>root@fnngj-H24X:/usr/java#  echo $JAVA_HOME
+</span><span class='line'>
+</span><span class='line'>root@fnngj-H24X:/usr/java# echo $CLASSPATH
+</span><span class='line'>
+</span><span class='line'>root@fnngj-H24X:/usr/java#  echo $PATH</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看安装的java版本：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>root@fnngj-H24X:/usr/java#  java -version
+</span><span class='line'>java version "1.7.0_11"
+</span><span class='line'>Java(TM) SE Runtime Environment (build 1.7.0_11-b21)
+</span><span class='line'>Java HotSpot(TM) Server VM (build 23.6-b04, mixed mode)</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使其对所有用户有效</h3>
+
+<p>重新打开一个终端，查看java版本</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>fnngj@fnngj-H24X:~$ java -version
+</span><span class='line'>程序 'java' 已包含在下列软件包中：
+</span><span class='line'>* default-jre
+</span><span class='line'>* gcj-4.6-jre-headless
+</span><span class='line'>* gcj-4.7-jre-headless
+</span><span class='line'>* openjdk-7-jre-headless
+</span><span class='line'>* openjdk-6-jre-headless
+</span><span class='line'>请尝试：sudo apt-get install &lt;选定的软件包></span></code></pre></td></tr></table></div></figure>
+
+
+<p>啊！怎么找不到了呢? 因为刚才是用root用户配置的，且关闭终端，配置的作用就消失了。那怎么办？</p>
+
+<h3>需要修改profile 文件</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/java#  sudo gedit /etc/profile</span></code></pre></td></tr></table></div></figure>
+
+
+<p>打开profile文件，添加如下内容</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#set java environment
+</span><span class='line'>
+</span><span class='line'>JAVA_HOME=/usr/java/java-7-sun
+</span><span class='line'>export JRE_HOME=/usr/java/java-7-sun/jre
+</span><span class='line'>export CLASSPATH=.:$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+</span><span class='line'>export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改完成后保存</p>
+
+<p>这个需要重启电脑才能生效。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-23T19:44:00+08:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/23/android/" title="Previous Post: 在ubuntu下载android源码">&laquo; 在ubuntu下载android源码</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/24/frameworks/" title="Next Post: android源码结构">android源码结构 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/23/java/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/23/java/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

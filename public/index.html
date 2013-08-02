@@ -9,7 +9,10 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="http://blog.csdn.net/qinjuning/article/details/7310620 Context，中文直译为“上下文”，SDK中对其说明如下： Interface to global information about an application &hellip;">
+  <meta name="description" content="对于Activity中的TextView之类的现实文字的控件，如果我们要使用自定义的字体，不能在XML里定义，只能在代码中实现。 一般的做法是将字体文件保存在assets/fonts/目录下，然后使用代码 1
+2
+3
+TextView textView = (TextView) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -47,7 +50,7 @@
   
 </ul>
   
-<form action="http://www.baidu.com/search" method="get">
+<form action="http://www.baidu.com/s?wd=" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:dande618.github.com" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
@@ -70,7 +73,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/05/27/android-context/">Android Context</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/08/02/typeface-in-widget/">自定义widget上的字体类型</a></h1>
     
     
       <p class="meta">
@@ -86,39 +89,156 @@
   
 
 
-<time datetime="2013-05-27T20:59:00+08:00" pubdate data-updated="true">May 27<span>th</span>, 2013</time>
+<time datetime="2013-08-02T20:13:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
         
-         | <a href="/blog/2013/05/27/android-context/#disqus_thread">Comments</a>
+         | <a href="/blog/2013/08/02/typeface-in-widget/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p><a href="http://blog.csdn.net/qinjuning/article/details/7310620">http://blog.csdn.net/qinjuning/article/details/7310620</a></p>
+  <div class="entry-content"><p>对于Activity中的TextView之类的现实文字的控件，如果我们要使用自定义的字体，不能在XML里定义，只能在代码中实现。</p>
 
-<p><img src="http://img.my.csdn.net/uploads/201203/1/0_1330607569Vj4c.gif"></p>
+<p>一般的做法是将字体文件保存在assets/fonts/目录下，然后使用代码</p>
 
-<p>Context，中文直译为“上下文”，SDK中对其说明如下：</p>
-
-<blockquote><p>Interface to global information about an application environment. This is an abstract class whose implementation is provided by the Android system. It allows access to application-specific resources and classes, as well as up-calls for application-level operations such as launching activities, broadcasting and receiving intents, etc.</p></blockquote>
-
-<p>从上可知一下三点,即：</p>
-
-<ol>
-<li><p>它描述的是一个应用程序环境的信息，即上下文。</p></li>
-<li><p>该类是一个抽象(abstract class)类，Android提供了该抽象类的具体实现类(后面我们会讲到是ContextIml类)。</p></li>
-<li><p>通过它我们可以获取应用程序的资源和类，也包括一些应用级别操作，例如：启动一个Activity，发送广播，接受Intent信息 等。。</p></li>
-</ol>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>TextView textView = (TextView) findViewById(R.id.textview);
+</span><span class='line'>Typeface typeFace = Typeface.createFromAsset(getAssets(),"fonts/Cambira.ttf");
+</span><span class='line'>textView.setTypeface(typeFace);</span></code></pre></td></tr></table></div></figure>
 
 
-<p>于是，我们可以利用该Context对象去构建应用级别操作(application-level operations) 。</p>
+<p>而widget使用RemoteView更新界面，无法使用这种方法设置自定义字体。</p>
 
-<p><strong>Context类</strong>    路径： /frameworks/base/core/java/android/content/Context.java</p>
+<p>可以使用以下方法</p>
 
-<p>说明：  抽象类，提供了一组通用的API。</p>
+<p>参见 <a href="http://stackoverflow.com/questions/4318572/how-to-use-a-custom-typeface-in-a-widget">http://stackoverflow.com/questions/4318572/how-to-use-a-custom-typeface-in-a-widget</a></p>
 
-<p>源代码(部分)如下：</p>
+<p>即使用ImageView代替TextView，自己绘制自定义字体的图片。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public Bitmap buildUpdate(String time) 
+</span><span class='line'>{
+</span><span class='line'>    Bitmap myBitmap = Bitmap.createBitmap(160, 84, Bitmap.Config.ARGB_4444);
+</span><span class='line'>    Canvas myCanvas = new Canvas(myBitmap);
+</span><span class='line'>    Paint paint = new Paint();
+</span><span class='line'>    Typeface clock = Typeface.createFromAsset(this.getAssets(),"Clockopia.ttf");
+</span><span class='line'>    paint.setAntiAlias(true);
+</span><span class='line'>    paint.setSubpixelText(true);
+</span><span class='line'>    paint.setTypeface(clock);
+</span><span class='line'>    paint.setStyle(Paint.Style.FILL);
+</span><span class='line'>    paint.setColor(Color.WHITE);
+</span><span class='line'>    paint.setTextSize(65);
+</span><span class='line'>    paint.setTextAlign(Align.CENTER);
+</span><span class='line'>    myCanvas.drawText(time, 80, 60, paint);
+</span><span class='line'>    return myBitmap;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>String time = (String) DateFormat.format(mTimeFormat, mCalendar);
+</span><span class='line'>RemoteViews views = new RemoteViews(getPackageName(), R.layout.main);
+</span><span class='line'>views.setImageViewBitmap(R.id.TimeView, buildUpdate(time));</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/02/git/">Git Add . 无法添加文件夹下的文件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T17:50:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/02/git/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天提交版本时遇到了git目录无法添加文件夹下的文件。比如要提交A文件夹，而程序代码在A/B文件夹下。使用git add . 只能加入一个空的B文件夹。这个原因是B文件夹是从别的git库拉下来的，只要把B下的隐藏文件.git删掉就可以了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/23/bitmap-zoom/">对Bitmap进行缩放</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-23T20:13:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/23/bitmap-zoom/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用以下方法对Bitmap进行缩放</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -129,28 +249,128 @@
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Context</span> <span class="o">{</span>
-</span><span class='line'>     <span class="c1">//...</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">Object</span> <span class="nf">getSystemService</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>  <span class="c1">//获得系统级服务</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">void</span> <span class="nf">startActivity</span><span class="o">(</span><span class="n">Intent</span> <span class="n">intent</span><span class="o">);</span>     <span class="c1">//通过一个Intent启动Activity</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">ComponentName</span> <span class="nf">startService</span><span class="o">(</span><span class="n">Intent</span> <span class="n">service</span><span class="o">);</span>  <span class="c1">//启动Service</span>
-</span><span class='line'>     <span class="c1">//根据文件名得到SharedPreferences对象</span>
-</span><span class='line'>     <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">SharedPreferences</span> <span class="nf">getSharedPreferences</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span><span class="kt">int</span> <span class="n">mode</span><span class="o">);</span>
-</span><span class='line'>     <span class="c1">//...</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Bitmap</span> <span class="nf">zoomBitmap</span><span class="o">(</span><span class="n">Bitmap</span> <span class="n">bitmap</span><span class="o">,</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="kt">int</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>         <span class="k">if</span> <span class="o">(</span><span class="n">bitmap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">bitmap</span><span class="o">.</span><span class="na">getWidth</span><span class="o">();</span>
+</span><span class='line'>         <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="n">bitmap</span><span class="o">.</span><span class="na">getHeight</span><span class="o">();</span>
+</span><span class='line'>         <span class="n">Matrix</span> <span class="n">matrix</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Matrix</span><span class="o">();</span>
+</span><span class='line'>         <span class="kt">float</span> <span class="n">scaleWidth</span> <span class="o">=</span> <span class="o">((</span><span class="kt">float</span><span class="o">)</span> <span class="n">width</span> <span class="o">/</span> <span class="n">w</span><span class="o">);</span>
+</span><span class='line'>         <span class="kt">float</span> <span class="n">scaleHeight</span> <span class="o">=</span> <span class="o">((</span><span class="kt">float</span><span class="o">)</span> <span class="n">height</span> <span class="o">/</span> <span class="n">h</span><span class="o">);</span>
+</span><span class='line'>         <span class="n">matrix</span><span class="o">.</span><span class="na">postScale</span><span class="o">(</span><span class="n">scaleWidth</span><span class="o">,</span> <span class="n">scaleHeight</span><span class="o">);</span>
+</span><span class='line'>         <span class="n">Bitmap</span> <span class="n">newbmp</span> <span class="o">=</span> <span class="n">Bitmap</span><span class="o">.</span><span class="na">createBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="n">matrix</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>         <span class="k">return</span> <span class="n">newbmp</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者直接使用</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">android.media.ThumbnailUtils</span><span class="o">;</span>
+</span><span class='line'><span class="c1">//... ...</span>
+</span><span class='line'><span class="n">ThumbnailUtils</span><span class="o">.</span><span class="na">extractThumbnail</span><span class="o">(</span><span class="n">Bitmap</span> <span class="n">bitmap</span><span class="o">,</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="kt">int</span> <span class="n">height</span><span class="o">)</span><span class="err">方法</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/22/canreorder/">Launcher中锁定图标位置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-22T19:12:00+08:00" pubdate data-updated="true">Jul 22<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/22/canreorder/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一、使图标不能被挤开</h3>
+
+<p>在Launcher中，AllAppsButton的图标是在Hotseat.java加载的，并且设置了对应的layoutparams的属性 canReorder = false;</p>
+
+<p>如字面上的意思，设置了此属性为false的layoutparams中的图标不能被重新排序，即不能被直接或间接挤开。但是可以移动（AllApps按钮不能移动，使因为在hotseat.java单独加载时，没有绑定长按监听器）。当拖动其他图标到此处时，可以形成文件夹。所以如果对此有需求，还要更改其他对应的代码。</p>
+
+<p>通过对源码的搜索，发现只有两处用到了这个属性。</p>
+
+<p>一处是在rearrangementExists方法</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">Rect</span><span class="o">.</span><span class="na">intersects</span><span class="o">(</span><span class="n">r0</span><span class="o">,</span> <span class="n">r1</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">lp</span><span class="o">.</span><span class="na">canReorder</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">mIntersectingViews</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">child</span><span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Activity类 、Service类 、Application类本质上都是Context子类。</p>
+<p>注释掉此处后，图标可以被直接挤开。</p>
 
-<p>应用程序创建Context实例的情况有如下几种情况：</p>
+<p>另一处是pushViewsToTempLocation方法</p>
 
-<ol>
-<li><p>创建Application对象时， 而且整个App共一个Application对象</p></li>
-<li><p>创建Service对象时</p></li>
-<li><p>创建Activity对象时</p></li>
-</ol>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(!</span><span class="n">cluster</span><span class="o">.</span><span class="na">views</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">v</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">dragView</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">cluster</span><span class="o">.</span><span class="na">isViewTouchingEdge</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">whichEdge</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">LayoutParams</span> <span class="n">lp</span> <span class="o">=</span> <span class="o">(</span><span class="n">LayoutParams</span><span class="o">)</span> <span class="n">v</span><span class="o">.</span><span class="na">getLayoutParams</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">lp</span><span class="o">.</span><span class="na">canReorder</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">// The push solution includes the all apps button,  </span>
+</span><span class='line'>            <span class="c1">// this is not viable.  </span>
+</span><span class='line'>            <span class="n">fail</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
+
+<p>注释掉此处后，图标可以被间接挤开，也就是挤压相邻的另一个图标。</p>
 </div>
   
   
@@ -163,7 +383,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/05/26/android-service/">Android Service</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/07/20/mm/">android源码，编译完整的APK</a></h1>
     
     
       <p class="meta">
@@ -179,26 +399,124 @@
   
 
 
-<time datetime="2013-05-26T19:00:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+<time datetime="2013-07-20T15:06:00+08:00" pubdate data-updated="true">Jul 20<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/05/26/android-service/#disqus_thread">Comments</a>
+         | <a href="/blog/2013/07/20/mm/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>android中服务是运行在后台的东西，级别与activity差不多。既然说service是运行在后台的服务，那么它就是不可见的，没有界面的东西。你可以启动一个服务Service来播放音乐，或者记录你地理信息位置的改变，或者启动一个服务来运行并一直监听某种动作。</p>
+  <div class="entry-content"><p>修改源码下的</p>
 
-<p>Service和其他组件一样，都是运行在主线程中，因此不能用它来做耗时的请求或者动作。你可以在服务中开一一个线程，在线程中做耗时动作。</p>
+<p>/build/core/java_library.mk 和 /build/core/package.mk</p>
 
-<p><a href="http://www.cnblogs.com/zhangdongzi/archive/2012/01/08/2316711.html">http://www.cnblogs.com/zhangdongzi/archive/2012/01/08/2316711.html</a></p>
+<p>将 LOCAL_DEX_PREOPT :=true</p>
+
+<p>改成 false</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/19/launcher-folder/">launcher2的Folder布局相关</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-19T20:50:00+08:00" pubdate data-updated="true">Jul 19<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/19/launcher-folder/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这里只写文件图标相关，主要是FolderIcon.java控制。可以看到，FolderIcon是LinearLayout的子类。</p>
+
+<p>观察/res/layout-land(port)/folder_icon.xml，FolderIcon是由一个ImageView和一个BubbleTextView组成，这个ImageView是FolderIcon的背景。</p>
+
+<p>在这里可以调整文件夹图标的大小。在BubbleTextView对应的的style里调整padding、字体大小、文字与图标间距等。</p>
+
+<p>再看FolderIcon.java。</p>
+
+<p>有一些final的属性，比如显示preview的图标的个数，默认是3个。以及相关动画显示的时间等。</p>
+
+<p>Folder的加载可以参考这篇博客 <a href="http://blog.csdn.net/wdaming1986/article/details/7748738">http://blog.csdn.net/wdaming1986/article/details/7748738</a></p>
+
+<p>显示的程序图标预览在computePreviewItemDrawingParams()方法，之后通过drawPreviewItem()绘制在屏幕上。</p>
+
+<p>当拖动图标移动到一个文件夹上时，会调用CellLayout的onDraw方法，显示蓝色的外框和内部背景。</p>
+
+<p>当点击Hotseat上FolderIcon，打开文件夹后，Hotseat上会显示表示文件夹位置的一个小篮圈，这个也是在CellLayout的onDraw方法里实现的。在growAndFadeOutFolderIcon()方法判断是不是位于Hotseat。</p>
+
+<p>调用顺序依次是onClick【Launcher.java】 -> handleFolderClick【Launcher.java】 -> openFolder【Launcher.java】 -> growAndFadeOutFolderIcon【Launcher.java】 -> setFolderLeaveBehindCell【CellLayout.java】 -> invalidate【CellLayout.java】</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/15/launcher2/">4.2.2_r1版本源码的launcher2布局介绍</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-15T18:20:00+08:00" pubdate data-updated="true">Jul 15<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/15/launcher2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="http://image142.poco.cn/mypoco/myphoto/20130714/18/4309479020130714181905068.jpg"></p>
+
+<p>AndroidManifest.xml里面，有两个Activity，其中一个是Launcher，一个是壁纸选择。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2013/05/26/android-service/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2013/07/15/launcher2/">Read on &rarr;</a>
     </footer>
   
 
@@ -210,7 +528,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/05/26/log/">LogCat的用法</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/06/24/summary/">Android电话面试总结</a></h1>
     
     
       <p class="meta">
@@ -226,73 +544,22 @@
   
 
 
-<time datetime="2013-05-26T16:16:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+<time datetime="2013-06-24T17:50:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/05/26/log/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Logcat是Android中一个命令行工具可以用于得到程序的log信息。</p>
-
-<p><a href="http://weizhulin.blog.51cto.com/1556324/311692">http://weizhulin.blog.51cto.com/1556324/311692</a></p>
-
-<p>android.util.Log常用的方法有以下5个：Log.v() Log.d() Log.i() Log.w() 以及 Log.e() 。根据首字母对应VERBOSE，DEBUG,INFO, WARN，ERROR。</p>
-
-<ol>
-<li><p>Log.v 的调试颜色为黑色的，任何消息都会输出，这里的v代表verbose啰嗦的意思，平时使用就是Log.v(&#8220;&#8221;,&#8221;&#8220;);</p></li>
-<li><p>Log.d 的输出颜色是蓝色的，仅输出debug调试的意思，但他会输出上层的信息，过滤起来可以通过DDMS的Logcat标签来选择.</p></li>
-<li><p>Log.i 的输出为绿色，一般提示性的消息information，它不会输出Log.v和Log.d的信息，但会显示i、w和e的信息</p></li>
-<li><p>Log.w 的意思为橙色，可以看作为warning警告，一般需要我们注意优化Android代码，同时选择它后还会输出Log.e的信息。</p></li>
-<li><p>Log.e 为红色，可以想到error错误，这里仅显示红色的错误信息，这些错误就需要我们认真的分析，查看栈的信息了。</p></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/24/android-activity/">Android Activity</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-24T11:00:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/24/android-activity/#disqus_thread">Comments</a>
+         | <a href="/blog/2013/06/24/summary/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Activity是Android组件中最基本也是最为常见用的四大组件之一，通常是一个单独的屏幕，它上面可以显示一些控件也可以监听并处理用户的事件做出响应。Activity之间通过Intent进行通信。</p>
+  <div class="entry-content"><p>关于这次电话面试的总结。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2013/05/24/android-activity/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2013/06/24/summary/">Read on &rarr;</a>
     </footer>
   
 
@@ -304,7 +571,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/05/23/android-studio/">Android Studio 安装无法打开</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/06/24/frameworks/">Android源码结构</a></h1>
     
     
       <p class="meta">
@@ -320,24 +587,24 @@
   
 
 
-<time datetime="2013-05-23T23:01:00+08:00" pubdate data-updated="true">May 23<span>rd</span>, 2013</time>
+<time datetime="2013-06-24T12:23:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/05/23/android-studio/#disqus_thread">Comments</a>
+         | <a href="/blog/2013/06/24/frameworks/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>最近谷歌发布了Android Studio，是一个全新的Android开发环境，基于IntelliJIDEA。可以作为替代eclispe+adt的开发环境。</p>
+  <div class="entry-content"><p>转载<a href="http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html">http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html</a></p>
 
-<p>下载地址 <a href="http://developer.android.com/sdk/installing/studio.html">http://developer.android.com/sdk/installing/studio.html</a></p>
+<p><code>Android 2.1</code> |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （启动引导相关代码） |&#8211; build （存放系统编译规则及generic等基础开发包配置） |&#8211; cts （Android兼容性测试套件标准） |&#8211; dalvik （dalvik JAVA虚拟机） |&#8211; development （应用程序开发相关） |&#8211; external （android使用的一些开源的模组） |&#8211; frameworks</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2013/05/23/android-studio/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2013/06/24/frameworks/">Read on &rarr;</a>
     </footer>
   
 
@@ -349,7 +616,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/05/19/Close-Cursor/">Android关闭Cursor</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/06/23/java/">ubuntu搭建Java环境</a></h1>
     
     
       <p class="meta">
@@ -365,204 +632,34 @@
   
 
 
-<time datetime="2013-05-19T07:17:00+08:00" pubdate data-updated="true">May 19<span>th</span>, 2013</time>
+<time datetime="2013-06-23T19:44:00+08:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
         
-         | <a href="/blog/2013/05/19/Close-Cursor/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>转载 <a href="http://zhifeiji512.iteye.com/blog/963925">http://zhifeiji512.iteye.com/blog/963925</a></p>
-
-<p>Cursor是Android查询数据后得到的一个管理数据集合的类，正常情况下，如果查询得到的数据量较小时不会有内存问题，而且虚拟机能够保证Cusor最终会被释放掉。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/19/Close-Cursor/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/17/ContentObserver/">简单使用ContentObserver观察数据库更新</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-17T20:54:00+08:00" pubdate data-updated="true">May 17<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/17/ContentObserver/#disqus_thread">Comments</a>
+         | <a href="/blog/2013/06/23/java/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>需要注意的是，使用了registerContentObserver后，一定要使用unregisterContentObserver，否则会多次注册引起多次onChange。</p>
+  <div class="entry-content"><p><a href="http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html">http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html</a></p>
+
+<p>登录oracle的网站去下载JDK7</p>
+
+<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html</a></p>
+
+<p><img class="center" src="http://images.cnitblog.com/blog/311516/201301/30223821-19a73c9899094ce9a2ff640c751b9868.png"></p>
+
+<p>好吧！在下载之前我们要先选中“Accept License Agreement” 然后，才允许我们下载。</p>
+
+<p>等等有好几个linux版本的 JDK，那么应该选择那个呢？我们先来看看他们有什么不同。</p>
+
+<p>x86对应的是32位操作系统下的应用程序，x64对应的是64位操作系统下的应用程序，那我们在下载之前要先确定我的操作系统是32位的还是64位的。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2013/05/17/ContentObserver/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/13/SQLTest/">Service写入数据库并更新UI</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-13T22:22:00+08:00" pubdate data-updated="true">May 13<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/13/SQLTest/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>目的是使用Service写入SQLite数据库，然后通知UI更新。</p>
-
-<p>首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/13/SQLTest/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/01/listener/">【转载】Android到处都在使用的回调分析</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-01T13:01:00+08:00" pubdate data-updated="true">May 1<span>st</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/01/listener/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Android到处都在使用的回调分析</p>
-
-<p><a href="http://lzd20021683.iteye.com/blog/1319626">http://lzd20021683.iteye.com/blog/1319626</a></p>
-
-<blockquote><p><strong>回调函数：</strong></p>
-
-<p>回调函数就是一个通过函数指针调用的函数。如果你把函数的指针(地址)作为参数传递给另一个函数，当这个指针被用为调用它所指向的函数时，我们就说这是回调函数。回调函数不是由该函数的实现方直接调用，而是在特定的事件或条件发生时由另外的一方调用的，用于对该事件或条件进行响应。</p></blockquote>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/01/listener/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/30/service/">Android Service</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-30T20:01:00+08:00" pubdate data-updated="true">Apr 30<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/30/service/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Service，Android在后台运行的服务，和Activiy比较相似，只是没有界面显示。Service的启动方式有Context.startService()和Context.bindService()两种。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/30/service/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2013/06/23/java/">Read on &rarr;</a>
     </footer>
   
 

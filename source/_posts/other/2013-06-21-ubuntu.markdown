@@ -1,0 +1,143 @@
+---
+layout: post
+title: "在win7基础上，安装ubuntu双系统"
+date: 2013-06-21 16:50
+comments: true
+categories: 其他
+---
+##安装ubuntu方法
+
+实际安装最新版本，方法是对的。
+
+<http://ifeiyang.cn/archives/1835.html>
+
+###适用环境：
+
+理论上win7、vista系统32位或64位均可。ubuntu适用与10.X版本，且ubuntu-10.10-desktop-i386.iso 和ubuntu-10.10-desktop-amd64.iso测试通过。接下来以ubuntu-10.10-desktop-amd64.iso安装为例作为说明。
+
+###第一步：下载Ubuntu10.10
+
+下载地址： http://www.ubuntu.com/desktop/get-ubuntu/download
+
+下载版本为最新桌面版，朋友们可以选择安装不同版本。
+<!-- more -->
+###第二步：下载grub4dos
+
+GRUB4DOS是一款优秀的多系统引导软件，需要其引导安装ubuntu，最新版为grub4dos-0.4.4.zip，于2009年4月发布。
+
+下载地址：http://download.gna.org/grub4dos/
+
+###第三步：设置启动项
+
+###1. 解压grub4dos，将目录中的grldr，grldr.mbr，grub.exe三个文件复制到C盘根目录下
+
+###2. 解压ubuntu10.10，将casper目录下vmlinuz、initrd.lz两个文件复制到C盘根目录下 
+
+###3. C 盘根目录下建立menu.lst 文件，内容为：
+
+{% codeblock %}
+title Install Ubuntu 
+root (hd0,0) 
+kernel (hd0,0)/vmlinuz boot=casper iso-scan/filename=/ubuntu-10.10-desktop-i386.iso ro quiet splash locale=zh_CN.UTF-8 
+initrd (hd0,0)/initrd.lz
+{% endcodeblock %}
+
+###4. 在C 盘根目录新建一个文件命名为boot.ini 。内容如下：
+
+{% codeblock %}
+[boot loader] 
+[operating systems] 
+c:\grldr.mbr="ubuntu" 
+{% endcodeblock %}
+
+###5. 将ubuntu-10.10-desktop-i386.iso复制到C盘或者D盘根目录下
+
+注：你下载的Ubuntu文件名字要和第三步的文件名字相一致
+
+###第四步：硬盘安装Ubuntu10.10
+
+重启电脑，按回车进入Ubuntu10.10的安装界面
+
+打开终端输入如下命令：
+
+{% codeblock %}
+sudo umount -l /isodevice
+{% endcodeblock %}
+
+这一命令取消掉对光盘所在驱动器的挂载，否则分区界面找不到分区。
+
+双击安装Ubuntu，根据提示进行安装即可
+
+补充：
+
+安装完Ubuntu10.10后grldr.mbr，grub.exe，vmlinuz，initrd.lz，menu.lst，boot.ini这几个文件都可以删除了，开机后会进入引导界面，可以选择是Ubuntu启动或者win7启动，不用做任何设置。 还有这个是在win7或vista下硬盘安装的Ubuntu的方法，方法收集自网络，老饕测试成功，如果是系统是XP或是其他的此方法不一定有效。
+
+还有安装Linux时分区的一些问题：
+
+安装的时候选择手动分区，推介专门Ubuntu做3个分区：根分区，home分区和交换分区（swap）。
+
+根分区：相当于系统盘
+
+home分区：主要是放一些用户文件什么的
+
+交换分区（swap）：这东西类似 Windows中的虚拟内存，但比那个还要专业，直接搞成一个分区形式了，而且Linux也有SWAP文件的形式出现，推介大小为自己内存容量的2倍，太大了也没什么用，毕竟硬盘的速度实在太慢了。
+
+#修复win7启动项
+
+如果只能看到ubuntu启动项，而找不到win7，可以尝试一下方法
+
+##第一种方法
+
+进ubuntu，打开终端（Ctrl+Alt+T），执行 sudo grub-update
+
+##第二种方法
+
+手动修改 grub.cfg，在适合的位置加入win7的启动项。
+
+参考 <http://www.huomo.cn/os/article-1867d.html>
+
+###1. 取得root权限（系统最高权限）
+
+{% codeblock %}
+sudo -i
+{% endcodeblock %}
+
+按提示输入密码；
+
+备份原来的grub.cfg
+
+{% codeblock %}
+cp /boot/grub/grub.cfg grub.cfg.bak
+{% endcodeblock %}
+
+###2. 查看各个硬盘分区的UUID值
+
+{% codeblock %}
+ls -l /dev/disk/by-uuid
+{% endcodeblock %}
+
+###3. 修改启动脚步grub.cfg
+
+{% codeblock %}
+gedit /boot/grub/grub.cfg
+{% endcodeblock %}
+
+在合适位置加入下面代码
+
+{% codeblock %}
+menuentry（“Win7 Ultimate loader (sda1)”）{
+insmod part_msdos
+insmod ntfs
+set root='(hd0,msdos1)'
+searcg\h --no-floppy --fs-uuid --set=root 40F44BE7F44BDE32
+chainloader +1
+}
+{% endcodeblock %}
+
+##第三种方法
+
+如果win7的引导出现错误，比如bootmgr is missing。可以使用安装盘修复，或者使用u盘制作winPE系统（UltraISO+ISO镜像），然后使用NTBOOTautofix进行修复。
+
+#在WIN7中修复ubuntu的启动项
+
+可以参考这个帖子 <http://bbs.pcbeta.com/viewthread-600509-1-1.html>

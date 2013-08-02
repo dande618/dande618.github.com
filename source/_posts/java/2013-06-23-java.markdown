@@ -1,0 +1,147 @@
+---
+layout: post
+title: "ubuntu搭建Java环境"
+date: 2013-06-23 19:44
+comments: true
+categories: java
+---
+<http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html>
+
+登录oracle的网站去下载JDK7
+
+<http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html>
+
+{% img center http://images.cnitblog.com/blog/311516/201301/30223821-19a73c9899094ce9a2ff640c751b9868.png %}
+
+好吧！在下载之前我们要先选中“Accept License Agreement” 然后，才允许我们下载。
+
+等等有好几个linux版本的 JDK，那么应该选择那个呢？我们先来看看他们有什么不同。
+
+x86对应的是32位操作系统下的应用程序，x64对应的是64位操作系统下的应用程序，那我们在下载之前要先确定我的操作系统是32位的还是64位的。
+<!-- more -->
+ctrl+alt+t 调出ubuntu的终端。输入一下命令：
+
+{% codeblock %}
+$ getconf LONG_BIT //查看操作系统位数
+
+$ lsb_release -a //顺便看看操作系统信息
+{% endcodeblock %}
+
+每种位数操作系统又分了两种类型的安装包。
+
+- rmp原本是RedHat Linux发行版专门用来管理Linux各项套件的程序，由于它遵循GPL规则且功能强大方便，因而广受欢迎。逐渐受到其他发行版的采用。RPM套件管理方式的出现，让Linux易于安装，升级，间接提升了Linux的适用度。
+
+- tar.gz就是用tar和gzip压缩后的文件扩展名。 用winzip或winrar就可以打开。
+
+###解压
+
+{% codeblock %}
+sudo -i       //切换root权限
+{% endcodeblock %}
+
+进入下载文件的文件夹。
+
+{% codeblock %}
+下载# ls       //查看下载的文件
+
+下载# sudo mkdir /usr/java       //创建目录
+
+下载# sudo tar zxvf jdk-7u11-linux-i586.tar.gz -C /usr/java //将下载的文件解压到/usr/java目录下
+
+下载# cd /usr/java/             //切换到创建的目录下
+
+/usr/java#             //查看目录
+{% endcodeblock %}
+
+###改名（非必须步骤）
+
+为了便于书写，我们需要对JDK的解压目录进行改名。
+{% codeblock %}
+root@fnngj-H24X:/usr/java# sudo mv jdk1.7.0_11  java-7-sun
+
+root@fnngj-H24X:/usr/java# ls
+{% endcodeblock %}
+
+###修改配置文件
+
+打开配置文件命令
+
+{% codeblock %}
+sudo gedit /etc/environment
+{% endcodeblock %}
+
+配置内容如下：
+
+{% codeblock %}
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$JAVA_HOME/bin"
+
+export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
+
+export JAVA_HOME=/usr/java/java-7-sun
+{% endcodeblock %}
+
+保存后关闭配置文件
+
+要使配置文件生效，需要输入一下：
+{% codeblock %}
+/usr/java#  source /etc/environment
+{% endcodeblock %}
+
+###验证
+
+在终端使用echo命令检查环境变量的设置情况
+
+{% codeblock %}
+root@fnngj-H24X:/usr/java#  echo $JAVA_HOME
+
+root@fnngj-H24X:/usr/java# echo $CLASSPATH
+
+root@fnngj-H24X:/usr/java#  echo $PATH
+{% endcodeblock %}
+
+查看安装的java版本：
+
+{% codeblock %}
+root@fnngj-H24X:/usr/java#  java -version
+java version "1.7.0_11"
+Java(TM) SE Runtime Environment (build 1.7.0_11-b21)
+Java HotSpot(TM) Server VM (build 23.6-b04, mixed mode)
+{% endcodeblock %}
+
+###使其对所有用户有效
+
+重新打开一个终端，查看java版本
+
+{% codeblock %}
+fnngj@fnngj-H24X:~$ java -version
+程序 'java' 已包含在下列软件包中：
+* default-jre
+* gcj-4.6-jre-headless
+* gcj-4.7-jre-headless
+* openjdk-7-jre-headless
+* openjdk-6-jre-headless
+请尝试：sudo apt-get install <选定的软件包> 
+{% endcodeblock %}
+
+啊！怎么找不到了呢? 因为刚才是用root用户配置的，且关闭终端，配置的作用就消失了。那怎么办？
+
+###需要修改profile 文件
+
+{% codeblock %}
+/usr/java#  sudo gedit /etc/profile
+{% endcodeblock %}
+
+打开profile文件，添加如下内容
+
+{% codeblock %}
+#set java environment
+
+JAVA_HOME=/usr/java/java-7-sun
+export JRE_HOME=/usr/java/java-7-sun/jre
+export CLASSPATH=.:$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH
+{% endcodeblock %}
+
+修改完成后保存
+
+这个需要重启电脑才能生效。

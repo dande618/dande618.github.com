@@ -158,7 +158,7 @@
     </url>
     <url>
         <loc>http://dande618.github.com/blog/2013/05/26/log/</loc>
-        <lastmod>2013-05-26T15:45:49+08:00</lastmod>
+        <lastmod>2013-05-27T20:35:53+08:00</lastmod>
     </url>
     <url>
         <loc>http://dande618.github.com/blog/2013/05/26/android-service/</loc>
@@ -166,15 +166,139 @@
     </url>
     <url>
         <loc>http://dande618.github.com/blog/2013/05/27/android-context/</loc>
-        <lastmod>2013-05-27T19:44:04+08:00</lastmod>
+        <lastmod>2013-05-29T08:48:08+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/05/28/android-broadcast/</loc>
+        <lastmod>2013-05-28T20:05:06+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/05/29/android-fragment/</loc>
+        <lastmod>2013-05-29T19:17:55+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/05/29/android-MVC/</loc>
+        <lastmod>2013-05-29T16:37:51+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/05/31/memory-management-in-android/</loc>
+        <lastmod>2013-06-05T16:11:41+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/01/sqlite/</loc>
+        <lastmod>2013-06-05T18:20:34+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/03/strategy/</loc>
+        <lastmod>2013-06-05T16:08:57+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/04/stringbuffer/</loc>
+        <lastmod>2013-06-05T17:25:12+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/06/java-collection/</loc>
+        <lastmod>2013-06-06T21:00:50+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/07/refresh-view/</loc>
+        <lastmod>2013-06-11T14:22:02+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/09/StaggeredGridView/</loc>
+        <lastmod>2013-06-10T09:49:54+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/10/viewpager/</loc>
+        <lastmod>2013-06-10T09:59:37+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/10/adapter/</loc>
+        <lastmod>2013-06-10T20:31:32+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/10/singleton/</loc>
+        <lastmod>2013-06-11T20:49:45+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/11/listview/</loc>
+        <lastmod>2013-06-13T20:12:41+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/13/JSON/</loc>
+        <lastmod>2013-06-13T20:18:34+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/15/UML/</loc>
+        <lastmod>2013-06-15T18:02:21+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/16/notification/</loc>
+        <lastmod>2013-06-16T20:09:42+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/16/AsyncTask/</loc>
+        <lastmod>2013-06-16T20:22:13+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/18/Command/</loc>
+        <lastmod>2013-06-18T22:16:58+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/21/ubuntu/</loc>
+        <lastmod>2013-06-21T17:37:18+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/23/android/</loc>
+        <lastmod>2013-06-23T22:17:46+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/23/java/</loc>
+        <lastmod>2013-06-23T22:22:19+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/24/frameworks/</loc>
+        <lastmod>2013-06-24T18:22:06+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/06/24/summary/</loc>
+        <lastmod>2013-06-27T20:37:24+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/07/15/launcher2/</loc>
+        <lastmod>2013-07-16T07:08:31+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/07/19/launcher-folder/</loc>
+        <lastmod>2013-07-21T19:15:02+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/07/20/mm/</loc>
+        <lastmod>2013-07-22T07:40:12+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/07/22/canreorder/</loc>
+        <lastmod>2013-07-24T07:09:17+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/07/23/bitmap-zoom/</loc>
+        <lastmod>2013-07-24T07:12:03+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/08/02/git/</loc>
+        <lastmod>2013-08-02T20:28:53+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dande618.github.com/blog/2013/08/02/typeface-in-widget/</loc>
+        <lastmod>2013-08-02T20:46:21+08:00</lastmod>
     </url>
     <url>
         <loc>http://dande618.github.com/blog/archives/</loc>
-        <lastmod>2013-05-27T20:27:27+08:00</lastmod>
+        <lastmod>2013-08-02T20:46:21+08:00</lastmod>
     </url>
     <url>
         <loc>http://dande618.github.com/</loc>
-        <lastmod>2013-05-27T20:27:27+08:00</lastmod>
+        <lastmod>2013-08-02T20:46:21+08:00</lastmod>
     </url>
     <url>
         <loc>http://dande618.github.com/robots.txt</loc>
