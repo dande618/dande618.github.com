@@ -9,10 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="对于Activity中的TextView之类的现实文字的控件，如果我们要使用自定义的字体，不能在XML里定义，只能在代码中实现。 一般的做法是将字体文件保存在assets/fonts/目录下，然后使用代码 1
-2
-3
-TextView textView = (TextView) &hellip;">
+  <meta name="description" content="最近修复了一个BUG是定制SetupWizard时，下面的系统栏会出现。 SetupWizard是一台安卓设备第一次运行时的设置程序，可以设置Google帐号，姓名什么的，所以不允许用户点击返回、Home或最近运行三个虚拟按键。 当设置Google帐号时， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -40,7 +37,7 @@ TextView textView = (TextView) &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">初心</a></h1>
   
-    <h2>——活在当下——</h2>
+    <h2>何期自性，本自具足</h2>
   
 </hgroup>
 
@@ -49,13 +46,6 @@ TextView textView = (TextView) &hellip;">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
-  
-<form action="http://www.baidu.com/s?wd=" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:dande618.github.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
   
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
@@ -67,6 +57,113 @@ TextView textView = (TextView) &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/28/statusbar/">Android隐藏下方系统栏statusbar</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-28T18:10:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/28/statusbar/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近修复了一个BUG是定制SetupWizard时，下面的系统栏会出现。</p>
+
+<p>SetupWizard是一台安卓设备第一次运行时的设置程序，可以设置Google帐号，姓名什么的，所以不允许用户点击返回、Home或最近运行三个虚拟按键。</p>
+
+<p>当设置Google帐号时，会打开GoogleLoginService的Activity，所以用网上的有些方法不好用。一进入输入状态时，StatusBar还会显示出来。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/08/28/statusbar/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/10/launcher-hdpi/">源码Launcher编译，使用mdpi的资源</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-10T08:10:00+08:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/10/launcher-hdpi/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>4.2.2的源码，进行对Launcher2的修改，之后使用mm或mmm编译，使用adb push安装到平板中。</p>
+
+<p>因为使用的一代nexus7，所以一般程序调用资源的是drawable_sw600dp_hdpi下的图片资源，但是按照上面方法编译出的Launcher使用drawable_sw600dp_mdpi的图片资源。</p>
+
+<p>在网上搜索后，解决方法是</p>
+
+<blockquote><p>默认编译mdpi的apk，如果要编译hdpi，需要在./build/target/product/full.mk文件中添加：</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>PRODUCT_AAPT_CONFIG := normal hdpi 
+</span><span class='line'>PRODUCT_AAPT_PREF_CONFIG := hdpi</span></code></pre></td></tr></table></div></figure>
+
+
+<p>经过测试，</p>
+
+<p>PRODUCT_AAPT_CONFIG指定了hdpi的话，就会使用hdpi的资源，而不使用mdpi资源！指定xhdpi的话，就不会使用hdpi的资源！</p>
+
+<p>PRODUCT_AAPT_PREF_CONFIG指定hdpi，编译出的APK中会有hdpi、mdpi等等，没有xhdpi和xxhdpi，默认是mdpi，所以编译出的APK中就没有hdpi。</p>
+
+<p>aapt 是android assert packaging tool的缩写，即安卓打包工具。</p>
+
+<p>加上这两句以后，会影响其参数，只为一种设备匹配文件。而eclipse生成的程序可以为多种设备匹配。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -560,106 +657,6 @@ TextView textView = (TextView) &hellip;">
   
     <footer>
       <a rel="full-article" href="/blog/2013/06/24/summary/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/24/frameworks/">Android源码结构</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-24T12:23:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/24/frameworks/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>转载<a href="http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html">http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html</a></p>
-
-<p><code>Android 2.1</code> |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （启动引导相关代码） |&#8211; build （存放系统编译规则及generic等基础开发包配置） |&#8211; cts （Android兼容性测试套件标准） |&#8211; dalvik （dalvik JAVA虚拟机） |&#8211; development （应用程序开发相关） |&#8211; external （android使用的一些开源的模组） |&#8211; frameworks</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/24/frameworks/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/23/java/">ubuntu搭建Java环境</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-23T19:44:00+08:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/23/java/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html">http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html</a></p>
-
-<p>登录oracle的网站去下载JDK7</p>
-
-<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html</a></p>
-
-<p><img class="center" src="http://images.cnitblog.com/blog/311516/201301/30223821-19a73c9899094ce9a2ff640c751b9868.png"></p>
-
-<p>好吧！在下载之前我们要先选中“Accept License Agreement” 然后，才允许我们下载。</p>
-
-<p>等等有好几个linux版本的 JDK，那么应该选择那个呢？我们先来看看他们有什么不同。</p>
-
-<p>x86对应的是32位操作系统下的应用程序，x64对应的是64位操作系统下的应用程序，那我们在下载之前要先确定我的操作系统是32位的还是64位的。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/23/java/">Read on &rarr;</a>
     </footer>
   
 

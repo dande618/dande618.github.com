@@ -9,7 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="转载 http://www.cnblogs.com/playing/archive/2011/03/23/1992030.html 在 Android 中使用 Activity, Service, Broadcast, BroadcastReceiver 活动(Activity) - 用于表现功能 &hellip;">
+  <meta name="description" content="转载 http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html MVC (Model-View-Controller)：M是指逻辑模型，V是指视图模型，C则是控制器。一个逻辑模型可以对于多种视图模型， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -37,7 +37,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">初心</a></h1>
   
-    <h2>——活在当下——</h2>
+    <h2>何期自性，本自具足</h2>
   
 </hgroup>
 
@@ -46,13 +46,6 @@
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
-  
-<form action="http://www.baidu.com/s?wd=" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:dande618.github.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
   
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
@@ -64,6 +57,106 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/android-MVC/">Android之MVC模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T19:07:00+08:00" pubdate data-updated="true">May 29<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/29/android-MVC/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>转载 <a href="http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html">http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html</a></p>
+
+<p><strong>MVC (Model-View-Controller)：M是指逻辑模型，V是指视图模型，C则是控制器。</strong>一个逻辑模型可以对于多种视图模型，比如一批统计数据你可以分别用柱状图、饼图来表示。一种视图模型也可以对于多种逻辑模型。使用MVC的目的是<strong>将M和V的实现代码分离</strong>，从而使同一个程序可以使用不同的表现形式，而C存在的目的则是确保M和V的同步，一旦M改变，V应该同步更新，这与《设计模式》中的观察者模式是完全一样。</p>
+
+<p>MVC好处：<strong>从用户的角度出发，用户可以根据自己的需求，选择自己合适的浏览数据的方式</strong>。比如说，对于一篇在线文档，用户可以选择以HTML网页的方式阅读，也可以选择以pdf的方式阅读。从开发者的角度，MVC把应用程序的逻辑层与界面是完全分开的，最大的好处是：界面设计人员可以直接参与到界面开发，程序员就可以把精力放在逻辑层上。而不是像以前那样，设计人员把所有的材料交给开发人员，由开发人员来实现界面。在Eclipes工具中开发Android采用了更加简单的方法，设计人员在DroidDraw中设计界面，以XML方式保存，在Eclipes中直接打开就可以看到设计人员设计的界面。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/29/android-MVC/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/android-fragment/">Fragment</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T17:10:00+08:00" pubdate data-updated="true">May 29<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/29/android-fragment/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>官方API文档翻译：<a href="http://blog.csdn.net/aomandeshangxiao/article/details/7671533">http://blog.csdn.net/aomandeshangxiao/article/details/7671533</a></p>
+
+<ol>
+<li><p>Fragment 作为 Activity 界面的一部分组成出现。</p></li>
+<li><p>可以在一个 Activity 中同时出现多个 Fragment，并且，一个 Fragment 亦可在多个 Activity 中使用。</p></li>
+<li><p>在 Activity 运行过程中，可以添加、移除或者替换 Fragment（add()、remove()、replace()）。</p></li>
+<li><p>Fragment 可以响应自己的输入事件，并且有自己的生命周期，当然，它们的生命周期直接被其所属的宿主 Activity 的生命周期影响。</p></li>
+</ol>
+
+
+<p><img class="center" src="http://developer.android.com/images/fundamentals/fragments.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/29/android-fragment/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -433,100 +526,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/05/17/ContentObserver/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/13/SQLTest/">Service写入数据库并更新UI</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-13T22:22:00+08:00" pubdate data-updated="true">May 13<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/13/SQLTest/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>目的是使用Service写入SQLite数据库，然后通知UI更新。</p>
-
-<p>首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/13/SQLTest/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/01/listener/">【转载】Android到处都在使用的回调分析</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-01T13:01:00+08:00" pubdate data-updated="true">May 1<span>st</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/01/listener/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Android到处都在使用的回调分析</p>
-
-<p><a href="http://lzd20021683.iteye.com/blog/1319626">http://lzd20021683.iteye.com/blog/1319626</a></p>
-
-<blockquote><p><strong>回调函数：</strong></p>
-
-<p>回调函数就是一个通过函数指针调用的函数。如果你把函数的指针(地址)作为参数传递给另一个函数，当这个指针被用为调用它所指向的函数时，我们就说这是回调函数。回调函数不是由该函数的实现方直接调用，而是在特定的事件或条件发生时由另外的一方调用的，用于对该事件或条件进行响应。</p></blockquote>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/01/listener/">Read on &rarr;</a>
     </footer>
   
 

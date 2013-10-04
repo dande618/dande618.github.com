@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Android Service - 初心</title>
+  <title>源码Launcher编译，使用mdpi的资源 - 初心</title>
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="Service，Android在后台运行的服务，和Activiy比较相似，只是没有界面显示。Service的启动方式有Context.startService()和Context.bindService()两种。 使用Service，需要定义一个继承android.app.Service的子类； &hellip;">
+  <meta name="description" content="4.2.2的源码，进行对Launcher2的修改，之后使用mm或mmm编译，使用adb push安装到平板中。 因为使用的一代nexus7，所以一般程序调用资源的是drawable_sw600dp_hdpi下的图片资源， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://dande618.github.com/blog/2013/04/30/service/">
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/08/10/launcher-hdpi/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,7 +60,7 @@
   
   <header>
     
-      <h1 class="entry-title">Android Service</h1>
+      <h1 class="entry-title">源码Launcher编译，使用mdpi的资源</h1>
     
     
       <p class="meta">
@@ -76,7 +76,7 @@
   
 
 
-<time datetime="2013-04-30T20:01:00+08:00" pubdate data-updated="true">Apr 30<span>th</span>, 2013</time>
+<time datetime="2013-08-10T08:10:00+08:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -85,34 +85,29 @@
   </header>
 
 
-<div class="entry-content"><p>Service，Android在后台运行的服务，和Activiy比较相似，只是没有界面显示。Service的启动方式有Context.startService()和Context.bindService()两种。</p>
+<div class="entry-content"><p>4.2.2的源码，进行对Launcher2的修改，之后使用mm或mmm编译，使用adb push安装到平板中。</p>
 
-<!-- more -->
+<p>因为使用的一代nexus7，所以一般程序调用资源的是drawable_sw600dp_hdpi下的图片资源，但是按照上面方法编译出的Launcher使用drawable_sw600dp_mdpi的图片资源。</p>
 
+<p>在网上搜索后，解决方法是</p>
 
-<p>使用Service，需要定义一个继承android.app.Service的子类；</p>
+<blockquote><p>默认编译mdpi的apk，如果要编译hdpi，需要在./build/target/product/full.mk文件中添加：</p></blockquote>
 
-<p>和Activity一样，Service也要在AndroidMainfest里声明，同时可以声明由哪些intent启动；</p>
-
-<p>Service的子类必须实现abstract IBinder onBind(Intent intent)方法，该方法返回一个IBinder对象，应用程序可以通过该对象与Service通讯；</p>
-
-<h3>服务的生命周期</h3>
-
-<p>有了 Service 类我们如何启动他呢，有两种方法：</p>
-
-<ul>
-<li><p>Context.startService()</p></li>
-<li><p>Context.bindService()</p></li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>PRODUCT_AAPT_CONFIG := normal hdpi 
+</span><span class='line'>PRODUCT_AAPT_PREF_CONFIG := hdpi</span></code></pre></td></tr></table></div></figure>
 
 
-<p>在同一个应用任何地方调用 startService() 方法就能启动 Service 了，然后系统会回调 Service 类的 onCreate() 以及 onStart() 方法。这样启动的 Service 会一直运行在后台，直到 Context.stopService() 或者 selfStop() 方法被调用。另外如果一个 Service 已经被启动，其他代码再试图调用 startService() 方法，是不会执行 onCreate() 的，但会重新执行一次 onStart() 。</p>
+<p>经过测试，</p>
 
-<p>另外一种 bindService() 方法的意思是，把这个 Service 和调用 Service 的客户类绑起来，如果调用这个客户类被销毁，Service 也会被销毁。用这个方法的一个好处是，bindService() 方法执行后 Service 会回调上边提到的 onBind() 方发，你可以从这里返回一个实现了 IBind 接口的类，在客户端操作这个类就能和这个服务通信了，比如得到 Service 运行的状态或其他操作。如果 Service 还没有运行，使用这个方法启动 Service 就会 onCreate() 方法而不会调用 onStart()。</p>
+<p>PRODUCT_AAPT_CONFIG指定了hdpi的话，就会使用hdpi的资源，而不使用mdpi资源！指定xhdpi的话，就不会使用hdpi的资源！</p>
 
-<h3>与 Service 通信并且让它持续运行</h3>
+<p>PRODUCT_AAPT_PREF_CONFIG指定hdpi，编译出的APK中会有hdpi、mdpi等等，没有xhdpi和xxhdpi，默认是mdpi，所以编译出的APK中就没有hdpi。</p>
 
-<p>如果我们想保持和 Service 的通信，又不想让 Service 随着 Activity 退出而退出呢？你可以先 startService() 然后再 bindService() 。当你不需要绑定的时候就执行 unbindService() 方法，执行这个方法只会触发 Service 的 onUnbind() 而不会把这个 Service 销毁。这样就可以既保持和 Service 的通信，也不会随着 Activity 销毁而销毁了。</p>
+<p>aapt 是android assert packaging tool的缩写，即安卓打包工具。</p>
+
+<p>加上这两句以后，会影响其参数，只为一种设备匹配文件。而eclipse生成的程序可以为多种设备匹配。</p>
 </div>
 
 
@@ -135,7 +130,7 @@
   
 
 
-<time datetime="2013-04-30T20:01:00+08:00" pubdate data-updated="true">Apr 30<span>th</span>, 2013</time>
+<time datetime="2013-08-10T08:10:00+08:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -156,10 +151,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/04/28/ContentProvider/" title="Previous Post: Android ContentProvider">&laquo; Android ContentProvider</a>
+        <a class="basic-alignment left" href="/blog/2013/08/02/typeface-in-widget/" title="Previous Post: 自定义widget上的字体类型">&laquo; 自定义widget上的字体类型</a>
       
       
-        <a class="basic-alignment right" href="/blog/2013/05/01/listener/" title="Next Post: 【转载】Android到处都在使用的回调分析">【转载】Android到处都在使用的回调分析 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2013/08/28/statusbar/" title="Next Post: android隐藏下方系统栏statusbar">android隐藏下方系统栏statusbar &raquo;</a>
       
     </p>
   </footer>
@@ -195,8 +190,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://dande618.github.com/blog/2013/04/30/service/';
-        var disqus_url = 'http://dande618.github.com/blog/2013/04/30/service/';
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/08/10/launcher-hdpi/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/08/10/launcher-hdpi/';
         var disqus_script = 'embed.js';
       
     (function () {
