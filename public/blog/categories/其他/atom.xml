@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 其他 | 初心]]></title>
   <link href="http://dande618.github.com/blog/categories/其他/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-08-28T21:13:11+08:00</updated>
+  <updated>2013-10-29T11:31:10+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -19,32 +19,6 @@
     <updated>2013-08-02T17:50:00+08:00</updated>
     <id>http://dande618.github.com/blog/2013/08/02/git</id>
     <content type="html"><![CDATA[<p>今天提交版本时遇到了git目录无法添加文件夹下的文件。比如要提交A文件夹，而程序代码在A/B文件夹下。使用git add . 只能加入一个空的B文件夹。这个原因是B文件夹是从别的git库拉下来的，只要把B下的隐藏文件.git删掉就可以了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[android电话面试总结]]></title>
-    <link href="http://dande618.github.com/blog/2013/06/24/summary/"/>
-    <updated>2013-06-24T17:50:00+08:00</updated>
-    <id>http://dande618.github.com/blog/2013/06/24/summary</id>
-    <content type="html"><![CDATA[<p>关于这次电话面试的总结。</p>
-
-<!-- more -->
-
-
-<p>前一天约好了今天进行电话技术面试，今天准时接到电话。</p>
-
-<p>首先会有自我介绍，基本是把简历上的内容大致复述下。</p>
-
-<p>然后直接问了做过的项目问题。自己对项目进行描述，有些紧张说的有些乱。</p>
-
-<p>对项目进行描述，首先要对项目进行一个大致的描述，面向什么样的用户，实现了怎样的功能。</p>
-
-<p>然后针对自己负责的部分做详细的介绍。期间面试官会针对你提到的内容问相关的问题，看你相关的知识是否了解的透彻。这就要求对相关的知识要掌握清楚。</p>
-
-<p>像网上很多人所说的那样，我想面试官并不是看中你哪个项目的经验，重要的是其中对基础知识的掌握，最重要的是分析解决问题的能力。</p>
-
-<p>当然面试前要用足够的时间总结项目的内容，同时也要记清楚基础知识和常见的面试问题。</p>
 ]]></content>
   </entry>
   
@@ -499,6 +473,179 @@ Markdown 会转为：</p>
 </span><span class='line'>&lt;hr />
 </span><span class='line'>
 </span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[正则表达式]]></title>
+    <link href="http://dande618.github.com/blog/2013/02/15/regex/"/>
+    <updated>2013-02-15T16:00:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/02/15/regex</id>
+    <content type="html"><![CDATA[<p>　　在计算机科学中，是指一个用来描述或者匹配一系列符合某个句法规则的字符串的单个字符串。在很多文本编辑器或其他工具里，正则表达式通常被用来检索和/或替换那些符合某个模式的文本内容。许多程序设计语言都支持利用正则表达式进行字符串操作。</p></p>
+
+<br/>
+
+
+<!-- more -->
+
+
+<table class="mytable"><tr><td class="mytable">元字符 
+</td><td class="mytable">描述
+</td></tr><tr><td class="mytable">\
+</td><td class="mytableb">将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“\n”匹配字符“n”。“\\n”匹配一个换行符。序列“\\”匹配“\”而“\(”则匹配“(”。
+</td></tr><tr><td class="mytable">^
+</td><td class="mytableb">匹配输入字符串的开始位置。如果设置了RegExp对象的Multiline属性，^也匹配“\n”或“\r”之后的位置。
+</td></tr><tr><td class="mytable">$
+</td><td class="mytableb">匹配输入字符串的结束位置。如果设置了RegExp对象的Multiline属性，$也匹配“\n”或“\r”之前的位置。
+</td></tr><tr><td class="mytable">*
+</td><td class="mytableb">匹配前面的子表达式零次或多次。例如，zo*能匹配“z”以及“zoo”。*等价于{0,}。
+</td></tr><tr><td class="mytable">+
+</td><td class="mytableb">匹配前面的子表达式一次或多次。例如，“zo+”能匹配“zo”以及“zoo”，但不能匹配“z”。+等价于{1,}。
+</td></tr><tr><td class="mytable">?
+</td><td class="mytableb">匹配前面的子表达式零次或一次。例如，“do(es)?”可以匹配“does”或“does”中的“do”。?等价于{0,1}。
+</td></tr><tr><td class="mytable">{n}
+</td><td class="mytableb">n是一个非负整数。匹配确定的n次。例如，“o{2}”不能匹配“Bob”中的“o”，但是能匹配“food”中的两个o。
+</td></tr><tr><td class="mytable">{n,}
+</td><td class="mytableb">n是一个非负整数。至少匹配n次。例如，“o{2,}”不能匹配“Bob”中的“o”，但能匹配“foooood”中的所有o。“o{1,}”等价于“o+”。“o{0,}”则等价于“o*”。
+</td></tr><tr><td class="mytable">{n,m}
+</td><td class="mytableb">m和n均为非负整数，其中n&lt;=m。最少匹配n次且最多匹配m次。例如，“o{1,3}”将匹配“fooooood”中的前三个o。“o{0,1}”等价于“o?”。请注意在逗号和两个数之间不能有空格。
+</td></tr><tr><td class="mytable">?
+</td><td class="mytableb">当该字符紧跟在任何一个其他限制符（*,+,?，{n}，{n,}，{n,m}）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串“oooo”，“o+?”将匹配单个“o”，而“o+”将匹配所有“o”。
+</td></tr><tr><td class="mytable">.点
+</td><td class="mytableb">匹配除“\n”之外的任何单个字符。要匹配包括“\n”在内的任何字符，请使用像“&#91;\s\S&#93;”的模式。
+</td></tr><tr><td class="mytable">(pattern)
+</td><td class="mytableb">匹配pattern并获取这一匹配。所获取的匹配可以从产生的Matches集合得到，在VBScript中使用SubMatches集合，在JScript中则使用$0…$9属性。要匹配圆括号字符，请使用“\(”或“\)”。
+</td></tr><tr><td class="mytable">(?:pattern)
+</td><td class="mytableb">匹配pattern但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用或字符“(|)”来组合一个模式的各个部分是很有用。例如“industr(?:y|ies)”就是一个比“industry|industries”更简略的表达式。
+</td></tr><tr><td class="mytable">(?=pattern)
+</td><td class="mytableb">正向肯定预查，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，“Windows(?=95|98|NT|2000)”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
+</td></tr><tr><td class="mytable">(?!pattern)
+</td><td class="mytableb">正向否定预查，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如“Windows(?!95|98|NT|2000)”能匹配“Windows3.1”中的“Windows”，但不能匹配“Windows2000”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
+</td></tr><tr><td class="mytable">(?&lt;=pattern)
+</td><td class="mytableb">反向肯定预查，与正向肯定预查类似，只是方向相反。例如，“(?&lt;=95|98|NT|2000)Windows”能匹配“2000Windows”中的“Windows”，但不能匹配“3.1Windows”中的“Windows”。
+</td></tr><tr><td class="mytable">(?&lt;!pattern)
+</td><td class="mytableb">反向否定预查，与正向否定预查类似，只是方向相反。例如“(?&lt;!95|98|NT|2000)Windows”能匹配“3.1Windows”中的“Windows”，但不能匹配“2000Windows”中的“Windows”。
+</td></tr><tr><td class="mytable">x|y
+</td><td class="mytableb">匹配x或y。例如，“z|food”能匹配“z”或“food”。“(z|f)ood”则匹配“zood”或“food”。
+</td></tr><tr><td class="mytable">&#91;xyz&#93;
+</td><td class="mytableb">字符集合。匹配所包含的任意一个字符。例如，“&#91;abc&#93;”可以匹配“plain”中的“a”。
+</td></tr><tr><td class="mytable">&#91;^xyz&#93;
+</td><td class="mytableb">负值字符集合。匹配未包含的任意字符。例如，“&#91;^abc&#93;”可以匹配“plain”中的“plin”。
+</td></tr><tr><td class="mytable">&#91;a-z&#93;
+</td><td class="mytableb">字符范围。匹配指定范围内的任意字符。例如，“&#91;a-z&#93;”可以匹配“a”到“z”范围内的任意小写字母字符。
+</td></tr><tr><td class="mytable">&#91;^a-z&#93;
+</td><td class="mytableb">负值字符范围。匹配任何不在指定范围内的任意字符。例如，“&#91;^a-z&#93;”可以匹配任何不在“a”到“z”范围内的任意字符。
+</td></tr><tr><td class="mytable">\b
+</td><td class="mytableb">匹配一个单词边界，也就是指单词和空格间的位置。例如，“er\b”可以匹配“never”中的“er”，但不能匹配“verb”中的“er”。
+</td></tr><tr><td class="mytable">\B
+</td><td class="mytableb">匹配非单词边界。“er\B”能匹配“verb”中的“er”，但不能匹配“never”中的“er”。
+</td></tr><tr><td class="mytable">\cx
+</td><td class="mytableb">匹配由x指明的控制字符。例如，\cM匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的“c”字符。
+</td></tr><tr><td class="mytable">\d
+</td><td class="mytableb">匹配一个数字字符。等价于&#91;0-9&#93;。
+</td></tr><tr><td class="mytable">\D
+</td><td class="mytableb">匹配一个非数字字符。等价于&#91;^0-9&#93;。
+</td></tr><tr><td class="mytable">\f
+</td><td class="mytableb">匹配一个换页符。等价于\x0c和\cL。
+</td></tr><tr><td class="mytable">\n
+</td><td class="mytableb">匹配一个换行符。等价于\x0a和\cJ。
+</td></tr><tr><td class="mytable">\r
+</td><td class="mytableb">匹配一个回车符。等价于\x0d和\cM。
+</td></tr><tr><td class="mytable">\s
+</td><td class="mytableb">匹配任何空白字符，包括空格、制表符、换页符等等。等价于&#91; \f\n\r\t\v&#93;。
+</td></tr><tr><td class="mytable">\S
+</td><td class="mytableb">匹配任何非空白字符。等价于&#91;^ \f\n\r\t\v&#93;。
+</td></tr><tr><td class="mytable">\t
+</td><td class="mytableb">匹配一个制表符。等价于\x09和\cI。
+</td></tr><tr><td class="mytable">\v
+</td><td class="mytableb">匹配一个垂直制表符。等价于\x0b和\cK。
+</td></tr><tr><td class="mytable">\w
+</td><td class="mytableb">匹配包括下划线的任何单词字符。等价于“&#91;A-Za-z0-9_&#93;”。
+</td></tr><tr><td class="mytable">\W
+</td><td class="mytableb">匹配任何非单词字符。等价于“&#91;^A-Za-z0-9_&#93;”。
+</td></tr><tr><td class="mytable">\xn
+</td><td class="mytableb">匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，“\x41”匹配“A”。“\x041”则等价于“\x04&amp;1”。正则表达式中可以使用ASCII编码。
+</td></tr><tr><td class="mytable">\num
+</td><td class="mytableb">匹配num，其中num是一个正整数。对所获取的匹配的引用。例如，“(.)\1”匹配两个连续的相同字符。
+</td></tr><tr><td class="mytable">\n
+</td><td class="mytableb">标识一个八进制转义值或一个向后引用。如果\n之前至少n个获取的子表达式，则n为向后引用。否则，如果n为八进制数字（0-7），则n为一个八进制转义值。
+</td></tr><tr><td class="mytable">\nm
+</td><td class="mytableb">标识一个八进制转义值或一个向后引用。如果\nm之前至少有nm个获得子表达式，则nm为向后引用。如果\nm之前至少有n个获取，则n为一个后跟文字m的向后引用。如果前面的条件都不满足，若n和m均为八进制数字（0-7），则\nm将匹配八进制转义值nm。
+</td></tr><tr><td class="mytable">\nml
+</td><td class="mytableb">如果n为八进制数字（0-3），且m和l均为八进制数字（0-7），则匹配八进制转义值nml。
+</td></tr><tr><td class="mytable">\un
+</td><td class="mytableb">匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\u00A9匹配版权符号（&copy;）。
+</td></tr></table>
+
+
+<h2>使用emeditor宏批处理</h2>
+
+<p>例
+1. 添加菜单项
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>if (document.selection.isempty)&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>else&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>nFlags=eeFindNext | eeReplaceSelOnly | eeReplaceAll | eeFindReplaceRegExp;
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>menu= CreatePopupMenu();&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>menu.Add("使用正则表达式提取字符串",1);&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>result = menu.Track( 0 );&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>if (result>40) nFlags=nFlags=eeFindNext | eeReplaceAll | eeFindReplaceRegExp;&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>switch(result){&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>case 1: //内容&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>    break;
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>default:&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>2.删除段首尾空格
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>document.selection.Replace("&lt;sup>\s*","",eeFindNext&lt;/sup> | eeReplaceAll | eeFindReplaceRegExp);&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>document.selection.Replace("\s*$","",eeFindNext | eeReplaceAll | eeFindReplaceRegExp);</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
