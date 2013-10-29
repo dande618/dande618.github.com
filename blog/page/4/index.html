@@ -9,8 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="官方API文档翻译：http://blog.csdn.net/aomandeshangxiao/article/details/7671533 Fragment 作为 Activity 界面的一部分组成出现。
-可以在一个 Activity 中同时出现多个 Fragment，并且，一个 &hellip;">
+  <meta name="description" content="转载 http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html MVC (Model-View-Controller)：M是指逻辑模型，V是指视图模型，C则是控制器。一个逻辑模型可以对于多种视图模型， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +57,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/android-MVC/">Android之MVC模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T19:07:00+08:00" pubdate data-updated="true">May 29<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/29/android-MVC/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>转载 <a href="http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html">http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html</a></p>
+
+<p><strong>MVC (Model-View-Controller)：M是指逻辑模型，V是指视图模型，C则是控制器。</strong>一个逻辑模型可以对于多种视图模型，比如一批统计数据你可以分别用柱状图、饼图来表示。一种视图模型也可以对于多种逻辑模型。使用MVC的目的是<strong>将M和V的实现代码分离</strong>，从而使同一个程序可以使用不同的表现形式，而C存在的目的则是确保M和V的同步，一旦M改变，V应该同步更新，这与《设计模式》中的观察者模式是完全一样。</p>
+
+<p>MVC好处：<strong>从用户的角度出发，用户可以根据自己的需求，选择自己合适的浏览数据的方式</strong>。比如说，对于一篇在线文档，用户可以选择以HTML网页的方式阅读，也可以选择以pdf的方式阅读。从开发者的角度，MVC把应用程序的逻辑层与界面是完全分开的，最大的好处是：界面设计人员可以直接参与到界面开发，程序员就可以把精力放在逻辑层上。而不是像以前那样，设计人员把所有的材料交给开发人员，由开发人员来实现界面。在Eclipes工具中开发Android采用了更加简单的方法，设计人员在DroidDraw中设计界面，以XML方式保存，在Eclipes中直接打开就可以看到设计人员设计的界面。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/29/android-MVC/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -480,51 +526,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/05/17/ContentObserver/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/13/SQLTest/">Service写入数据库并更新UI</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-13T22:22:00+08:00" pubdate data-updated="true">May 13<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/13/SQLTest/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>目的是使用Service写入SQLite数据库，然后通知UI更新。</p>
-
-<p>首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/13/SQLTest/">Read on &rarr;</a>
     </footer>
   
 

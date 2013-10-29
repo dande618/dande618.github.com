@@ -9,7 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html 登录oracle的网站去下载JDK7 http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads &hellip;">
+  <meta name="description" content="转载http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html Android 2.1 |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -57,6 +57,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/24/frameworks/">Android源码结构</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-24T12:23:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/24/frameworks/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>转载<a href="http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html">http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html</a></p>
+
+<p><code>Android 2.1</code> |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （启动引导相关代码） |&#8211; build （存放系统编译规则及generic等基础开发包配置） |&#8211; cts （Android兼容性测试套件标准） |&#8211; dalvik （dalvik JAVA虚拟机） |&#8211; development （应用程序开发相关） |&#8211; external （android使用的一些开源的模组） |&#8211; frameworks</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/24/frameworks/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -531,84 +576,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/06/11/listview/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/10/singleton/">JAVA单例模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-10T19:28:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/10/singleton/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://blog.csdn.net/it_man/article/details/5787567">http://blog.csdn.net/it_man/article/details/5787567</a></p>
-
-<p>1.预先加载法</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">S1</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="nf">S1</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;ok1&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">S1</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">S1</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">S1</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>优点：</p>
-
-<p>1.线程安全的</p>
-
-<p>2.在类加载的同时已经创建好一个静态对象,调用时反应速度快。</p>
-
-<p>缺点： 资源利用效率不高，可能getInstance永远不会执行到，但是执行了该类的其他静态方法或者加载了该类（class.forName），那么这个实例仍然初始化了</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/10/singleton/">Read on &rarr;</a>
     </footer>
   
 

@@ -9,7 +9,18 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="对于android开发者来说起，适配器模式简直太熟悉不过，有很多应用可以说是天天在直接或者间接的用到适配器模式，比如ListView。 ListView用于显示列表数据，但是作为列表数据集合有很多形式，有Array，有Cursor，我们需要对应的适配器作为桥梁，处理相应的数据（ &hellip;">
+  <meta name="description" content="http://blog.csdn.net/it_man/article/details/5787567 1.预先加载法 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+class S1 { private S1() { System.out.println(&quot;ok1&quot;); } &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -57,6 +68,84 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/10/singleton/">JAVA单例模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-10T19:28:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/10/singleton/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://blog.csdn.net/it_man/article/details/5787567">http://blog.csdn.net/it_man/article/details/5787567</a></p>
+
+<p>1.预先加载法</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">S1</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">S1</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;ok1&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="n">S1</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">S1</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">S1</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>优点：</p>
+
+<p>1.线程安全的</p>
+
+<p>2.在类加载的同时已经创建好一个静态对象,调用时反应速度快。</p>
+
+<p>缺点： 资源利用效率不高，可能getInstance永远不会执行到，但是执行了该类的其他静态方法或者加载了该类（class.forName），那么这个实例仍然初始化了</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/10/singleton/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -543,53 +632,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/05/31/memory-management-in-android/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/29/android-MVC/">Android之MVC模式</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-29T19:07:00+08:00" pubdate data-updated="true">May 29<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/29/android-MVC/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>转载 <a href="http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html">http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html</a></p>
-
-<p><strong>MVC (Model-View-Controller)：M是指逻辑模型，V是指视图模型，C则是控制器。</strong>一个逻辑模型可以对于多种视图模型，比如一批统计数据你可以分别用柱状图、饼图来表示。一种视图模型也可以对于多种逻辑模型。使用MVC的目的是<strong>将M和V的实现代码分离</strong>，从而使同一个程序可以使用不同的表现形式，而C存在的目的则是确保M和V的同步，一旦M改变，V应该同步更新，这与《设计模式》中的观察者模式是完全一样。</p>
-
-<p>MVC好处：<strong>从用户的角度出发，用户可以根据自己的需求，选择自己合适的浏览数据的方式</strong>。比如说，对于一篇在线文档，用户可以选择以HTML网页的方式阅读，也可以选择以pdf的方式阅读。从开发者的角度，MVC把应用程序的逻辑层与界面是完全分开的，最大的好处是：界面设计人员可以直接参与到界面开发，程序员就可以把精力放在逻辑层上。而不是像以前那样，设计人员把所有的材料交给开发人员，由开发人员来实现界面。在Eclipes工具中开发Android采用了更加简单的方法，设计人员在DroidDraw中设计界面，以XML方式保存，在Eclipes中直接打开就可以看到设计人员设计的界面。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/29/android-MVC/">Read on &rarr;</a>
     </footer>
   
 
