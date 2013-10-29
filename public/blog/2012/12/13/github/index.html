@@ -106,7 +106,7 @@ git commit -m ""
 </li>
 <li>当你开发完毕，需要合并到master上时
 <pre class="wiki">git checkout master    #先切换回master
-git pull                       #这里不可能有任何冲突，因为master是不会本地修改的
+git pull   #这里不可能有任何冲突，因为master是不会本地修改的
 git checkout &lt;branch_name&gt;  #切换回开发分支
 git rebase master       #这时候可能会产生冲突，哪些文件冲突了，反馈信息里有明确显示
 如果发生了冲突：
