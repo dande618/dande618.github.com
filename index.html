@@ -1,1 +1,726 @@
-My Octopress Page is coming soon &hellip;
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="最近修复了一个BUG是定制SetupWizard时，下面的系统栏会出现。 SetupWizard是一台安卓设备第一次运行时的设置程序，可以设置Google帐号，姓名什么的，所以不允许用户点击返回、Home或最近运行三个虚拟按键。 当设置Google帐号时， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/28/statusbar/">Android隐藏下方系统栏statusbar</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-28T18:10:00+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/28/statusbar/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近修复了一个BUG是定制SetupWizard时，下面的系统栏会出现。</p>
+
+<p>SetupWizard是一台安卓设备第一次运行时的设置程序，可以设置Google帐号，姓名什么的，所以不允许用户点击返回、Home或最近运行三个虚拟按键。</p>
+
+<p>当设置Google帐号时，会打开GoogleLoginService的Activity，所以用网上的有些方法不好用。一进入输入状态时，StatusBar还会显示出来。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/08/28/statusbar/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/10/launcher-hdpi/">源码Launcher编译，使用mdpi的资源</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-10T08:10:00+08:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/10/launcher-hdpi/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>4.2.2的源码，进行对Launcher2的修改，之后使用mm或mmm编译，使用adb push安装到平板中。</p>
+
+<p>因为使用的一代nexus7，所以一般程序调用资源的是drawable_sw600dp_hdpi下的图片资源，但是按照上面方法编译出的Launcher使用drawable_sw600dp_mdpi的图片资源。</p>
+
+<p>在网上搜索后，解决方法是</p>
+
+<blockquote><p>默认编译mdpi的apk，如果要编译hdpi，需要在./build/target/product/full.mk文件中添加：</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>PRODUCT_AAPT_CONFIG := normal hdpi 
+</span><span class='line'>PRODUCT_AAPT_PREF_CONFIG := hdpi</span></code></pre></td></tr></table></div></figure>
+
+
+<p>经过测试，</p>
+
+<p>PRODUCT_AAPT_CONFIG指定了hdpi的话，就会使用hdpi的资源，而不使用mdpi资源！指定xhdpi的话，就不会使用hdpi的资源！</p>
+
+<p>PRODUCT_AAPT_PREF_CONFIG指定hdpi，编译出的APK中会有hdpi、mdpi等等，没有xhdpi和xxhdpi，默认是mdpi，所以编译出的APK中就没有hdpi。</p>
+
+<p>aapt 是android assert packaging tool的缩写，即安卓打包工具。</p>
+
+<p>加上这两句以后，会影响其参数，只为一种设备匹配文件。而eclipse生成的程序可以为多种设备匹配。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/02/typeface-in-widget/">自定义widget上的字体类型</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T20:13:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/02/typeface-in-widget/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>对于Activity中的TextView之类的现实文字的控件，如果我们要使用自定义的字体，不能在XML里定义，只能在代码中实现。</p>
+
+<p>一般的做法是将字体文件保存在assets/fonts/目录下，然后使用代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>TextView textView = (TextView) findViewById(R.id.textview);
+</span><span class='line'>Typeface typeFace = Typeface.createFromAsset(getAssets(),"fonts/Cambira.ttf");
+</span><span class='line'>textView.setTypeface(typeFace);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而widget使用RemoteView更新界面，无法使用这种方法设置自定义字体。</p>
+
+<p>可以使用以下方法</p>
+
+<p>参见 <a href="http://stackoverflow.com/questions/4318572/how-to-use-a-custom-typeface-in-a-widget">http://stackoverflow.com/questions/4318572/how-to-use-a-custom-typeface-in-a-widget</a></p>
+
+<p>即使用ImageView代替TextView，自己绘制自定义字体的图片。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>public Bitmap buildUpdate(String time) 
+</span><span class='line'>{
+</span><span class='line'>    Bitmap myBitmap = Bitmap.createBitmap(160, 84, Bitmap.Config.ARGB_4444);
+</span><span class='line'>    Canvas myCanvas = new Canvas(myBitmap);
+</span><span class='line'>    Paint paint = new Paint();
+</span><span class='line'>    Typeface clock = Typeface.createFromAsset(this.getAssets(),"Clockopia.ttf");
+</span><span class='line'>    paint.setAntiAlias(true);
+</span><span class='line'>    paint.setSubpixelText(true);
+</span><span class='line'>    paint.setTypeface(clock);
+</span><span class='line'>    paint.setStyle(Paint.Style.FILL);
+</span><span class='line'>    paint.setColor(Color.WHITE);
+</span><span class='line'>    paint.setTextSize(65);
+</span><span class='line'>    paint.setTextAlign(Align.CENTER);
+</span><span class='line'>    myCanvas.drawText(time, 80, 60, paint);
+</span><span class='line'>    return myBitmap;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>String time = (String) DateFormat.format(mTimeFormat, mCalendar);
+</span><span class='line'>RemoteViews views = new RemoteViews(getPackageName(), R.layout.main);
+</span><span class='line'>views.setImageViewBitmap(R.id.TimeView, buildUpdate(time));</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/02/git/">Git Add . 无法添加文件夹下的文件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T17:50:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/08/02/git/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天提交版本时遇到了git目录无法添加文件夹下的文件。比如要提交A文件夹，而程序代码在A/B文件夹下。使用git add . 只能加入一个空的B文件夹。这个原因是B文件夹是从别的git库拉下来的，只要把B下的隐藏文件.git删掉就可以了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/23/bitmap-zoom/">对Bitmap进行缩放</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-23T20:13:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/23/bitmap-zoom/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用以下方法对Bitmap进行缩放</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Bitmap</span> <span class="nf">zoomBitmap</span><span class="o">(</span><span class="n">Bitmap</span> <span class="n">bitmap</span><span class="o">,</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="kt">int</span> <span class="n">height</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>         <span class="k">if</span> <span class="o">(</span><span class="n">bitmap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>             <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>         <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">bitmap</span><span class="o">.</span><span class="na">getWidth</span><span class="o">();</span>
+</span><span class='line'>         <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="n">bitmap</span><span class="o">.</span><span class="na">getHeight</span><span class="o">();</span>
+</span><span class='line'>         <span class="n">Matrix</span> <span class="n">matrix</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Matrix</span><span class="o">();</span>
+</span><span class='line'>         <span class="kt">float</span> <span class="n">scaleWidth</span> <span class="o">=</span> <span class="o">((</span><span class="kt">float</span><span class="o">)</span> <span class="n">width</span> <span class="o">/</span> <span class="n">w</span><span class="o">);</span>
+</span><span class='line'>         <span class="kt">float</span> <span class="n">scaleHeight</span> <span class="o">=</span> <span class="o">((</span><span class="kt">float</span><span class="o">)</span> <span class="n">height</span> <span class="o">/</span> <span class="n">h</span><span class="o">);</span>
+</span><span class='line'>         <span class="n">matrix</span><span class="o">.</span><span class="na">postScale</span><span class="o">(</span><span class="n">scaleWidth</span><span class="o">,</span> <span class="n">scaleHeight</span><span class="o">);</span>
+</span><span class='line'>         <span class="n">Bitmap</span> <span class="n">newbmp</span> <span class="o">=</span> <span class="n">Bitmap</span><span class="o">.</span><span class="na">createBitmap</span><span class="o">(</span><span class="n">bitmap</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">w</span><span class="o">,</span> <span class="n">h</span><span class="o">,</span> <span class="n">matrix</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>         <span class="k">return</span> <span class="n">newbmp</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者直接使用</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">android.media.ThumbnailUtils</span><span class="o">;</span>
+</span><span class='line'><span class="c1">//... ...</span>
+</span><span class='line'><span class="n">ThumbnailUtils</span><span class="o">.</span><span class="na">extractThumbnail</span><span class="o">(</span><span class="n">Bitmap</span> <span class="n">bitmap</span><span class="o">,</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="kt">int</span> <span class="n">height</span><span class="o">)</span><span class="err">方法</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/22/canreorder/">Launcher中锁定图标位置</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-22T19:12:00+08:00" pubdate data-updated="true">Jul 22<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/22/canreorder/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一、使图标不能被挤开</h3>
+
+<p>在Launcher中，AllAppsButton的图标是在Hotseat.java加载的，并且设置了对应的layoutparams的属性 canReorder = false;</p>
+
+<p>如字面上的意思，设置了此属性为false的layoutparams中的图标不能被重新排序，即不能被直接或间接挤开。但是可以移动（AllApps按钮不能移动，使因为在hotseat.java单独加载时，没有绑定长按监听器）。当拖动其他图标到此处时，可以形成文件夹。所以如果对此有需求，还要更改其他对应的代码。</p>
+
+<p>通过对源码的搜索，发现只有两处用到了这个属性。</p>
+
+<p>一处是在rearrangementExists方法</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">Rect</span><span class="o">.</span><span class="na">intersects</span><span class="o">(</span><span class="n">r0</span><span class="o">,</span> <span class="n">r1</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">lp</span><span class="o">.</span><span class="na">canReorder</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">mIntersectingViews</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">child</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注释掉此处后，图标可以被直接挤开。</p>
+
+<p>另一处是pushViewsToTempLocation方法</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(!</span><span class="n">cluster</span><span class="o">.</span><span class="na">views</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">v</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">dragView</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">cluster</span><span class="o">.</span><span class="na">isViewTouchingEdge</span><span class="o">(</span><span class="n">v</span><span class="o">,</span> <span class="n">whichEdge</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">LayoutParams</span> <span class="n">lp</span> <span class="o">=</span> <span class="o">(</span><span class="n">LayoutParams</span><span class="o">)</span> <span class="n">v</span><span class="o">.</span><span class="na">getLayoutParams</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">lp</span><span class="o">.</span><span class="na">canReorder</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">// The push solution includes the all apps button,  </span>
+</span><span class='line'>            <span class="c1">// this is not viable.  </span>
+</span><span class='line'>            <span class="n">fail</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注释掉此处后，图标可以被间接挤开，也就是挤压相邻的另一个图标。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/20/mm/">android源码，编译完整的APK</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-20T15:06:00+08:00" pubdate data-updated="true">Jul 20<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/20/mm/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>修改源码下的</p>
+
+<p>/build/core/java_library.mk 和 /build/core/package.mk</p>
+
+<p>将 LOCAL_DEX_PREOPT :=true</p>
+
+<p>改成 false</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/19/launcher-folder/">launcher2的Folder布局相关</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-19T20:50:00+08:00" pubdate data-updated="true">Jul 19<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/19/launcher-folder/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这里只写文件图标相关，主要是FolderIcon.java控制。可以看到，FolderIcon是LinearLayout的子类。</p>
+
+<p>观察/res/layout-land(port)/folder_icon.xml，FolderIcon是由一个ImageView和一个BubbleTextView组成，这个ImageView是FolderIcon的背景。</p>
+
+<p>在这里可以调整文件夹图标的大小。在BubbleTextView对应的的style里调整padding、字体大小、文字与图标间距等。</p>
+
+<p>再看FolderIcon.java。</p>
+
+<p>有一些final的属性，比如显示preview的图标的个数，默认是3个。以及相关动画显示的时间等。</p>
+
+<p>Folder的加载可以参考这篇博客 <a href="http://blog.csdn.net/wdaming1986/article/details/7748738">http://blog.csdn.net/wdaming1986/article/details/7748738</a></p>
+
+<p>显示的程序图标预览在computePreviewItemDrawingParams()方法，之后通过drawPreviewItem()绘制在屏幕上。</p>
+
+<p>当拖动图标移动到一个文件夹上时，会调用CellLayout的onDraw方法，显示蓝色的外框和内部背景。</p>
+
+<p>当点击Hotseat上FolderIcon，打开文件夹后，Hotseat上会显示表示文件夹位置的一个小篮圈，这个也是在CellLayout的onDraw方法里实现的。在growAndFadeOutFolderIcon()方法判断是不是位于Hotseat。</p>
+
+<p>调用顺序依次是onClick【Launcher.java】 -> handleFolderClick【Launcher.java】 -> openFolder【Launcher.java】 -> growAndFadeOutFolderIcon【Launcher.java】 -> setFolderLeaveBehindCell【CellLayout.java】 -> invalidate【CellLayout.java】</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/15/launcher2/">4.2.2_r1版本源码的launcher2布局介绍</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-15T18:20:00+08:00" pubdate data-updated="true">Jul 15<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/07/15/launcher2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="http://image142.poco.cn/mypoco/myphoto/20130714/18/4309479020130714181905068.jpg"></p>
+
+<p>AndroidManifest.xml里面，有两个Activity，其中一个是Launcher，一个是壁纸选择。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/15/launcher2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/24/frameworks/">Android源码结构</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-24T12:23:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/24/frameworks/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>转载<a href="http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html">http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html</a></p>
+
+<p><code>Android 2.1</code> |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （启动引导相关代码） |&#8211; build （存放系统编译规则及generic等基础开发包配置） |&#8211; cts （Android兼容性测试套件标准） |&#8211; dalvik （dalvik JAVA虚拟机） |&#8211; development （应用程序开发相关） |&#8211; external （android使用的一些开源的模组） |&#8211; frameworks</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/24/frameworks/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

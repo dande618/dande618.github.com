@@ -1,0 +1,659 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="对于android开发者来说起，适配器模式简直太熟悉不过，有很多应用可以说是天天在直接或者间接的用到适配器模式，比如ListView。 ListView用于显示列表数据，但是作为列表数据集合有很多形式，有Array，有Cursor，我们需要对应的适配器作为桥梁，处理相应的数据（ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/page/3/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/10/adapter/">Android 适配器模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-10T19:28:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/10/adapter/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>对于android开发者来说起，适配器模式简直太熟悉不过，有很多应用可以说是天天在直接或者间接的用到适配器模式，比如ListView。</p>
+
+<p>ListView用于显示列表数据，但是作为列表数据集合有很多形式，有Array，有Cursor，我们需要对应的适配器作为桥梁，处理相应的数据（并能形成ListView所需要的视图）。</p>
+
+<p>正是因为定义了这些适配器接口和适配器类，才能使我们的数据简单灵活而又正确的显示到了adapterview的实现类上。</p>
+
+<p>适配器模式，Adapter Pattern，勇敢的去适配，大量的资源可以重用。</p>
+
+<p><a href="http://www.cnblogs.com/qianxudetianxia/archive/2012/02/27/2010965.html">http://www.cnblogs.com/qianxudetianxia/archive/2012/02/27/2010965.html</a></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/10/adapter/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/10/viewpager/">Android的 ViewPager</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-10T11:00:00+08:00" pubdate data-updated="true">Jun 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/10/viewpager/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ViewPager用于实现多页面的切换效果，该类存在于Google的兼容包里面，所以在引用时记得在BuilldPath中加入“android-support-v4.jar”</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/10/viewpager/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/09/StaggeredGridView/">Android StaggeredGridView</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-09T15:13:00+08:00" pubdate data-updated="true">Jun 9<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/09/StaggeredGridView/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Staggered adj.错列的，叉排的</p>
+
+<p>一个类似Google Plus Android 上使用的动态GridView的控件，可以用来实现瀑布流效果。</p>
+
+<p><img class="center" src="http://image14.poco.cn/mypoco/myphoto/20130609/19/430947902013060919105709.png"></p>
+
+<p>github上的一个实际例子 <a href="https://github.com/chrisjenx/StaggeredGridView">https://github.com/chrisjenx/StaggeredGridView</a></p>
+
+<p><img class="center" src="http://image14.poco.cn/mypoco/myphoto/20130609/19/4309479020130609190127093.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/09/StaggeredGridView/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/07/refresh-view/">Android View刷新</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-07T17:24:00+08:00" pubdate data-updated="true">Jun 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/07/refresh-view/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Android中对View的更新有很多种方式，使用时要区分不同的应用场合。我感觉最要紧的是分清：多线程和双缓冲的使用情况。</p>
+
+<p>转载 <a href="http://blog.csdn.net/zreodown/article/details/7301509">http://blog.csdn.net/zreodown/article/details/7301509</a></p>
+
+<h3>1.不使用多线程和双缓冲</h3>
+
+<p>这种情况最简单了，一般只是希望在View发生改变时对UI进行重绘。你只需在Activity中显式地调用View对象中的invalidate()方法即可。系统会自动调用 View的onDraw()方法。</p>
+
+<h3>2.使用多线程和不使用双缓冲</h3>
+
+<p>这种情况需要开启新的线程，新开的线程就不好访问View对象了。强行访问的话会报：android.view.ViewRoot$CalledFromWrongThreadException：Only the original thread that created a view hierarchy can touch its views.</p>
+
+<p>这时候你需要创建一个继承了android.os.Handler的子类，并重写handleMessage(Message msg)方法。android.os.Handler是能发送和处理消息的，你需要在Activity中发出更新UI的消息，然后再你的Handler（可以使用匿名内部类）中处理消息（因为匿名内部类可以访问父类变量， 你可以直接调用View对象中的invalidate()方法 ）。也就是说：在新线程创建并发送一个Message，然后再主线程中捕获、处理该消息。</p>
+
+<h3>3.使用多线程和双缓冲</h3>
+
+<p>Android中SurfaceView是View的子类，她同时也实现了双缓冲。你可以定义一个她的子类并实现SurfaceHolder.Callback接口。由于实现SurfaceHolder.Callback接口，新线程就不需要android.os.Handler帮忙了。SurfaceHolder中lockCanvas()方法可以锁定画布，绘制玩新的图像后调用unlockCanvasAndPost(canvas)解锁（显示），还是比较方便得。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/07/refresh-view/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/06/java-collection/">Java中的集合</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-06T20:40:00+08:00" pubdate data-updated="true">Jun 6<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/06/java-collection/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="http://p.blog.csdn.net/images/p_blog_csdn_net/EvanLiu/map.bmp"></p>
+
+<p><a href="http://blog.csdn.net/softwave/article/details/4166598">http://blog.csdn.net/softwave/article/details/4166598</a></p>
+
+<h1>集合类说明及区别</h1>
+
+<h2>Collection接口</h2>
+
+<p> 　　Collection是最基本的集合接口，一个Collection代表一组Object，即Collection的元素（Elements）。一些 Collection允许相同的元素而另一些不行。一些能排序而另一些不行。Java SDK不提供直接继承自Collection的类，Java SDK提供的类都是继承自Collection的“子接口”如List和Set。</p>
+
+<p> 　　所有实现Collection接口的类都必须提供两个标准的构造函数：无参数的构造函数用于创建一个空的Collection，有一个 Collection参数的构造函数用于创建一个新的Collection，这个新的Collection与传入的Collection有相同的元素。后 一个构造函数允许用户复制一个Collection。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/06/java-collection/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/04/stringbuffer/">String,StringBuffer与StringBuilder</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-04T15:21:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/04/stringbuffer/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.cnblogs.com/springcsc/archive/2009/12/03/1616330.html">http://www.cnblogs.com/springcsc/archive/2009/12/03/1616330.html</a></p>
+
+<p>StringBuffer类和String一样，也用来代表字符串，只是由于StringBuffer的内部实现方式和String不同，所以StringBuffer在进行字符串处理时，不生成新的对象，在内存使用上要优于String类。</p>
+
+<p>所以在实际使用时，如果经常需要对一个字符串进行修改，例如插入、删除等操作，使用StringBuffer要更加适合一些。</p>
+
+<p>在StringBuffer类中存在很多和String类一样的方法，这些方法在功能上和String类中的功能是完全一样的。</p>
+
+<p>但是有一个最显著的区别在于，对于StringBuffer对象的每次修改都会改变对象自身，这点是和String类最大的区别。</p>
+
+<p>另外由于StringBuffer是线程安全的，关于线程的概念后续有专门的章节进行介绍，所以在多线程程序中也可以很方便的进行使用，但是程序的执行效率相对来说就要稍微慢一些。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/04/stringbuffer/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/03/strategy/">Strategy策略模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-03T14:43:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/03/strategy/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>策略模式定义了一系列的算法，并将每一个算法封装起来，而且使它们还可以相互替换。策略模式让算法独立于使用它的客户而独立变化。</p>
+
+<p>原文：The Strategy Pattern defines a family of algorithms,encapsulates each one,and makes them interchangeable. Strategy lets the algorithm vary independently from clients that use it.</p></blockquote>
+
+<p><img class="center" src="http://image142.poco.cn/mypoco/myphoto/20130604/15/4309479020130604154048093.gif"></p>
+
+<h3>策略模式中体现了两个非常基本的面向对象设计的原则：</h3>
+
+<ul>
+<li><p>封装变化的概念</p></li>
+<li><p>编程中使用接口，而不是对接口的实现</p></li>
+</ul>
+
+
+<p>面向接口的编程，实现类之间的弱耦合</p>
+
+<h3>Context(应用场景):</h3>
+
+<ol>
+<li><p>需要使用ConcreteStrategy提供的算法。</p></li>
+<li><p>内部维护一个Strategy的实例。</p></li>
+<li><p>负责动态设置运行时Strategy具体的实现算法。</p></li>
+<li><p>负责跟Strategy之间的交互和数据传递。</p></li>
+</ol>
+
+
+<h3>Strategy(抽象策略类)：</h3>
+
+<ol>
+<li>定义了一个公共接口，各种不同的算法以不同的方式实现这个接口，Context使用这个接口调用不同的算法，一般使用接口或抽象类实现。</li>
+</ol>
+
+
+<h3>ConcreteStrategy(具体策略类)：</h3>
+
+<ol>
+<li>实现了Strategy定义的接口，提供具体的算法实现。</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/03/strategy/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/01/sqlite/">Android之SQlite存储</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-01T19:24:00+08:00" pubdate data-updated="true">Jun 1<span>st</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/01/sqlite/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用嵌入式关系型SQLite数据库存储数据</p>
+
+<p>除了可以使用文件或SharedPreferences存储数据，还可以选择使用SQLite数据库存储数据。</p>
+
+<p>在Android平台上，集成了一个嵌入式关系型数据库——SQLite，</p>
+
+<ol>
+<li><p>SQLite3支持 NULL、INTEGER、REAL（浮点数字）、TEXT(字符串文本)和BLOB(二进制对象)数据类型，虽然它支持的类型虽然只有五种，但实际上sqlite3也接受varchar(n)、char(n)、decimal(p,s) 等数据类型，只不过在运算或保存时会转成对应的五种数据类型。</p></li>
+<li><p>SQLite最大的特点是你可以保存任何类型的数据到任何字段中，无论这列声明的数据类型是什么。例如：可以在Integer字段中存放字符串，或者在布尔型字段中存放浮点数，或者在字符型字段中存放日期型值。</p></li>
+<li><p>但有一种情况例外：定义为INTEGER PRIMARY KEY的字段只能存储64位整数， 当向这种字段中保存除整数以外的数据时，将会产生错误。</p></li>
+<li><p>另外， SQLite 在解析CREATE TABLE 语句时，会忽略 CREATE TABLE 语句中跟在字段名后面的数据类型信息，如下面语句会忽略 name字段的类型信息：</p></li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/01/sqlite/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/31/memory-management-in-android/">[转] Android 操作系统的内存回收机制</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T15:18:00+08:00" pubdate data-updated="true">May 31<span>st</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/31/memory-management-in-android/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>全文见 <a href="http://www.oschina.net/question/129540_64132">http://www.oschina.net/question/129540_64132</a></p>
+
+<p>Android 是一款基于 Linux 内核，面向移动终端的操作系统。为适应其作为移动平台操作系统的特殊需要，谷歌对其做了特别的设计与优化，使应用程序关闭但不退出，并由操作系统进行进程 的回收管理。本文在 Application Framework 与 Linux 内核两个层次上，以进程为粒度，对 Android 操作系统的进程资源回收机制进行了剖析。读者可以从本文获得对 Android 应用程序的生存周期的进一步理解，从而更加合理、高效地构建应用程序。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/31/memory-management-in-android/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/29/android-MVC/">Android之MVC模式</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-29T19:07:00+08:00" pubdate data-updated="true">May 29<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/29/android-MVC/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>转载 <a href="http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html">http://www.cnblogs.com/devinzhang/archive/2012/01/26/2329869.html</a></p>
+
+<p><strong>MVC (Model-View-Controller)：M是指逻辑模型，V是指视图模型，C则是控制器。</strong>一个逻辑模型可以对于多种视图模型，比如一批统计数据你可以分别用柱状图、饼图来表示。一种视图模型也可以对于多种逻辑模型。使用MVC的目的是<strong>将M和V的实现代码分离</strong>，从而使同一个程序可以使用不同的表现形式，而C存在的目的则是确保M和V的同步，一旦M改变，V应该同步更新，这与《设计模式》中的观察者模式是完全一样。</p>
+
+<p>MVC好处：<strong>从用户的角度出发，用户可以根据自己的需求，选择自己合适的浏览数据的方式</strong>。比如说，对于一篇在线文档，用户可以选择以HTML网页的方式阅读，也可以选择以pdf的方式阅读。从开发者的角度，MVC把应用程序的逻辑层与界面是完全分开的，最大的好处是：界面设计人员可以直接参与到界面开发，程序员就可以把精力放在逻辑层上。而不是像以前那样，设计人员把所有的材料交给开发人员，由开发人员来实现界面。在Eclipes工具中开发Android采用了更加简单的方法，设计人员在DroidDraw中设计界面，以XML方式保存，在Eclipes中直接打开就可以看到设计人员设计的界面。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/29/android-MVC/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/2/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

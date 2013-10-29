@@ -1,0 +1,1188 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>android源码结构 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="转载http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html Android 2.1 |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/24/frameworks/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android源码结构</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-24T12:23:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>转载<a href="http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html">http://www.cnblogs.com/yyyyy5101/archive/2011/06/16/2082856.html</a></p>
+
+<p><code>Android 2.1</code> |&#8211; Makefile |&#8211; bionic （bionic C库） |&#8211; bootable （启动引导相关代码） |&#8211; build （存放系统编译规则及generic等基础开发包配置） |&#8211; cts （Android兼容性测试套件标准） |&#8211; dalvik （dalvik JAVA虚拟机） |&#8211; development （应用程序开发相关） |&#8211; external （android使用的一些开源的模组） |&#8211; frameworks</p>
+
+<!-- more -->
+
+
+<h2><code>Android 2.1</code></h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- Makefile
+</span><span class='line'>|-- bionic                        （bionic C库）
+</span><span class='line'>|-- bootable                （启动引导相关代码）
+</span><span class='line'>|-- build                        （存放系统编译规则及generic等基础开发包配置）
+</span><span class='line'>|-- cts                        （Android兼容性测试套件标准）
+</span><span class='line'>|-- dalvik                        （dalvik JAVA虚拟机）
+</span><span class='line'>|-- development        （应用程序开发相关）
+</span><span class='line'>|-- external                （android使用的一些开源的模组）
+</span><span class='line'>|-- frameworks                （核心框架——java及C++语言）
+</span><span class='line'>|-- hardware                （部分厂家开源的硬解适配层HAL代码）
+</span><span class='line'>|-- out                        （编译完成后的代码输出与此目录）
+</span><span class='line'>|-- packages                （应用程序包）
+</span><span class='line'>|-- prebuilt                （x86和arm架构下预编译的一些资源）
+</span><span class='line'>|-- sdk                        （sdk及模拟器）
+</span><span class='line'>|-- system                        （底层文件系统库、应用及组件——C语言）
+</span><span class='line'>`-- vendor                （厂商定制代码）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>bionic 目录</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- libc                        （C库）
+</span><span class='line'>|   |-- arch-arm        （ARM架构，包含系统调用汇编实现）
+</span><span class='line'>|   |-- arch-x86        （x86架构，包含系统调用汇编实现）
+</span><span class='line'>|   |-- bionic                （由C实现的功能，架构无关）
+</span><span class='line'>|   |-- docs                （文档）
+</span><span class='line'>|   |-- include                （头文件）
+</span><span class='line'>|   |-- inet                （？inet相关，具体作用不明）
+</span><span class='line'>|   |-- kernel                （Linux内核中的一些头文件）
+</span><span class='line'>|   |-- netbsd                （？nesbsd系统相关，具体作用不明）
+</span><span class='line'>|   |-- private                （？一些私有的头文件）
+</span><span class='line'>|   |-- stdio                （stdio实现）
+</span><span class='line'>|   |-- stdlib                （stdlib实现）
+</span><span class='line'>|   |-- string                （string函数实现）
+</span><span class='line'>|   |-- tools                （几个工具）
+</span><span class='line'>|   |-- tzcode                （时区相关代码）
+</span><span class='line'>|   |-- unistd                （unistd实现）
+</span><span class='line'>|   `-- zoneinfo        （时区信息）
+</span><span class='line'>|-- libdl                        （libdl实现，dl是动态链接，提供访问动态链接库的功能）
+</span><span class='line'>|-- libm                        （libm数学库的实现，）
+</span><span class='line'>|   |-- alpha                （apaha架构）
+</span><span class='line'>|   |-- amd64                （amd64架构）
+</span><span class='line'>|   |-- arm                （arm架构）
+</span><span class='line'>|   |-- bsdsrc                （？bsd的源码）
+</span><span class='line'>|   |-- i386                （i386架构）
+</span><span class='line'>|   |-- i387                （i387架构？）
+</span><span class='line'>|   |-- ia64                （ia64架构）
+</span><span class='line'>|   |-- include                （头文件）
+</span><span class='line'>|   |-- man                （数学函数，后缀名为.3，一些为freeBSD的库文件）
+</span><span class='line'>|   |-- powerpc        （powerpc架构）
+</span><span class='line'>|   |-- sparc64                （sparc64架构）
+</span><span class='line'>|   `-- src                （源代码）
+</span><span class='line'>|-- libstdc++                （libstdc++ C++实现库）
+</span><span class='line'>|   |-- include                （头文件）
+</span><span class='line'>|   `-- src                （源码）
+</span><span class='line'>|-- libthread_db        （多线程程序的调试器库）
+</span><span class='line'>|   `-- include                （头文件）
+</span><span class='line'>`-- linker                        （动态链接器）
+</span><span class='line'>`-- arch                （支持arm和x86两种架构）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>bootable 目录</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- bootloader                                （适合各种bootloader的通用代码）
+</span><span class='line'>|   `-- legacy                                （估计不能直接使用，可以参考）
+</span><span class='line'>|       |-- arch_armv6                （V6架构，几个简单的汇编文件）
+</span><span class='line'>|       |-- arch_msm7k                （高通7k处理器架构的几个基本驱动）
+</span><span class='line'>|       |-- include                        （通用头文件和高通7k架构头文件）
+</span><span class='line'>|       |-- libboot                        （启动库，都写得很简单）
+</span><span class='line'>|       |-- libc                        （一些常用的c函数）
+</span><span class='line'>|       |-- nandwrite                （nandwirte函数实现）
+</span><span class='line'>|       `-- usbloader                （usbloader实现）
+</span><span class='line'>|-- diskinstaller                        （android镜像打包器，x86可生产iso）
+</span><span class='line'>`-- recovery                                （系统恢复相关）
+</span><span class='line'>    |-- edify                                （升级脚本使用的edify脚本语言）
+</span><span class='line'>    |-- etc                                （init.rc恢复脚本）
+</span><span class='line'>    |-- minui                                （一个简单的UI）
+</span><span class='line'>    |-- minzip                                （一个简单的压缩工具）
+</span><span class='line'>    |-- mtdutils                        （mtd工具）
+</span><span class='line'>    |-- res                                （资源）
+</span><span class='line'>    |   `-- images                        （一些图片）
+</span><span class='line'>    |-- tools                                （工具）
+</span><span class='line'>    |   `-- ota                        （OTA Over The Air Updates升级工具）
+</span><span class='line'>`-- updater                        （升级器）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>build目录</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- core                                （核心编译规则）
+</span><span class='line'>|-- history                                （历史记录）
+</span><span class='line'>|-- libs                                
+</span><span class='line'>|   `-- host                        （主机端库，有android “cp”功能替换）
+</span><span class='line'>|-- target                                （目标机编译对象）
+</span><span class='line'>|   |-- board                        （开发平台）
+</span><span class='line'>|   |   |-- emulator        （模拟器）
+</span><span class='line'>|   |   |-- generic                （通用）
+</span><span class='line'>|   |   |-- idea6410        （自己添加的）
+</span><span class='line'>|   |   `-- sim                （最简单）
+</span><span class='line'>|   `-- product                （开发平台对应的编译规则）
+</span><span class='line'>|       `-- security        （密钥相关）
+</span><span class='line'>`-- tools                                （编译中主机使用的工具及脚本）
+</span><span class='line'>    |-- acp                        （Android "acp" Command）
+</span><span class='line'>    |-- apicheck                （api检查工具）
+</span><span class='line'>    |-- applypatch                （补丁工具）
+</span><span class='line'>    |-- apriori                        （预链接工具）
+</span><span class='line'>    |-- atree                        （tree工具）
+</span><span class='line'>    |-- bin2asm                （bin转换为asm工具）
+</span><span class='line'>    |-- check_prereq        （检查编译时间戳工具）
+</span><span class='line'>    |-- dexpreopt                （模拟器相关工具，具体功能不明）
+</span><span class='line'>    |-- droiddoc                （？作用不明，java语言，网上有人说和JDK5有关）
+</span><span class='line'>    |-- fs_config                （This program takes a list of files and directories）
+</span><span class='line'>    |-- fs_get_stats                （获取文件系统状态）
+</span><span class='line'>    |-- iself                        （判断是否ELF格式）
+</span><span class='line'>    |-- isprelinked                （判断是否prelinked）
+</span><span class='line'>    |-- kcm                        （按键相关）
+</span><span class='line'>    |-- lsd                        （List symbol dependencies）
+</span><span class='line'>    |-- releasetools                （生成镜像的工具及脚本）
+</span><span class='line'>    |-- rgb2565                （rgb转换为565）
+</span><span class='line'>    |-- signapk                （apk签名工具）
+</span><span class='line'>    |-- soslim                        （strip工具）
+</span><span class='line'>`-- zipalign                （zip archive alignment tool）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>dalvik目录 dalvik虚拟机</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- dalvikvm                        （main.c的目录）
+</span><span class='line'>|-- dexdump                        （dex反汇编）
+</span><span class='line'>|-- dexlist                                （List all methods in all concrete classes in a DEX file.）
+</span><span class='line'>|-- dexopt                                （预验证与优化）
+</span><span class='line'>|-- docs                                （文档）
+</span><span class='line'>|-- dvz                                （和zygote相关的一个命令）
+</span><span class='line'>|-- dx                                （dx工具，将多个java转换为dex）
+</span><span class='line'>|-- hit                                （？java语言写成）
+</span><span class='line'>|-- libcore                                （核心库）
+</span><span class='line'>|-- libcore-disabled                （？禁用的库）
+</span><span class='line'>|-- libdex                                （dex的库）
+</span><span class='line'>|-- libnativehelper                （Support functions for Android's class libraries）
+</span><span class='line'>|-- tests                                （测试代码）
+</span><span class='line'>|-- tools                                （工具）
+</span><span class='line'>`-- vm                                （虚拟机实现）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>development 目录                （开发者需要的一些例程及工具）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- apps                                （一些核心应用程序）
+</span><span class='line'>|   |-- BluetoothDebug        （蓝牙调试程序）
+</span><span class='line'>|   |-- CustomLocale        （自定义区域设置）
+</span><span class='line'>|   |-- Development        （开发）
+</span><span class='line'>|   |-- Fallback                （和语言相关的一个程序）
+</span><span class='line'>|   |-- FontLab                （字库）
+</span><span class='line'>|   |-- GestureBuilder        （手势动作）
+</span><span class='line'>|   |-- NinePatchLab        （？）
+</span><span class='line'>|   |-- OBJViewer                （OBJ查看器）
+</span><span class='line'>|   |-- SdkSetup                （SDK安装器）
+</span><span class='line'>|   |-- SpareParts                （高级设置）
+</span><span class='line'>|   |-- Term                        （远程登录）
+</span><span class='line'>|   `-- launchperf                （？）
+</span><span class='line'>|-- build                                （编译脚本模板）
+</span><span class='line'>|-- cmds                                （有个monkey工具）
+</span><span class='line'>|-- data                                （配置数据）
+</span><span class='line'>|-- docs                                （文档）
+</span><span class='line'>|-- host                                （主机端USB驱动等）
+</span><span class='line'>|-- ide                                （集成开发环境）
+</span><span class='line'>|-- ndk                                （本地开发套件——c语言开发套件）
+</span><span class='line'>|-- pdk                                （Plug Development Kit）
+</span><span class='line'>|-- samples                        （例程）
+</span><span class='line'>|   |-- AliasActivity        （？）
+</span><span class='line'>|   |-- ApiDemos                （API演示程序）
+</span><span class='line'>|   |-- BluetoothChat        （蓝牙聊天）
+</span><span class='line'>|   |-- BrowserPlugin        （浏览器插件）
+</span><span class='line'>|   |-- BusinessCard        （商业卡）
+</span><span class='line'>|   |-- Compass                （指南针）
+</span><span class='line'>|   |-- ContactManager        （联系人管理器）
+</span><span class='line'>|   |-- CubeLiveWallpaper        （动态壁纸的一个简单例程）
+</span><span class='line'>|   |-- FixedGridLayout        （像是布局）
+</span><span class='line'>|   |-- GlobalTime                （全球时间）
+</span><span class='line'>|   |-- HelloActivity        （Hello）
+</span><span class='line'>|   |-- Home                        （Home）
+</span><span class='line'>|   |-- JetBoy                        （jetBoy游戏）
+</span><span class='line'>|   |-- LunarLander        （貌似又是一个游戏）
+</span><span class='line'>|   |-- MailSync                （邮件同步）
+</span><span class='line'>|   |-- MultiResolution        （多分辨率）
+</span><span class='line'>|   |-- MySampleRss        （RSS）
+</span><span class='line'>|   |-- NotePad                （记事本）
+</span><span class='line'>|   |-- RSSReader                （RSS阅读器）
+</span><span class='line'>|   |-- SearchableDictionary        （目录搜索）
+</span><span class='line'>|   |-- SimpleJNI                （JNI例程）
+</span><span class='line'>|   |-- SkeletonApp        （空壳APP）
+</span><span class='line'>|   |-- Snake                        （snake程序）
+</span><span class='line'>|   |-- SoftKeyboard        （软键盘）
+</span><span class='line'>|   |-- Wiktionary                （？维基）
+</span><span class='line'>|   `-- WiktionarySimple（？维基例程）
+</span><span class='line'>|-- scripts                                （脚本）
+</span><span class='line'>|-- sdk                                （sdk配置）
+</span><span class='line'>|-- simulator                        （？模拟器）
+</span><span class='line'>|-- testrunner                        （？测试用）
+</span><span class='line'>`-- tools                                （一些工具）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>external 目录</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- aes                        （AES加密）
+</span><span class='line'>|-- apache-http                （网页服务器）
+</span><span class='line'>|-- astl                        （ASTL (Android STL) is a slimmed-down version of the regular C++ STL.）
+</span><span class='line'>|-- bison                        （自动生成语法分析器，将无关文法转换成C、C++）
+</span><span class='line'>|-- blktrace                （blktrace is a block layer IO tracing mechanism）
+</span><span class='line'>|-- bluetooth                （蓝牙相关、协议栈）
+</span><span class='line'>|-- bsdiff                        （diff工具）
+</span><span class='line'>|-- bzip2                        （压缩工具）
+</span><span class='line'>|-- clearsilver                （html模板系统）
+</span><span class='line'>|-- dbus                        （低延时、低开销、高可用性的IPC机制）
+</span><span class='line'>|-- dhcpcd                （DHCP服务）
+</span><span class='line'>|-- dosfstools                （DOS文件系统工具）
+</span><span class='line'>|-- dropbear                （SSH2的server）
+</span><span class='line'>|-- e2fsprogs                （EXT2文件系统工具）
+</span><span class='line'>|-- elfcopy                （复制ELF的工具）
+</span><span class='line'>|-- elfutils                        （ELF工具）
+</span><span class='line'>|-- embunit                （Embedded Unit Project）
+</span><span class='line'>|-- emma                        （java代码覆盖率统计工具）
+</span><span class='line'>|-- esd                        （Enlightened Sound Daemon，将多种音频流混合在一个设备上播放）
+</span><span class='line'>|-- expat                        （Expat is a stream-oriented XML parser.）
+</span><span class='line'>|-- fdlibm                        （FDLIBM (Freely Distributable LIBM)）
+</span><span class='line'>|-- freetype                （字体）
+</span><span class='line'>|-- fsck_msdos                （dos文件系统检查工具）
+</span><span class='line'>|-- gdata                        （google的无线数据相关）
+</span><span class='line'>|-- genext2fs                （genext2fs generates an ext2 filesystem as a normal (non-root) user）
+</span><span class='line'>|-- giflib                        （gif库）
+</span><span class='line'>|-- googleclient        （google用户库）
+</span><span class='line'>|-- grub                        （This is GNU GRUB, the GRand Unified Bootloader.）
+</span><span class='line'>|-- gtest                        （Google C++ Testing Framework）
+</span><span class='line'>|-- icu4c                        （ICU(International Component for Unicode)在C/C++下的版本）
+</span><span class='line'>|-- ipsec-tools                （This package provides a way to use the native IPsec functionality ）
+</span><span class='line'>|-- iptables                （防火墙）
+</span><span class='line'>|-- jdiff                        （generate a report describing the difference between two public Java APIs.）
+</span><span class='line'>|-- jhead                        （jpeg头部信息工具）
+</span><span class='line'>|-- jpeg                        （jpeg库）
+</span><span class='line'>|-- junit                        （JUnit是一个Java语言的单元测试框架）
+</span><span class='line'>|-- kernel-headers        （内核的一些头文件）
+</span><span class='line'>|-- libffi                        （libffi is a foreign function interface library.）
+</span><span class='line'>|-- libpcap                （网络数据包捕获函数）
+</span><span class='line'>|-- libpng                        （png库）
+</span><span class='line'>|-- libxml2                （xml解析库）
+</span><span class='line'>|-- mtpd                        （一个命令）
+</span><span class='line'>|-- netcat                        （simple Unix utility which reads and writes dataacross network connections）
+</span><span class='line'>|-- netperf                        （网络性能测量工具）
+</span><span class='line'>|-- neven                        （看代码和JNI相关）
+</span><span class='line'>|-- opencore                （多媒体框架）
+</span><span class='line'>|-- openssl                （SSL加密相关）
+</span><span class='line'>|-- openvpn                （VPN开源库）
+</span><span class='line'>|-- oprofile                （OProfile是Linux内核支持的一种性能分析机制。）
+</span><span class='line'>|-- ping                        （ping命令）
+</span><span class='line'>|-- ppp                        （pppd拨号命令，好像还没有chat）
+</span><span class='line'>|-- proguard                （Java class file shrinker, optimizer, obfuscator, and preverifier）
+</span><span class='line'>|-- protobuf                （a flexible, efficient, automated mechanism for serializing structured data）
+</span><span class='line'>|-- qemu                        （arm模拟器）
+</span><span class='line'>|-- safe-iop                （functions for performing safe integer operations ）
+</span><span class='line'>|-- skia                        （skia图形引擎）
+</span><span class='line'>|-- sonivox                （sole MIDI solution for Google Android Mobile Phone Platform）
+</span><span class='line'>|-- speex                        （Speex编/解码API的使用(libspeex)）
+</span><span class='line'>|-- sqlite                        （数据库）
+</span><span class='line'>|-- srec                        （Nuance 公司提供的开源连续非特定人语音识别）
+</span><span class='line'>|-- strace                        （trace工具）
+</span><span class='line'>|-- svox                        （Embedded Text-to-Speech）
+</span><span class='line'>|-- tagsoup                （TagSoup是一个Java开发符合SAX的HTML解析器）
+</span><span class='line'>|-- tcpdump                （抓TCP包的软件）
+</span><span class='line'>|-- tesseract                （Tesseract Open Source OCR Engine.）
+</span><span class='line'>|-- tinyxml                （TinyXml is a simple, small, C++ XML parser）
+</span><span class='line'>|-- tremor                        （I stream and file decoder provides an embeddable,integer-only library）
+</span><span class='line'>|-- webkit                        （浏览器核心）
+</span><span class='line'>|-- wpa_supplicant        （无线网卡管理）
+</span><span class='line'>|-- xmlwriter                （XML 编辑工具）
+</span><span class='line'>|-- yaffs2                        （yaffs文件系统）
+</span><span class='line'>`-- zlib                        （a general purpose data compression library）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>frameworks 目录        （核心框架——java及C++语言）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- base                        （基本内容）
+</span><span class='line'>|   |-- api                （？都是xml文件，定义了java的api？）
+</span><span class='line'>|   |-- awt                （AWT库）
+</span><span class='line'>|   |-- build                （空的）
+</span><span class='line'>|   |-- camera                （摄像头服务程序库）
+</span><span class='line'>|   |-- cmds                （重要命令：am、app_proce等）
+</span><span class='line'>|   |-- core                （核心库）
+</span><span class='line'>|   |-- data                （字体和声音等数据文件）
+</span><span class='line'>|   |-- docs                （文档）
+</span><span class='line'>|   |-- graphics        （图形相关）
+</span><span class='line'>|   |-- include                （头文件）
+</span><span class='line'>|   |-- keystore        （和数据签名证书相关）
+</span><span class='line'>|   |-- libs                （库）
+</span><span class='line'>|   |-- location        （地区库）
+</span><span class='line'>|   |-- media                （媒体相关库）
+</span><span class='line'>|   |-- obex                （蓝牙传输库）
+</span><span class='line'>|   |-- opengl                （2D-3D加速库）
+</span><span class='line'>|   |-- packages        （设置、TTS、VPN程序）
+</span><span class='line'>|   |-- sax                （XML解析器）
+</span><span class='line'>|   |-- services        （各种服务程序）
+</span><span class='line'>|   |-- telephony        （电话通讯管理）
+</span><span class='line'>|   |-- test-runner        （测试工具相关）
+</span><span class='line'>|   |-- tests                （各种测试）
+</span><span class='line'>|   |-- tools                （一些叫不上名的工具）
+</span><span class='line'>|   |-- vpn                （VPN）
+</span><span class='line'>|   `-- wifi                （无线网络）
+</span><span class='line'>|-- opt                        （可选部分）
+</span><span class='line'>|   |-- com.google.android                                （有个framework.jar）
+</span><span class='line'>|   |-- com.google.android.googlelogin                （有个client.jar）
+</span><span class='line'>|   `-- emoji                （standard message elements）
+</span><span class='line'>`-- policies                （Product policies are operating system directions aimed at specific uses）
+</span><span class='line'>    `-- base                
+</span><span class='line'>        |-- mid        （MID设备）
+</span><span class='line'>        `-- phone        （手机类设备，一般用这个）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>hardware 目录                （部分厂家开源的硬解适配层HAL代码）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- broadcom                        （博通公司）
+</span><span class='line'>|   `-- wlan                        （无线网卡）
+</span><span class='line'>|-- libhardware                        （硬件库）
+</span><span class='line'>|   |-- include                        （头文件）
+</span><span class='line'>|   `-- modules                （Default (and possibly architecture dependents) HAL modules）
+</span><span class='line'>|       |-- gralloc                （gralloc显示相关）
+</span><span class='line'>|       `-- overlay                （Skeleton for the "overlay" HAL module.）
+</span><span class='line'>|-- libhardware_legacy        （旧的硬件库）
+</span><span class='line'>|   |-- flashlight                （背光）
+</span><span class='line'>|   |-- gps                        （GPS）
+</span><span class='line'>|   |-- include                        （头文件）
+</span><span class='line'>|   |-- mount                        （旧的挂载器）
+</span><span class='line'>|   |-- power                        （电源）
+</span><span class='line'>|   |-- qemu                        （模拟器）
+</span><span class='line'>|   |-- qemu_tracing        （模拟器跟踪）
+</span><span class='line'>|   |-- tests                        （测试）
+</span><span class='line'>|   |-- uevent                        （uevent）
+</span><span class='line'>|   |-- vibrator                        （震动）
+</span><span class='line'>|   `-- wifi                        （无线）
+</span><span class='line'>|-- msm7k                        （高通7k处理器开源抽象层）
+</span><span class='line'>|   |-- boot                        （启动）
+</span><span class='line'>|   |-- libaudio                （声音库）
+</span><span class='line'>|   |-- libaudio-qsd8k        （qsd8k的声音相关库）
+</span><span class='line'>|   |-- libcamera                （摄像头库）
+</span><span class='line'>|   |-- libcopybit                （copybit库）
+</span><span class='line'>|   |-- libgralloc                （gralloc库）
+</span><span class='line'>|   |-- libgralloc-qsd8k        （qsd8k的gralloc库）
+</span><span class='line'>|   |-- liblights                （背光库）
+</span><span class='line'>|   `-- librpc                        （RPC库）
+</span><span class='line'>|-- ril                                （无线电抽象层）
+</span><span class='line'>|   |-- include                        （头文件）
+</span><span class='line'>|   |-- libril                        （库）
+</span><span class='line'>|   |-- reference-cdma-sms        （cdma短信参考）
+</span><span class='line'>|   |-- reference-ril                        （ril参考）
+</span><span class='line'>|   `-- rild                                （ril后台服务程序）
+</span><span class='line'>`-- ti                                                （ti公司开源HAL）
+</span><span class='line'>    |-- omap3                                （omap3处理器）
+</span><span class='line'>    |   |-- dspbridge                （DSP桥）
+</span><span class='line'>    |   |-- libopencorehw        （opencore硬件库）
+</span><span class='line'>    |   |-- liboverlay                （overlay硬件库）
+</span><span class='line'>    |   |-- libstagefrighthw        （stagefright硬件库）
+</span><span class='line'>    |   `-- omx                        （omx组件）
+</span><span class='line'>    `-- wlan                                （无线网卡）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>packages 目录</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- apps                                （应用程序库）
+</span><span class='line'>|   |-- AlarmClock                （闹钟）
+</span><span class='line'>|   |-- Bluetooth                （蓝牙）
+</span><span class='line'>|   |-- Browser                （浏览器）
+</span><span class='line'>|   |-- Calculator                （计算器）
+</span><span class='line'>|   |-- Calendar                （日历）
+</span><span class='line'>|   |-- Camera                 （相机）
+</span><span class='line'>|   |-- CertInstaller                （在Android中安装数字签名，被调用）
+</span><span class='line'>|   |-- Contacts                （拨号(调用)、联系人、通话记录）
+</span><span class='line'>|   |-- DeskClock                （桌面时钟）
+</span><span class='line'>|   |-- Email                        （Email）
+</span><span class='line'>|   |-- Gallery                        （相册，和Camera类似，多了列表）
+</span><span class='line'>|   |-- Gallery3D                （？3D相册）
+</span><span class='line'>|   |-- GlobalSearch        （为google搜索服务，提供底层应用）
+</span><span class='line'>|   |-- GoogleSearch        （google搜索）
+</span><span class='line'>|   |-- HTMLViewer        （浏览器附属界面，被浏览器应用调用，同时提供存储记录功能）
+</span><span class='line'>|   |-- IM                        （即时通讯，为手机提供信号发送、接收、通信的服务）
+</span><span class='line'>|   |-- Launcher                （登陆启动项，显示图片框架等等图形界面）
+</span><span class='line'>|   |-- Launcher2                （登陆启动项，负责应用的调用）
+</span><span class='line'>|   |-- Mms                        （？彩信业务）
+</span><span class='line'>|   |-- Music                        （音乐播放器）
+</span><span class='line'>|   |-- PackageInstaller        （安装、卸载程序的响应）
+</span><span class='line'>|   |-- Phone                        （电话拨号程序）
+</span><span class='line'>|   |-- Provision                （预设应用的状态，使能应用）
+</span><span class='line'>|   |-- Settings                （开机设定，包括电量、蓝牙、设备信息、界面、wifi等）
+</span><span class='line'>|   |-- SoundRecorder        （录音机，可计算存储所需空间和时间）
+</span><span class='line'>|   |-- Stk                         （接收和发送短信）
+</span><span class='line'>|   |-- Sync                        （空）   -------①
+</span><span class='line'>|   |-- Updater                （空）
+</span><span class='line'>|   `-- VoiceDialer                （语音识别通话）
+</span><span class='line'>|-- inputmethods                （输入法）
+</span><span class='line'>|   |-- LatinIME                （拉丁文输入法）
+</span><span class='line'>|   |-- OpenWnn                （OpenWnn输入法）
+</span><span class='line'>|   `-- PinyinIME                （拼音输入法）
+</span><span class='line'>|-- providers                        （提供器，提供应用程序、界面所需的数据）
+</span><span class='line'>|   |-- ApplicationsProvider                （应用程序提供器，提供应用程序启动项、更新等）
+</span><span class='line'>|   |-- CalendarProvider                        （日历提供器）
+</span><span class='line'>|   |-- ContactsProvider                        （联系人提供器）
+</span><span class='line'>|   |-- DownloadProvider                （下载管理提供器）
+</span><span class='line'>|   |-- DrmProvider                        （创建和更新数据库时调用）
+</span><span class='line'>|   |-- GoogleContactsProvider        （联系人提供器的子类，用以同步联系人）
+</span><span class='line'>|   |-- GoogleSubscribedFeedsProvider（设置信息提供器）
+</span><span class='line'>|   |-- ImProvider                                （空）
+</span><span class='line'>|   |-- ManagementProvider                （空）
+</span><span class='line'>|   |-- MediaProvider                        （媒体提供器，提供存储数据）
+</span><span class='line'>|   |-- TelephonyProvider                （彩信提供器）
+</span><span class='line'>|   |-- UserDictionaryProvider        （用户字典提供器，提供用户常用字字典）
+</span><span class='line'>|   `-- WebSearchProvider                （空）
+</span><span class='line'>|-- services                                        
+</span><span class='line'>|   |-- EasService                                （空）
+</span><span class='line'>|   `-- LockAndWipe                        （空）
+</span><span class='line'>`-- wallpapers                                        （墙纸）
+</span><span class='line'>    |-- Basic                                        （基本墙纸，系统内置墙纸）
+</span><span class='line'>    |-- LivePicker                                （选择动态壁纸）
+</span><span class='line'>    |-- MagicSmoke                        （壁纸特殊效果）
+</span><span class='line'>    `-- MusicVisualization                （音乐可视化，图形随音乐而变化）</span></code></pre></td></tr></table></div></figure>
+
+
+<p>①里面有一个隐藏的.git文件夹，内容都是一样的，没有有意义的代码，config看似乎是一个下载程序，因此认为这些文件夹下没有实质东西。</p>
+
+<h3>prebuilt 目录                        （x86和arm架构下预编译的一些资源）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- android-arm                （arm-android相关）
+</span><span class='line'>|   |-- gdbserver                （gdb调试器）
+</span><span class='line'>|   `-- kernel                        （模拟的arm内核）
+</span><span class='line'>|-- android-x86                （x86-android相关）
+</span><span class='line'>|   `-- kernel                        （空的）
+</span><span class='line'>|-- common                        （通用编译好的代码，应该是java的）
+</span><span class='line'>|-- darwin-x86                        （drawin x86平台）
+</span><span class='line'>|   `-- toolchain                （工具链）
+</span><span class='line'>|       |-- arm-eabi-4.2.1        
+</span><span class='line'>|       |-- arm-eabi-4.3.1        
+</span><span class='line'>|       `-- arm-eabi-4.4.0        
+</span><span class='line'>|-- darwin-x86_64                （drawin x86 64bit平台）
+</span><span class='line'>|-- linux-x86                        （linux x86平台）
+</span><span class='line'>|   `-- toolchain                （工具链，我们应该主要用这个）
+</span><span class='line'>|       |-- arm-eabi-4.2.1        
+</span><span class='line'>|       |-- arm-eabi-4.3.1        
+</span><span class='line'>|       |-- arm-eabi-4.4.0        
+</span><span class='line'>|       `-- i686-unknown-linux-gnu-4.2.1        （x86版编译器）
+</span><span class='line'>|-- linux-x86_64                （linux x86 64bit平台）
+</span><span class='line'>|-- windows                        （windows平台）
+</span><span class='line'>`-- windows-x86_64        （64bit windows平台）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>system 目录                （底层文件系统库、应用及组件——C语言）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- Bluetooth                （蓝牙相关）
+</span><span class='line'>|-- core                        （系统核心工具盒接口）
+</span><span class='line'>|   |-- adb                （adb调试工具）
+</span><span class='line'>|   |-- cpio                （cpio工具，创建img）
+</span><span class='line'>|   |-- debuggerd        （调试工具）
+</span><span class='line'>|   |-- fastboot        （快速启动相关）
+</span><span class='line'>|   |-- include                （系统接口头文件）
+</span><span class='line'>|   |-- init                （init程序源代码）
+</span><span class='line'>|   |-- libacc                （轻量级C编译器）
+</span><span class='line'>|   |-- libctest                （libc测试相关）
+</span><span class='line'>|   |-- libcutils        （libc工具）
+</span><span class='line'>|   |-- liblog                （log库）
+</span><span class='line'>|   |-- libmincrypt        （加密库）
+</span><span class='line'>|   |-- libnetutils        （网络工具库）
+</span><span class='line'>|   |-- libpixelflinger        （图形处理库）
+</span><span class='line'>|   |-- libsysutils        （系统工具库）
+</span><span class='line'>|   |-- libzipfile        （zip库）
+</span><span class='line'>|   |-- logcat                （查看log工具）
+</span><span class='line'>|   |-- logwrapper        （log封装工具）
+</span><span class='line'>|   |-- mkbootimg        （制作启动boot.img的工具盒脚本）
+</span><span class='line'>|   |-- netcfg                （网络配置netcfg源码）
+</span><span class='line'>|   |-- nexus                （google最新手机的代码）
+</span><span class='line'>|   |-- rootdir                （rootfs，包含一些etc下的脚本和配置）
+</span><span class='line'>|   |-- sh                        （shell代码）
+</span><span class='line'>|   |-- toolbox                （toolbox，类似busybox的工具集）
+</span><span class='line'>|   `-- vold                （SD卡管理器）
+</span><span class='line'>|-- extras                        （额外工具）
+</span><span class='line'>|   |-- latencytop        （a tool for software developers ，identifying system latency happen）
+</span><span class='line'>|   |-- libpagemap        （pagemap库）
+</span><span class='line'>|   |-- librank                （Java Library Ranking System库）
+</span><span class='line'>|   |-- procmem        （pagemap相关）
+</span><span class='line'>|   |-- procrank        （Java Library Ranking System相关）
+</span><span class='line'>|   |-- showmap        （showmap工具）
+</span><span class='line'>|   |-- showslab        （showslab工具）
+</span><span class='line'>|   |-- sound                （声音相关）
+</span><span class='line'>|   |-- su                        （su命令源码）
+</span><span class='line'>|   |-- tests                （一些测试工具）
+</span><span class='line'>|   `-- timeinfo        （时区相关）
+</span><span class='line'>`-- wlan                        （无线相关）
+</span><span class='line'>    `-- ti                        （ti网卡相关工具及库）</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>vendor 目录                        （厂家定制内容）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|-- aosp                                （android open source project）
+</span><span class='line'>|   `-- products                （一些板级规则）
+</span><span class='line'>|-- htc                                （HTC公司）
+</span><span class='line'>|   |-- common-open        （通用部分）
+</span><span class='line'>|   |   `-- akmd                （解压img用的工具）
+</span><span class='line'>|   |-- dream-open                （G1开放部分）
+</span><span class='line'>|   |-- prebuilt-open        （预编译开放部分）
+</span><span class='line'>|   `-- sapphire-open        （sapphire这款型号开放内容）
+</span><span class='line'>|-- pv-open                        （没东西）
+</span><span class='line'>|-- qcom                                （里面基本是空的）
+</span><span class='line'>`-- sample                        （google提供的样例）
+</span><span class='line'>    |-- apps                        （应用）
+</span><span class='line'>    |   |-- client                （用户）
+</span><span class='line'>    |   `-- upgrade        （升级）
+</span><span class='line'>    |-- frameworks                （框架）
+</span><span class='line'>    |   `-- PlatformLibrary        （平台库）
+</span><span class='line'>    |-- products                （产品）
+</span><span class='line'>    |-- sdk_addon                （sdk添加部分）
+</span><span class='line'>    `-- skins                        （皮肤）
+</span><span class='line'>        `-- WVGAMedDpi        （WVGA适用的图片）</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-24T12:23:00+08:00" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/23/java/" title="Previous Post: ubuntu搭建Java环境">&laquo; ubuntu搭建Java环境</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/07/15/launcher2/" title="Next Post: 4.2.2_r1版本源码的launcher2布局介绍">4.2.2_r1版本源码的launcher2布局介绍 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/24/frameworks/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/24/frameworks/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

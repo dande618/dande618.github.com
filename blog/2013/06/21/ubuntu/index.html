@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>在win7基础上，安装ubuntu双系统 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="安装ubuntu方法 实际安装最新版本，方法是对的。 http://ifeiyang.cn/archives/1835.html 适用环境： 理论上win7、vista系统32位或64位均可。ubuntu适用与10.X版本，且ubuntu-10.10-desktop-i386.iso &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/21/ubuntu/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">在win7基础上，安装ubuntu双系统</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T16:50:00+08:00" pubdate data-updated="true">Jun 21<span>st</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>安装ubuntu方法</h2>
+
+<p>实际安装最新版本，方法是对的。</p>
+
+<p><a href="http://ifeiyang.cn/archives/1835.html">http://ifeiyang.cn/archives/1835.html</a></p>
+
+<h3>适用环境：</h3>
+
+<p>理论上win7、vista系统32位或64位均可。ubuntu适用与10.X版本，且ubuntu-10.10-desktop-i386.iso 和ubuntu-10.10-desktop-amd64.iso测试通过。接下来以ubuntu-10.10-desktop-amd64.iso安装为例作为说明。</p>
+
+<h3>第一步：下载Ubuntu10.10</h3>
+
+<p>下载地址： http://www.ubuntu.com/desktop/get-ubuntu/download</p>
+
+<p>下载版本为最新桌面版，朋友们可以选择安装不同版本。</p>
+
+<!-- more -->
+
+
+<h3>第二步：下载grub4dos</h3>
+
+<p>GRUB4DOS是一款优秀的多系统引导软件，需要其引导安装ubuntu，最新版为grub4dos-0.4.4.zip，于2009年4月发布。</p>
+
+<p>下载地址：http://download.gna.org/grub4dos/</p>
+
+<h3>第三步：设置启动项</h3>
+
+<h3>1. 解压grub4dos，将目录中的grldr，grldr.mbr，grub.exe三个文件复制到C盘根目录下</h3>
+
+<h3>2. 解压ubuntu10.10，将casper目录下vmlinuz、initrd.lz两个文件复制到C盘根目录下</h3>
+
+<h3>3. C 盘根目录下建立menu.lst 文件，内容为：</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>title Install Ubuntu 
+</span><span class='line'>root (hd0,0) 
+</span><span class='line'>kernel (hd0,0)/vmlinuz boot=casper iso-scan/filename=/ubuntu-10.10-desktop-i386.iso ro quiet splash locale=zh_CN.UTF-8 
+</span><span class='line'>initrd (hd0,0)/initrd.lz</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4. 在C 盘根目录新建一个文件命名为boot.ini 。内容如下：</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[boot loader] 
+</span><span class='line'>[operating systems] 
+</span><span class='line'>c:\grldr.mbr="ubuntu"</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5. 将ubuntu-10.10-desktop-i386.iso复制到C盘或者D盘根目录下</h3>
+
+<p>注：你下载的Ubuntu文件名字要和第三步的文件名字相一致</p>
+
+<h3>第四步：硬盘安装Ubuntu10.10</h3>
+
+<p>重启电脑，按回车进入Ubuntu10.10的安装界面</p>
+
+<p>打开终端输入如下命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo umount -l /isodevice</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这一命令取消掉对光盘所在驱动器的挂载，否则分区界面找不到分区。</p>
+
+<p>双击安装Ubuntu，根据提示进行安装即可</p>
+
+<p>补充：</p>
+
+<p>安装完Ubuntu10.10后grldr.mbr，grub.exe，vmlinuz，initrd.lz，menu.lst，boot.ini这几个文件都可以删除了，开机后会进入引导界面，可以选择是Ubuntu启动或者win7启动，不用做任何设置。 还有这个是在win7或vista下硬盘安装的Ubuntu的方法，方法收集自网络，老饕测试成功，如果是系统是XP或是其他的此方法不一定有效。</p>
+
+<p>还有安装Linux时分区的一些问题：</p>
+
+<p>安装的时候选择手动分区，推介专门Ubuntu做3个分区：根分区，home分区和交换分区（swap）。</p>
+
+<p>根分区：相当于系统盘</p>
+
+<p>home分区：主要是放一些用户文件什么的</p>
+
+<p>交换分区（swap）：这东西类似 Windows中的虚拟内存，但比那个还要专业，直接搞成一个分区形式了，而且Linux也有SWAP文件的形式出现，推介大小为自己内存容量的2倍，太大了也没什么用，毕竟硬盘的速度实在太慢了。</p>
+
+<h1>修复win7启动项</h1>
+
+<p>如果只能看到ubuntu启动项，而找不到win7，可以尝试一下方法</p>
+
+<h2>第一种方法</h2>
+
+<p>进ubuntu，打开终端（Ctrl+Alt+T），执行 sudo grub-update</p>
+
+<h2>第二种方法</h2>
+
+<p>手动修改 grub.cfg，在适合的位置加入win7的启动项。</p>
+
+<p>参考 <a href="http://www.huomo.cn/os/article-1867d.html">http://www.huomo.cn/os/article-1867d.html</a></p>
+
+<h3>1. 取得root权限（系统最高权限）</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo -i</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按提示输入密码；</p>
+
+<p>备份原来的grub.cfg</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cp /boot/grub/grub.cfg grub.cfg.bak</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. 查看各个硬盘分区的UUID值</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ls -l /dev/disk/by-uuid</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. 修改启动脚步grub.cfg</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gedit /boot/grub/grub.cfg</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在合适位置加入下面代码</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>menuentry（“Win7 Ultimate loader (sda1)”）{
+</span><span class='line'>insmod part_msdos
+</span><span class='line'>insmod ntfs
+</span><span class='line'>set root='(hd0,msdos1)'
+</span><span class='line'>searcg\h --no-floppy --fs-uuid --set=root 40F44BE7F44BDE32
+</span><span class='line'>chainloader +1
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>第三种方法</h2>
+
+<p>如果win7的引导出现错误，比如bootmgr is missing。可以使用安装盘修复，或者使用u盘制作winPE系统（UltraISO+ISO镜像），然后使用NTBOOTautofix进行修复。</p>
+
+<h1>在WIN7中修复ubuntu的启动项</h1>
+
+<p>可以参考这个帖子 <a href="http://bbs.pcbeta.com/viewthread-600509-1-1.html">http://bbs.pcbeta.com/viewthread-600509-1-1.html</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T16:50:00+08:00" pubdate data-updated="true">Jun 21<span>st</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/其他/'>其他</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/18/Command/" title="Previous Post: Java之命令模式（Command Pattern）">&laquo; Java之命令模式（Command Pattern）</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/23/android/" title="Next Post: 在ubuntu下载android源码">在ubuntu下载android源码 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/21/ubuntu/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/21/ubuntu/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

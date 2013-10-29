@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Android Broadcast - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="转载 http://www.cnblogs.com/playing/archive/2011/03/23/1992030.html 在 Android 中使用 Activity, Service, Broadcast, BroadcastReceiver 活动(Activity) - 用于表现功能 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/05/28/android-broadcast/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android Broadcast</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-28T16:59:00+08:00" pubdate data-updated="true">May 28<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>转载 <a href="http://www.cnblogs.com/playing/archive/2011/03/23/1992030.html">http://www.cnblogs.com/playing/archive/2011/03/23/1992030.html</a></p>
+
+<p>在 Android 中使用 Activity, Service, Broadcast, BroadcastReceiver</p>
+
+<p>活动(Activity) - 用于表现功能</p>
+
+<p>服务(Service) - 相当于后台运行的 Activity</p>
+
+<p>广播(Broadcast) - 用于发送广播</p>
+
+<p>广播接收器(BroadcastReceiver) - 用于接收广播</p>
+
+<p><span style="color:red">Intent - 用于连接以上各个组件，并在其间传递消息</span></p>
+
+<!-- more -->
+
+
+<p>========</p>
+
+<h2>BroadcastReceiver：</h2>
+
+<p>在Android中，Broadcast是一种广泛运用的在应用程序之间传输信息的机制。而BroadcastReceiver是对发送出来的 Broadcast进行过滤接受并响应的一类组件。下面将详细的阐述如何发送Broadcast和使用BroadcastReceiver过滤接收的过程：</p>
+
+<p><strong>首先在需要发送信息的地方</strong>，把要发送的信息和用于过滤的信息(如Action、Category)<strong>装入一个Intent对象</strong>，然后通过调用 Context.sendBroadcast()、sendOrderBroadcast()或sendStickyBroadcast()方法，把 Intent对象以广播方式发送出去。</p>
+
+<p>当Intent发送以后，所有已经注册的BroadcastReceiver<strong>会检查注册时的IntentFilter是否与发送的Intent相匹配</strong>，若匹配则就会调用BroadcastReceiver的<strong>onReceive()</strong>方法。所以当我们定义一个BroadcastReceiver的时候，都需要实现onReceive()方法。</p>
+
+<h3><span style="color:red">注册BroadcastReceiver有两种方式:</span></h3>
+
+<p><span style="color:red">一种方式是，静态的在AndroidManifest.xml中用<receiver>标签生命注册，并在标签内用<intent- filter>标签设置过滤器。</span></p>
+
+<p><span style="color:red">另一种方式是，动态的在代码中先定义并设置好一个 IntentFilter 对象，然后在需要注册的地方调Context.registerReceiver()方法，如果取消时就调用 Context.unregisterReceiver()方法。<strong>如果用动态方式注册的BroadcastReceiver的Context对象被销毁时，BroadcastReceiver也就自动取消注册了。（特别注意，有些可能需要后台监听的，如短信消息）</strong></span></p>
+
+<p>另外，若在使用sendBroadcast()的方法是指定了接收权限，则只有在AndroidManifest.xml中用<uses- permission>标签声明了拥有此权限的BroascastReceiver才会有可能接收到发送来的Broadcast。同样，若在注册BroadcastReceiver时指定了可接收的Broadcast的权限，则只有在包内的AndroidManifest.xml中 用<uses-permission>标签声明了，拥有此权限的Context对象所发送的Broadcast才能被这个 BroadcastReceiver所接收。</p>
+
+<p><strong>1.静态注册BroadcastReceiver:</strong></p>
+
+<p>静态注册比动态注册麻烦点，先<strong>新建一个类继承BroadcastReceiver</strong>，如：</p>
+
+<p>clsReceiver2.java</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">testBroadcastReceiver</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.BroadcastReceiver</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Context</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.content.Intent</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.widget.Toast</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * 接收静态注册广播的BroadcastReceiver，</span>
+</span><span class='line'><span class="cm"> * step1:要到AndroidManifest.xml这里注册消息</span>
+</span><span class='line'><span class="cm"> *         &lt;receiver android:name=&quot;clsReceiver2&quot;&gt;</span>
+</span><span class='line'><span class="cm">            &lt;intent-filter&gt;</span>
+</span><span class='line'><span class="cm">                &lt;action</span>
+</span><span class='line'><span class="cm">                    android:name=&quot;com.testBroadcastReceiver.Internal_2&quot;/&gt;</span>
+</span><span class='line'><span class="cm">            &lt;/intent-filter&gt;</span>
+</span><span class='line'><span class="cm">        &lt;/receiver&gt;</span>
+</span><span class='line'><span class="cm">    step2:定义消息的字符串</span>
+</span><span class='line'><span class="cm">    step3:通过Intent传递消息来驱使BroadcastReceiver触发</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">clsReceiver2</span> <span class="kd">extends</span> <span class="n">BroadcastReceiver</span><span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceive</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">action</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="na">getAction</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Toast</span><span class="o">.</span><span class="na">makeText</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">&quot;静态:&quot;</span><span class="o">+</span><span class="n">action</span><span class="o">,</span> <span class="mi">1000</span><span class="o">).</span><span class="na">show</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后到<strong>AndroidManifest.xml 添加receiver标签</strong></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">&quot;clsReceiver2&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;intent-filter&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;action</span>
+</span><span class='line'>            <span class="na">android:name=</span><span class="s">&quot;com.testBroadcastReceiver.Internal_2&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/intent-filter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/receiver&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一个name是类名,即你的继承BroadcastReceiver的类的名字，里面实现了BroadcastReceive的<strong>onReceive()</strong>方法，来处理你接到消息的动作。</p>
+
+<p>第二个name是action的名称，即你要监听的消息名字（其它消息都会被过滤不监听）。</p>
+
+<p><strong>2.动态注册BroadcastReceiver:</strong></p>
+
+<p>主要代码部分为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">IntentFilter</span> <span class="n">intentFilter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntentFilter</span><span class="o">();</span>
+</span><span class='line'><span class="n">intentFilter</span><span class="o">.</span><span class="na">addAction</span><span class="o">(</span><span class="n">String</span><span class="o">);</span> <span class="c1">//为BroadcastReceiver指定action，即要监听的消息名字。</span>
+</span><span class='line'><span class="n">registerReceiver</span><span class="o">(</span><span class="n">MyBroadcastReceiver</span><span class="o">,</span><span class="n">intentFilter</span><span class="o">);</span> <span class="c1">//注册监听</span>
+</span><span class='line'><span class="n">unregisterReceiver</span><span class="o">(</span><span class="n">MyBroadcastReceiver</span><span class="o">);</span> <span class="c1">//取消监听</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(一般：在onStart中注册，onStop中取消unregisterReceiver)</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">class</span> <span class="nc">MyBroadcastReceive</span> <span class="kd">extends</span> <span class="n">BroadcastReceiver</span>
+</span><span class='line'>     <span class="o">{</span>
+</span><span class='line'>           <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceive</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">)</span>
+</span><span class='line'>           <span class="o">{</span>
+</span><span class='line'>               <span class="n">String</span> <span class="n">action</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="na">getAction</span><span class="o">();</span>
+</span><span class='line'>                <span class="k">if</span><span class="o">(</span><span class="n">intent</span><span class="o">.</span><span class="na">ACTION_BATTERY_CHANGED</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">action</span><span class="o">))</span> <span class="c1">//判断是否接到电池变换消息 </span>
+</span><span class='line'>                <span class="o">{</span>
+</span><span class='line'>                   <span class="c1">//处理内容</span>
+</span><span class='line'>                 <span class="o">}</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>========</p>
+
+<h2>Broadcast：</h2>
+
+<p>发送广播消息，把要发送的信息和用于过滤的信息（如Action、Category）<span style="color:red">装入一个Intent对象</span>，然后通过<span style="color:red">调用 Context.sendBroadcast()、sendOrderBroadcast()或sendStickyBroadcast()方法</span>，把 Intent对象以广播方式发送出去。</p>
+
+<p>例如：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">INTENAL_ACTION_3</span><span class="o">);</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;Name&quot;</span><span class="o">,</span> <span class="s">&quot;hellogv&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">intent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="s">&quot;Blog&quot;</span><span class="o">,</span> <span class="s">&quot;http://blog.csdn.net/hellogv&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sendBroadcast</span><span class="o">(</span><span class="n">intent</span><span class="o">);</span><span class="c1">//传递过去</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>两种注册类型的区别是：</h3>
+
+<p>1)第一种不是常驻型广播，也就是说广播跟随程序的生命周期。</p>
+
+<p>2)第二种是常驻型，也就是说当应用程序关闭后，如果有信息广播来，程序也会被系统调用自动运行。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-28T16:59:00+08:00" pubdate data-updated="true">May 28<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/27/android-context/" title="Previous Post: Android Context">&laquo; Android Context</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/29/android-fragment/" title="Next Post: Fragment">Fragment &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/05/28/android-broadcast/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/05/28/android-broadcast/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

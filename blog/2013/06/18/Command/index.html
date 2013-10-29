@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Java之命令模式（Command Pattern） - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="http://www.cnblogs.com/devinzhang/archive/2012/01/06/2315235.html 1.概念 将来自客户端的请求传入一个对象，从而使你可用不同的请求对客户进行参数化。用于“行为请求者”与“行为实现者”解耦，可实现二者之间的松耦合，以便适应变化。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/06/18/Command/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Java之命令模式（Command Pattern）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-18T19:33:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://www.cnblogs.com/devinzhang/archive/2012/01/06/2315235.html">http://www.cnblogs.com/devinzhang/archive/2012/01/06/2315235.html</a></p>
+
+<h2>1.概念</h2>
+
+<p>将来自客户端的请求传入一个对象，从而使你可用不同的请求对客户进行参数化。用于“行为请求者”与“行为实现者”解耦，可实现二者之间的松耦合，以便适应变化。分离变化与不变的因素。</p>
+
+<p>在面向对象的程序设计中，一个对象调用另一个对象，一般情况下的调用过程是：创建目标对象实例；设置调用参数；调用目标对象的方法。</p>
+
+<p>但在有些情况下有必要使用一个专门的类对这种调用过程加以封装，我们把这种专门的类称作command类。</p>
+
+<p>Command模式可应用于</p>
+
+<ul>
+<li><p>整个调用过程比较繁杂，或者存在多处这种调用。这时，使用Command类对该调用加以封装，便于功能的再利用。</p></li>
+<li><p>调用前后需要对调用参数进行某些处理。</p></li>
+<li><p>调用前后需要进行某些额外处理，比如日志，缓存，记录历史操作等。</p></li>
+</ul>
+
+
+<p>Command模式有如下效果：</p>
+
+<ul>
+<li><p>将调用操作的对象和知道如何实现该操作的对象解耦。</p></li>
+<li><p>Command是头等对象。他们可以像其他对象一样被操作和扩展。</p></li>
+<li><p>你可将多个命令装配成一个复合命令。</p></li>
+<li><p>增加新的Command很容易，因为这无需改变现有的类。</p></li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>2.UML</h2>
+
+<p><img class="center" src="http://pic002.cnblogs.com/images/2012/267603/2012010622255792.jpg"></p>
+
+<h2>3.代码</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteCommand</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">state</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">ConcreteCommand</span><span class="o">(</span><span class="n">Receiver</span> <span class="n">receiver</span><span class="o">){</span>
+</span><span class='line'>       <span class="k">this</span><span class="o">.</span><span class="na">receiver</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">receiver</span><span class="o">.</span><span class="na">action</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Receiver</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">action</span><span class="o">(){</span>
+</span><span class='line'>       <span class="c1">//真正执行命令操作的功能代码</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Invoker</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCommand</span><span class="o">(</span><span class="n">Command</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>       <span class="k">this</span><span class="o">.</span><span class="na">command</span> <span class="o">=</span> <span class="n">command</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">runCommand</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>       <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">assemble</span><span class="o">(){</span>
+</span><span class='line'>       <span class="c1">//创建接收者</span>
+</span><span class='line'>       <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Receiver</span><span class="o">();</span>
+</span><span class='line'>       <span class="c1">//创建命令对象，设定它的接收者</span>
+</span><span class='line'>       <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteCommand</span><span class="o">(</span><span class="n">receiver</span><span class="o">);</span>
+</span><span class='line'>       <span class="c1">//创建Invoker，把命令对象设置进去</span>
+</span><span class='line'>       <span class="n">Invoker</span> <span class="n">invoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Invoker</span><span class="o">();</span>
+</span><span class='line'>       <span class="n">invoker</span><span class="o">.</span><span class="na">setCommand</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面给个例子，是模拟对电视机的操作有开机、关机、换台命令。代码如下</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//命令接收者</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Tv</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">int</span> <span class="n">currentChannel</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOn</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The televisino is on.&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOff</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The television is off.&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">changeChannel</span><span class="o">(</span><span class="kt">int</span> <span class="n">channel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="k">this</span><span class="o">.</span><span class="na">currentChannel</span> <span class="o">=</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Now TV channel is &quot;</span> <span class="o">+</span> <span class="n">channel</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//执行命令的接口</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kt">void</span> <span class="n">execute</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//开机命令</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandOn</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Tv</span> <span class="n">myTv</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">CommandOn</span><span class="o">(</span><span class="n">Tv</span> <span class="n">tv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span> <span class="o">=</span> <span class="n">tv</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span><span class="o">.</span><span class="na">turnOn</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//关机命令</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandOff</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Tv</span> <span class="n">myTv</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">CommandOff</span><span class="o">(</span><span class="n">Tv</span> <span class="n">tv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span> <span class="o">=</span> <span class="n">tv</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span><span class="o">.</span><span class="na">turnOff</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//频道切换命令</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandChange</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Tv</span> <span class="n">myTv</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="kt">int</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">CommandChange</span><span class="o">(</span><span class="n">Tv</span> <span class="n">tv</span><span class="o">,</span> <span class="kt">int</span> <span class="n">channel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span> <span class="o">=</span> <span class="n">tv</span><span class="o">;</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="k">this</span><span class="o">.</span><span class="na">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span><span class="o">.</span><span class="na">changeChannel</span><span class="o">(</span><span class="n">channel</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//可以看作是遥控器吧</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Control</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Command</span> <span class="n">onCommand</span><span class="o">,</span> <span class="n">offCommand</span><span class="o">,</span> <span class="n">changeChannel</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="n">Control</span><span class="o">(</span><span class="n">Command</span> <span class="n">on</span><span class="o">,</span> <span class="n">Command</span> <span class="n">off</span><span class="o">,</span> <span class="n">Command</span> <span class="n">channel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">onCommand</span> <span class="o">=</span> <span class="n">on</span><span class="o">;</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">offCommand</span> <span class="o">=</span> <span class="n">off</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">changeChannel</span> <span class="o">=</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOn</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">onCommand</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOff</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">offCommand</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">changeChannel</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">changeChannel</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//测试类</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 命令接收者</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">Tv</span> <span class="n">myTv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tv</span><span class="o">();</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 开机命令</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="n">CommandOn</span> <span class="n">on</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandOn</span><span class="o">(</span><span class="n">myTv</span><span class="o">);</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 关机命令</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="n">CommandOff</span> <span class="n">off</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandOff</span><span class="o">(</span><span class="n">myTv</span><span class="o">);</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 频道切换命令</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">CommandChange</span> <span class="n">channel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandChange</span><span class="o">(</span><span class="n">myTv</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 命令控制对象</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">Control</span> <span class="n">control</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Control</span><span class="o">(</span><span class="n">on</span><span class="o">,</span> <span class="n">off</span><span class="o">,</span> <span class="n">channel</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 开机</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="n">control</span><span class="o">.</span><span class="na">turnOn</span><span class="o">();</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 切换频道</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">control</span><span class="o">.</span><span class="na">changeChannel</span><span class="o">();</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 关机</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">control</span><span class="o">.</span><span class="na">turnOff</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行结果为：
+The televisino is on.
+Now TV channel is 2
+The television is off.</p>
+
+<h2>4.应用场景</h2>
+
+<p>在下面的情况下应当考虑使用命令模式：</p>
+
+<ol>
+<li><p>使用命令模式作为&#8221;CallBack&#8221;在面向对象系统中的替代。&#8221;CallBack&#8221;讲的便是先将一个函数登记上，然后在以后调用此函数。</p></li>
+<li><p>需要在不同的时间指定请求、将请求排队。一个命令对象和原先的请求发出者可以有不同的生命期。换言之，原先的请求发出者可能已经不在了，而命令对象本身仍然是活动的。这时命令的接收者可以是在本地，也可以在网络的另外一个地址。命令对象可以在串形化之后传送到另外一台机器上去。</p></li>
+<li><p>系统需要支持命令的撤消(undo)。命令对象可以把状态存储起来，等到客户端需要撤销命令所产生的效果时，可以调用undo()方法，把命令所产生的效果撤销掉。命令对象还可以提供redo()方法，以供客户端在需要时，再重新实施命令效果。</p></li>
+<li><p>如果一个系统要将系统中所有的数据更新到日志里，以便在系统崩溃时，可以根据日志里读回所有的数据更新命令，重新调用Execute()方法一条一条执行这些命令，从而恢复系统在崩溃前所做的数据更新。</p></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-18T19:33:00+08:00" pubdate data-updated="true">Jun 18<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/16/AsyncTask/" title="Previous Post: AsyncTask类的使用 ">&laquo; AsyncTask类的使用 </a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/21/ubuntu/" title="Next Post: 在win7基础上，安装ubuntu双系统">在win7基础上，安装ubuntu双系统 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/06/18/Command/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/06/18/Command/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

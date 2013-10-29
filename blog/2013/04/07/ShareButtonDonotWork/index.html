@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ShareAction在AVD失效的问题 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="　　在虚拟机（AVD，Android Virtual Device）使用ActionBar／ActionBarSherlock）上的ShareAction分享按键，怎么点也点不出程式列表，但在手机上没有问题。 　　在网路上查找，确有人反映过这个问题，应该是一个BUG。 　　参见 android. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ShareAction在AVD失效的问题</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-07T11:11:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>　　在虚拟机（AVD，Android Virtual Device）使用ActionBar／ActionBarSherlock）上的ShareAction分享按键，怎么点也点不出程式列表，但在手机上没有问题。</p>
+
+<!-- more -->
+
+
+<br />
+
+
+<p><img class="center" src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093427048.jpg" title="ShareAction" ></p>
+
+<br />
+
+
+<p>　　在网路上查找，确有人反映过这个问题，应该是一个BUG。</p>
+
+<p>　　参见 <a href="http://code.google.com/p/android/issues/detail?id=25467">android.widget.ShareActionProvider does not work on the emulator</a></p>
+
+<br />
+
+
+<p><img class="center" src="http://img14.poco.cn/mypoco/myphoto/20130409/10/4309479020130409101555091.jpg" title="ShareActionProvider" ></p>
+
+<p>　　此图是系统提供的ShareActionProvider类及相关对象，提供快速存取提供共享服务的Action。</p>
+
+<p>　　整个类图主要包括ShareActionProvider、ActivityChooserModel、ActivityChooserView、ActivityChooserViewAdapter等对象。</p>
+
+<p>　　派生自ActionProvider的具体类ShareActionProvider，用来实例化ActivityChooserModel、ActivityChooserView对象，并为ActivityChooserView对象设置数据模式，生成视图，操作和获取Model信息，根据Model信息创建活动菜单。</p>
+
+<p>　　ActivityChooserModel、ActivityChooserView、ActivityChooserViewAdapter三者构成MVC模式，分别对应Model、View及采用Adapter模式的Control，ActivityChooserView通过ActivityChooserViewAdapter获取ActivityChooserModel中的活动信息，ActivityChooserModel本身派生自DataSetObservable，可以在ActivityChooserView对象中为ActivityChooserModel对象登记一个DataSetObserver类型的对象，ActivityChooserModel对象通过该对象向ActivityChooserView对象发送ActivityChooserModel对象中的数据变化通知。</p>
+
+<p>　　ActivityChooserModel对于通过intent从包管理器中获得的符合intent条件的活动记录（以ActivityResolveInfo类型保存在数组列表中mActivites）的排序方法采用了策略模式，排序方法被封装成对象，在没有通过setActivitySorter方法设置排序方法时，采用默认排序方法，由DefaultSorter对象封装。DefaultSorter对象提供的排序方法是依据活动记录中的weight值进行排序，被排序的活动记录的weight值还依据记录在HistoricalRecord（HistoricalRecord中的活动通过读私有的XML类型的共享历史文件获得）列表中的活动顺序进行修改，依据HistoricalRecord列表的从后往前的顺序为mActivites数组中对应的对象增加weight值，活动历史记录中越往后的记录在mActivites列表中对应活动增加的权值越小，最新的相应记录增加的权值越大。</p>
+
+<p>　　HistoryPersister线程对象用于把HistoricalRecord列表中的记录保存到历史文件中。HistoryLoader线程对象用于读取历史文件到HistoricalRecord列表中。DataModelPackageMonitor对象用于监视数据包，在数据包更新时同步活动记录列表mActivites。ActivityChooserMode对象还通过Map类型的HashMap保证一个相同的历史文件只能实例化一个ActivityChooserModel对象，是单例模式的具体应用。</p>
+
+<br />
+
+
+<br />
+
+
+<p>在ActivityChooserView.java内的ActivityChooserViewAdapter类</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kt">boolean</span> <span class="n">mShowDefaultActivity</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">(!</span><span class="n">mShowDefaultActivity</span> <span class="o">&amp;&amp;</span> <span class="n">mDataModel</span><span class="o">.</span><span class="na">getDefaultActivity</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">activityCount</span><span class="o">--;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br />
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="k">if</span> <span class="o">(</span><span class="n">activityCount</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">historySize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="n">VISIBLE</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">ResolveInfo</span> <span class="n">activity</span> <span class="o">=</span> <span class="n">mAdapter</span><span class="o">.</span><span class="na">getDefaultActivity</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">PackageManager</span> <span class="n">packageManager</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getPackageManager</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">mDefaultActivityButtonImage</span><span class="o">.</span><span class="na">setImageDrawable</span><span class="o">(</span><span class="n">activity</span><span class="o">.</span><span class="na">loadIcon</span><span class="o">(</span><span class="n">packageManager</span><span class="o">));</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">mDefaultActionButtonContentDescription</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">CharSequence</span> <span class="n">label</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="na">loadLabel</span><span class="o">(</span><span class="n">packageManager</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">String</span> <span class="n">contentDescription</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span>
+</span><span class='line'>                        <span class="n">mDefaultActionButtonContentDescription</span><span class="o">,</span> <span class="n">label</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setContentDescription</span><span class="o">(</span><span class="n">contentDescription</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// Work-around for #415.</span>
+</span><span class='line'>            <span class="n">mAdapter</span><span class="o">.</span><span class="na">setShowDefaultActivity</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">mDefaultActivityButton</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">GONE</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>　　当打开程式时，如果只有一个响应intent的程式，activityCount成为0，button因而不能使用。</p>
+
+<br />
+
+
+<br />
+
+
+<br />
+
+
+<br />
+
+
+
+
+<div style="float:right;width:38.2%;margin-left: 0.6em;margin-top: 0.6em;"><img src="http://img14.poco.cn/mypoco/myphoto/20130407/09/4309479020130407093549098.jpg" /></div>
+
+
+<p>　　据分析，当只有一个（或零个）程式接受Intent.ACTION_SEND（或其他）的某个类型（如text/plain）时，就无法点出分享。而AVD初始时可能只有SMS（简讯息）可接受此Intent。如果再装载一个程式（如微博客户端），就可以正常使用ShareAction打开分享程式列表了。由于ShareAction会记住使用最多的程式，并显示在ActionBar上，所以使用过一次分享到SMS后卸载掉“微博”也是会显示SMS。但这并不解决问题。</p>
+
+<p>　　参见 <a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">ShareActionProvider does not work if only one intent</a></p>
+
+<br />
+
+
+<p>　　附ShareAction实现的部分代码（在SherlockFragment内，覆盖onCreateOptionsMenu方法）</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">ShareActionProvider</span> <span class="n">mShareActionProvider</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">,</span> <span class="n">MenuInflater</span> <span class="n">inflater</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">MenuItem</span> <span class="n">menuItem</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="na">findItem</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">share</span><span class="o">);</span>
+</span><span class='line'><span class="c1">// Get the provider and hold onto it to set/change the share intent. </span>
+</span><span class='line'><span class="n">mShareActionProvider</span> <span class="o">=</span> <span class="o">(</span><span class="n">ShareActionProvider</span><span class="o">)</span> <span class="n">menuItem</span><span class="o">.</span><span class="na">getActionProvider</span><span class="o">();</span>
+</span><span class='line'><span class="n">GoodsItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">GoodsItemManager</span><span class="o">.</span><span class="na">instance</span><span class="o">().</span><span class="na">getGoodsItems</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">mPosition</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Intent</span> <span class="n">shareIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_SEND</span><span class="o">);</span>
+</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_SUBJECT</span><span class="o">,</span> <span class="n">getResources</span><span class="o">().</span><span class="na">getString</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">string</span><span class="o">.</span><span class="na">share_subject</span><span class="o">));</span>
+</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_TEXT</span><span class="o">,</span> <span class="n">Html</span><span class="o">.</span><span class="na">fromHtml</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">getTitle</span><span class="o">()));</span>
+</span><span class='line'><span class="n">shareIntent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;text/plain&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">mShareActionProvider</span><span class="o">.</span><span class="na">setShareIntent</span><span class="o">(</span><span class="n">shareIntent</span><span class="o">);</span>
+</span><span class='line'> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br />
+
+
+<p>　　menu下的xml文件中定义</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;item</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/share&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/ic_action_share&quot;</span>
+</span><span class='line'>        <span class="na">android:showAsAction=</span><span class="s">&quot;ifRoom&quot;</span>
+</span><span class='line'>        <span class="na">android:actionProviderClass=</span><span class="s">&quot;com.actionbarsherlock.widget.ShareActionProvider&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;@string/action_share&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/item&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<br />
+
+
+<p>　　ActionBarSherlock在最近修复了这个问题，详见<a href="https://github.com/JakeWharton/ActionBarSherlock/issues/415">上文链接</a>。有兴趣的朋友可以下载最新代码，或者在调试时装载其他支持分享的程式！</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-07T11:11:00+08:00" pubdate data-updated="true">Apr 7<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/22/convertView/" title="Previous Post: 【转载】convertView&setTag方法的一点理解  ">&laquo; 【转载】convertView&setTag方法的一点理解  </a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/04/26/SQL/" title="Next Post: SQL基础知识">SQL基础知识 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/04/07/ShareButtonDonotWork/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

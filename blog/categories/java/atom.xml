@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: java | 初心]]></title>
+  <link href="http://dande618.github.com/blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://dande618.github.com/"/>
+  <updated>2013-10-29T14:40:42+08:00</updated>
+  <id>http://dande618.github.com/</id>
+  <author>
+    <name><![CDATA[dande618]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ubuntu搭建Java环境]]></title>
+    <link href="http://dande618.github.com/blog/2013/06/23/java/"/>
+    <updated>2013-06-23T19:44:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/06/23/java</id>
+    <content type="html"><![CDATA[<p><a href="http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html">http://www.cnblogs.com/fnng/archive/2013/01/30/2883815.html</a></p>
+
+<p>登录oracle的网站去下载JDK7</p>
+
+<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html</a></p>
+
+<p><img class="center" src="http://images.cnitblog.com/blog/311516/201301/30223821-19a73c9899094ce9a2ff640c751b9868.png"></p>
+
+<p>好吧！在下载之前我们要先选中“Accept License Agreement” 然后，才允许我们下载。</p>
+
+<p>等等有好几个linux版本的 JDK，那么应该选择那个呢？我们先来看看他们有什么不同。</p>
+
+<p>x86对应的是32位操作系统下的应用程序，x64对应的是64位操作系统下的应用程序，那我们在下载之前要先确定我的操作系统是32位的还是64位的。</p>
+
+<!-- more -->
+
+
+<p>ctrl+alt+t 调出ubuntu的终端。输入一下命令：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ getconf LONG_BIT //查看操作系统位数&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>$ lsb_release -a //顺便看看操作系统信息</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>每种位数操作系统又分了两种类型的安装包。</p>
+
+<ul>
+<li><p>rmp原本是RedHat Linux发行版专门用来管理Linux各项套件的程序，由于它遵循GPL规则且功能强大方便，因而广受欢迎。逐渐受到其他发行版的采用。RPM套件管理方式的出现，让Linux易于安装，升级，间接提升了Linux的适用度。</p></li>
+<li><p>tar.gz就是用tar和gzip压缩后的文件扩展名。 用winzip或winrar就可以打开。</p></li>
+</ul>
+
+
+<h3>解压</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo -i       //切换root权限</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>进入下载文件的文件夹。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>下载# ls       //查看下载的文件&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>下载# sudo mkdir /usr/java       //创建目录&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>下载# sudo tar zxvf jdk-7u11-linux-i586.tar.gz -C /usr/java //将下载的文件解压到/usr/java目录下&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>下载# cd /usr/java/             //切换到创建的目录下&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>/usr/java#             //查看目录</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>改名（非必须步骤）</h3>
+
+<p>为了便于书写，我们需要对JDK的解压目录进行改名。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>root@fnngj-H24X:/usr/java# sudo mv jdk1.7.0_11  java-7-sun&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>root@fnngj-H24X:/usr/java# ls</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>修改配置文件</h3>
+
+<p>打开配置文件命令</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo gedit /etc/environment</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>配置内容如下：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$JAVA_HOME/bin"&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>export CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>export JAVA_HOME=/usr/java/java-7-sun</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>保存后关闭配置文件</p>
+
+<p>要使配置文件生效，需要输入一下：
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/java#  source /etc/environment</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>验证</h3>
+
+<p>在终端使用echo命令检查环境变量的设置情况</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>root@fnngj-H24X:/usr/java#  echo $JAVA_HOME&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>root@fnngj-H24X:/usr/java# echo $CLASSPATH&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>root@fnngj-H24X:/usr/java#  echo $PATH</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>查看安装的java版本：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>root@fnngj-H24X:/usr/java#  java -version
+</span><span class='line'>java version "1.7.0_11"
+</span><span class='line'>Java(TM) SE Runtime Environment (build 1.7.0_11-b21)
+</span><span class='line'>Java HotSpot(TM) Server VM (build 23.6-b04, mixed mode)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>使其对所有用户有效</h3>
+
+<p>重新打开一个终端，查看java版本</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>fnngj@fnngj-H24X:~$ java -version
+</span><span class='line'>程序 'java' 已包含在下列软件包中：
+</span><span class='line'>* default-jre
+</span><span class='line'>* gcj-4.6-jre-headless
+</span><span class='line'>* gcj-4.7-jre-headless
+</span><span class='line'>* openjdk-7-jre-headless
+</span><span class='line'>* openjdk-6-jre-headless
+</span><span class='line'>请尝试：sudo apt-get install &lt;选定的软件包></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>啊！怎么找不到了呢? 因为刚才是用root用户配置的，且关闭终端，配置的作用就消失了。那怎么办？</p>
+
+<h3>需要修改profile 文件</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/usr/java#  sudo gedit /etc/profile</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>打开profile文件，添加如下内容</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>set java environment&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p>JAVA_HOME=/usr/java/java-7-sun
+</span><span class='line'>export JRE_HOME=/usr/java/java-7-sun/jre
+</span><span class='line'>export CLASSPATH=.:$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+</span><span class='line'>export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$PATH</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>修改完成后保存</p>
+
+<p>这个需要重启电脑才能生效。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java之命令模式（Command Pattern）]]></title>
+    <link href="http://dande618.github.com/blog/2013/06/18/Command/"/>
+    <updated>2013-06-18T19:33:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/06/18/Command</id>
+    <content type="html"><![CDATA[<p><a href="http://www.cnblogs.com/devinzhang/archive/2012/01/06/2315235.html">http://www.cnblogs.com/devinzhang/archive/2012/01/06/2315235.html</a></p>
+
+<h2>1.概念</h2>
+
+<p>将来自客户端的请求传入一个对象，从而使你可用不同的请求对客户进行参数化。用于“行为请求者”与“行为实现者”解耦，可实现二者之间的松耦合，以便适应变化。分离变化与不变的因素。</p>
+
+<p>在面向对象的程序设计中，一个对象调用另一个对象，一般情况下的调用过程是：创建目标对象实例；设置调用参数；调用目标对象的方法。</p>
+
+<p>但在有些情况下有必要使用一个专门的类对这种调用过程加以封装，我们把这种专门的类称作command类。</p>
+
+<p>Command模式可应用于</p>
+
+<ul>
+<li><p>整个调用过程比较繁杂，或者存在多处这种调用。这时，使用Command类对该调用加以封装，便于功能的再利用。</p></li>
+<li><p>调用前后需要对调用参数进行某些处理。</p></li>
+<li><p>调用前后需要进行某些额外处理，比如日志，缓存，记录历史操作等。</p></li>
+</ul>
+
+
+<p>Command模式有如下效果：</p>
+
+<ul>
+<li><p>将调用操作的对象和知道如何实现该操作的对象解耦。</p></li>
+<li><p>Command是头等对象。他们可以像其他对象一样被操作和扩展。</p></li>
+<li><p>你可将多个命令装配成一个复合命令。</p></li>
+<li><p>增加新的Command很容易，因为这无需改变现有的类。</p></li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>2.UML</h2>
+
+<p><img class="center" src="http://pic002.cnblogs.com/images/2012/267603/2012010622255792.jpg"></p>
+
+<h2>3.代码</h2>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">();</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConcreteCommand</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="n">state</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="nf">ConcreteCommand</span><span class="o">(</span><span class="n">Receiver</span> <span class="n">receiver</span><span class="o">){</span>
+</span><span class='line'>   <span class="k">this</span><span class="o">.</span><span class="na">receiver</span> <span class="o">=</span> <span class="n">receiver</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>   <span class="n">receiver</span><span class="o">.</span><span class="na">action</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Receiver</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">action</span><span class="o">(){</span>
+</span><span class='line'>   <span class="c1">//真正执行命令操作的功能代码</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Invoker</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCommand</span><span class="o">(</span><span class="n">Command</span> <span class="n">command</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>   <span class="k">this</span><span class="o">.</span><span class="na">command</span> <span class="o">=</span> <span class="n">command</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">runCommand</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>   <span class="n">command</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">assemble</span><span class="o">(){</span>
+</span><span class='line'>   <span class="c1">//创建接收者</span>
+</span><span class='line'>   <span class="n">Receiver</span> <span class="n">receiver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Receiver</span><span class="o">();</span>
+</span><span class='line'>   <span class="c1">//创建命令对象，设定它的接收者</span>
+</span><span class='line'>   <span class="n">Command</span> <span class="n">command</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcreteCommand</span><span class="o">(</span><span class="n">receiver</span><span class="o">);</span>
+</span><span class='line'>   <span class="c1">//创建Invoker，把命令对象设置进去</span>
+</span><span class='line'>   <span class="n">Invoker</span> <span class="n">invoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Invoker</span><span class="o">();</span>
+</span><span class='line'>   <span class="n">invoker</span><span class="o">.</span><span class="na">setCommand</span><span class="o">(</span><span class="n">command</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>下面给个例子，是模拟对电视机的操作有开机、关机、换台命令。代码如下</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//命令接收者</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Tv</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kt">int</span> <span class="n">currentChannel</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOn</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The televisino is on.&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOff</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The television is off.&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">changeChannel</span><span class="o">(</span><span class="kt">int</span> <span class="n">channel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="k">this</span><span class="o">.</span><span class="na">currentChannel</span> <span class="o">=</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Now TV channel is &quot;</span> <span class="o">+</span> <span class="n">channel</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//执行命令的接口</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kt">void</span> <span class="n">execute</span><span class="o">();</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//开机命令</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandOn</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Tv</span> <span class="n">myTv</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="n">CommandOn</span><span class="o">(</span><span class="n">Tv</span> <span class="n">tv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span> <span class="o">=</span> <span class="n">tv</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span><span class="o">.</span><span class="na">turnOn</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//关机命令</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandOff</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Tv</span> <span class="n">myTv</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="n">CommandOff</span><span class="o">(</span><span class="n">Tv</span> <span class="n">tv</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span> <span class="o">=</span> <span class="n">tv</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span><span class="o">.</span><span class="na">turnOff</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//频道切换命令</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CommandChange</span> <span class="kd">implements</span> <span class="n">Command</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Tv</span> <span class="n">myTv</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">private</span> <span class="kt">int</span> <span class="n">channel</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="n">CommandChange</span><span class="o">(</span><span class="n">Tv</span> <span class="n">tv</span><span class="o">,</span> <span class="kt">int</span> <span class="n">channel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span> <span class="o">=</span> <span class="n">tv</span><span class="o">;</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="k">this</span><span class="o">.</span><span class="na">channel</span> <span class="o">=</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">execute</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">myTv</span><span class="o">.</span><span class="na">changeChannel</span><span class="o">(</span><span class="n">channel</span><span class="o">);</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//可以看作是遥控器吧</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Control</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">private</span> <span class="n">Command</span> <span class="n">onCommand</span><span class="o">,</span> <span class="n">offCommand</span><span class="o">,</span> <span class="n">changeChannel</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="n">Control</span><span class="o">(</span><span class="n">Command</span> <span class="n">on</span><span class="o">,</span> <span class="n">Command</span> <span class="n">off</span><span class="o">,</span> <span class="n">Command</span> <span class="n">channel</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">onCommand</span> <span class="o">=</span> <span class="n">on</span><span class="o">;</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">offCommand</span> <span class="o">=</span> <span class="n">off</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">changeChannel</span> <span class="o">=</span> <span class="n">channel</span><span class="o">;</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOn</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">onCommand</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">turnOff</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">offCommand</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="err">　　</span><span class="kd">public</span> <span class="kt">void</span> <span class="n">changeChannel</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">changeChannel</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//测试类</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
+</span><span class='line'><span class="err">　　</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 命令接收者</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">Tv</span> <span class="n">myTv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Tv</span><span class="o">();</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 开机命令</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="n">CommandOn</span> <span class="n">on</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandOn</span><span class="o">(</span><span class="n">myTv</span><span class="o">);</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 关机命令</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="n">CommandOff</span> <span class="n">off</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandOff</span><span class="o">(</span><span class="n">myTv</span><span class="o">);</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="c1">// 频道切换命令</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">CommandChange</span> <span class="n">channel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandChange</span><span class="o">(</span><span class="n">myTv</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 命令控制对象</span>
+</span><span class='line'><span class="err">　　</span>   <span class="n">Control</span> <span class="n">control</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Control</span><span class="o">(</span><span class="n">on</span><span class="o">,</span> <span class="n">off</span><span class="o">,</span> <span class="n">channel</span><span class="o">);&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="err">　　</span> <span class="c1">// 开机</span>
+</span><span class='line'>  <span class="err">　　</span> <span class="n">control</span><span class="o">.</span><span class="na">turnOn</span><span class="o">();</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 切换频道</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">control</span><span class="o">.</span><span class="na">changeChannel</span><span class="o">();</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="c1">// 关机</span>
+</span><span class='line'> <span class="err">　　</span>  <span class="n">control</span><span class="o">.</span><span class="na">turnOff</span><span class="o">();</span>
+</span><span class='line'><span class="err">　　</span><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>执行结果为：
+The televisino is on.
+Now TV channel is 2
+The television is off.</p>
+
+<h2>4.应用场景</h2>
+
+<p>在下面的情况下应当考虑使用命令模式：</p>
+
+<ol>
+<li><p>使用命令模式作为"CallBack"在面向对象系统中的替代。"CallBack"讲的便是先将一个函数登记上，然后在以后调用此函数。</p></li>
+<li><p>需要在不同的时间指定请求、将请求排队。一个命令对象和原先的请求发出者可以有不同的生命期。换言之，原先的请求发出者可能已经不在了，而命令对象本身仍然是活动的。这时命令的接收者可以是在本地，也可以在网络的另外一个地址。命令对象可以在串形化之后传送到另外一台机器上去。</p></li>
+<li><p>系统需要支持命令的撤消(undo)。命令对象可以把状态存储起来，等到客户端需要撤销命令所产生的效果时，可以调用undo()方法，把命令所产生的效果撤销掉。命令对象还可以提供redo()方法，以供客户端在需要时，再重新实施命令效果。</p></li>
+<li><p>如果一个系统要将系统中所有的数据更新到日志里，以便在系统崩溃时，可以根据日志里读回所有的数据更新命令，重新调用Execute()方法一条一条执行这些命令，从而恢复系统在崩溃前所做的数据更新。</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Java UML类图]]></title>
+    <link href="http://dande618.github.com/blog/2013/06/15/UML/"/>
+    <updated>2013-06-15T12:28:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/06/15/UML</id>
+    <content type="html"><![CDATA[<p><a href="http://blog.sina.com.cn/s/blog_71460d95010111dc.html">http://blog.sina.com.cn/s/blog_71460d95010111dc.html</a></p>
+
+<p>类图是最常用的UML图，它用于描述系统的结构化设计。其中包括类关系以及与每个类关联的属性及行为。类图能出色地表示继承与合成关系。为了将类图作为一种高效的沟通工具使用，开发者必须理解如何将类图上出现的元素转换到Java中。下面来进一步探索这一转换过程。</p>
+
+<h2>元素</h2>
+
+<p>在后面的小节中，分别讲解了类图的各个元素及其在Java中相应的表示。我会列出元素名，后续简短的代码片断和一幅图来表示元素在类图上的样子。每一节的最后简要总结了该元素。</p>
+
+<!-- more -->
+
+
+<h3>类（Class）</h3>
+
+<p>类（图A）是对象的蓝图，其中包含3个组成部分。第一个是Java中定义的类名。第二个是属性（attributes）。第三个是该类提供的方法。
+属性和操作之前可附加一个可见性修饰符。加号（+）表示具有公共可见性。减号（-）表示私有可见性。#号表示受保护的可见性。省略这些修饰符表示具有package（包）级别的可见性。如果属性或操作具有下划线，表明它是静态的。在操作中，可同时列出它接受的参数，以及返回类型，如图A的“Java”区域所示。</p>
+
+<p>图A</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image001.gif"></p>
+
+<h3>包（Package）</h3>
+
+<p>包（图B）是一种常规用途的组合机制。UML中的一个包直接对应于Java中的一个包。在Java中，一个包可能含有其他包、类或者同时含有这两者。进行建模时，你通常拥有逻辑性的包，它主要用于对你的模型进行组织。你还会拥有物理性的包，它直接转换成系统中的Java包。每个包的名称对这个包进行了惟一性的标识。</p>
+
+<p>图B</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image002.gif"></p>
+
+<h3>接口（Interface）</h3>
+
+<p>接口（图C）是一系列操作的集合，它指定了一个类所提供的服务。它直接对应于Java中的一个接口类型。接口既可用图C的那个图标来表示，也可由附加了&lt;<interface>>的一个标准类来表示。通常，根据接口在类图上的样子，就能知道与其他类的关系。</p>
+
+<p>图C</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image003.gif"></p>
+
+<h2>关系</h2>
+
+<p>后面的例子将针对某个具体目的来独立地展示各种关系。虽然语法无误，但这些例子可进一步精炼，在它们的有效范围内包括更多的语义。</p>
+
+<h3>依赖（Dependency）</h3>
+
+<p>实体之间一个“使用”关系暗示一个实体的规范发生变化后，可能影响依赖于它的其他实例（图D）。更具体地说，它可转换为对不在实例作用域内的一个类或对象的任何类型的引用。其中包括一个局部变量，对通过方法调用而获得的一个对象的引用（如下例所示），或者对一个类的静态方法的引用（同时不存在那个类的一个实例）。也可利用“依赖”来表示包和包之间的关系。由于包中含有类，所以你可根据那些包中的各个类之间的关系，表示出包和包的关系。</p>
+
+<p>图D</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image004.gif"></p>
+
+<h3>关联（Association）</h3>
+
+<p>实体之间的一个结构化关系表明对象是相互连接的。箭头是可选的，它用于指定导航能力。如果没有箭头，暗示是一种双向的导航能力。在Java中，关联（图E）转换为一个实例作用域的变量，就像图E的“Java”区域所展示的代码那样。可为一个关联附加其他修饰符。多重性（Multiplicity）修饰符暗示着实例之间的关系。在示范代码中，Employee可以有0个或更多的TimeCard对象。但是，每个TimeCard只从属于单独一个Employee。</p>
+
+<p>图E</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image005.gif"></p>
+
+<h3>聚合（Aggregation）</h3>
+
+<p>聚合（图F）是关联的一种形式，代表两个类之间的整体/局部关系。聚合暗示着整体在概念上处于比局部更高的一个级别，而关联暗示两个类在概念上位于相同的级别。聚合也转换成Java中的一个实例作用域变量。</p>
+
+<p>关联和聚合的区别纯粹是概念上的，而且严格反映在语义上。聚合还暗示着实例图中不存在回路。换言之，只能是一种单向关系。</p>
+
+<p>图F</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image006.gif"></p>
+
+<h3>合成（Composition）</h3>
+
+<p>合成 （图G）是聚合的一种特殊形式，暗示“局部”在“整体”内部的生存期职责。合成也是非共享的。所以，虽然局部不一定要随整体的销毁而被销毁，但整体要么负责保持局部的存活状态，要么负责将其销毁。局部不可与其他整体共享。但是，整体可将所有权转交给另一个对象，后者随即将承担生存期职责。</p>
+
+<p>Employee和TimeCard的关系或许更适合表示成“合成”，而不是表示成“关联”。</p>
+
+<p>图G</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image007.gif"></p>
+
+<h3>泛化（Generalization）</h3>
+
+<p>泛化（图H）表示一个更泛化的元素和一个更具体的元素之间的关系。泛化是用于对继承进行建模的UML元素。在Java中，用extends关键字来直接表示这种关系。</p>
+
+<p>图H</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image008.gif"></p>
+
+<h3>实现（Realization）</h3>
+
+<p>实例（图I）关系指定两个实体之间的一个合同。换言之，一个实体定义一个合同，而另一个实体保证履行该合同。对Java应用程序进行建模时，实现关系可直接用implements关键字来表示。</p>
+
+<p>图I</p>
+
+<p><img class="center" src="http://www.uml.org.cn/oobject/images/image009.gif"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JAVA中的JSON]]></title>
+    <link href="http://dande618.github.com/blog/2013/06/13/JSON/"/>
+    <updated>2013-06-13T19:28:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/06/13/JSON</id>
+    <content type="html"><![CDATA[<p><a href="http://blog.csdn.net/xiazdong/article/details/7059573">http://blog.csdn.net/xiazdong/article/details/7059573</a></p>
+
+<h2>一、JSON介绍</h2>
+
+<p>JSON（JavaScript Object Notation），类似于XML，是一种数据交换格式，比如JAVA产生了一个数据想要给JavaScript，则除了利用XML外，还可以利用JSON;</p>
+
+<p>JSON相比XML的优势是表达起来很简单；</p>
+
+<p>官网：<a href="http://www.json.org/">http://www.json.org/</a></p>
+
+<blockquote><p>JSON是AJAX中的X（就是可以取代XML）;          ------出自JSON创始人;</p></blockquote>
+
+<p>注意：JSON并不是一个文档格式，没有*.json的文档，一般JSON格式的文档存在txt中，而XML可以是一个标准；</p>
+
+<p>在线校验JSON结构的网站：<a href="http://www.bejson.com/go.html?u=http://www.bejson.com/jsonview2/">http://www.bejson.com/go.html?u=http://www.bejson.com/jsonview2/</a></p>
+
+<!-- more -->
+
+
+<h2>二、JSON数据结构</h2>
+
+<p>JSON有两种数据结构：</p>
+
+<ol>
+<li><p>Map，也称为对象；｛....｝</p></li>
+<li><p>Array；[......]</p></li>
+</ol>
+
+
+<p>也就是说所有的JSON对象都是要以这些形式表示；</p>
+
+<h3>1.Map</h3>
+
+<p>简单的说就是Java中的Map，名称-值对的形式给出，名称和值之间用“：”隔开，两个Map之间用“，”隔开，一般表示形式如下：</p>
+
+<p>{'key1':'value1','key2':'value2'}</p>
+
+<p>以下为官网的图：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201112/10/0_13234989385pO5.gif"></p>
+
+<h3>2.Array</h3>
+
+<p>就是普通意义上的数组，一般形式如下：</p>
+
+<p>['arr1','arr2','arr3'];</p>
+
+<p>以下为官网的图：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201112/10/0_1323498954Pp6o.gif"></p>
+
+<p>图中的value可以是：</p>
+
+<p><img class="center" src="http://img.my.csdn.net/uploads/201112/10/0_1323498968ZgT5.gif"></p>
+
+<h3>总结：</h3>
+
+<p>(1)JSON的数据结构只有两种；</p>
+
+<p>(2)可以嵌套表示，比如Array中可以嵌套Object等；</p>
+
+<p>(3)记住：Object是以｛｝表示，Array是以[  ]表示；</p>
+
+<h2>三、JSON与XML互转示例</h2>
+
+<p>前面提到任何的XML都能够转换成JSON包；</p>
+
+<h3>1.简单XML</h3>
+
+<p>XML格式：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;person&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>name<span class="ni">&amp;gt;</span>xiazdong<span class="ni">&amp;lt;</span>/name<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>age<span class="ni">&amp;gt;</span>20<span class="ni">&amp;lt;</span>/age<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/person&gt;&lt;br/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>JSON格式：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>"name":"xiazdong",  
+</span><span class='line'>"age":20  
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}&lt;br/></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>2.复杂XML</p>
+
+<p>XML格式：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;section&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>title<span class="ni">&amp;gt;</span>BOOK<span class="ni">&amp;lt;</span>/title<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>signing<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>author name=&quot;author-1&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>book title=&quot;book1&quot; price=&quot;$11&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/signing<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>signing<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>author name=&quot;author-2&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'>    <span class="ni">&amp;lt;</span>book title=&quot;book2&quot; price=&quot;$22&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>/signing<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/section&gt;&lt;br/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>JSON格式：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>"section":{&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>    "title":"BOOK",  
+</span><span class='line'>    "signing":[  
+</span><span class='line'>    {  
+</span><span class='line'>        "author":  
+</span><span class='line'>        {  
+</span><span class='line'>            "name":"author-1"  
+</span><span class='line'>        },  
+</span><span class='line'>        "book":  
+</span><span class='line'>        {  
+</span><span class='line'>            "title":"book1",  
+</span><span class='line'>            "price":"$11"  
+</span><span class='line'>        }  
+</span><span class='line'>    },  
+</span><span class='line'>    {  
+</span><span class='line'>        "author":  
+</span><span class='line'>        {  
+</span><span class='line'>            "name":"author-2"  
+</span><span class='line'>        },  
+</span><span class='line'>        "book":  
+</span><span class='line'>        {  
+</span><span class='line'>            "title":"book2",  
+</span><span class='line'>            "price":"$22"  
+</span><span class='line'>        }  
+</span><span class='line'>    }     
+</span><span class='line'> ]}  
+</span><span class='line'>}  
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>注意：XML中的属性也是通过JSON的Map表示；</p>
+
+<h2>四、JSON包</h2>
+
+<p>如果我们想要使用JSON包，则可以下载JSON包的源代码，并将这些代码添加进Eclipse工程中，即可调用；</p>
+
+<p>如果想要看API文档，可以参见：<a href="http://www.JSON.org/java/index.html">http://www.JSON.org/java/index.html</a></p>
+
+<p>JSON包中最常用的两个类就是JSONObject和JSONArray，分别表示两种数据结构；</p>
+
+<h3>1.JSONObject代码实例</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">jsonobj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="s">&quot;{&#39;name&#39;:&#39;xiazdong&#39;,&#39;age&#39;:20}&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">jsonobj</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">jsonobj</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">name</span><span class="o">+</span><span class="s">&quot;:&quot;</span><span class="o">+</span><span class="n">age</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>2.JSONArray代码实例</h3>
+
+<p>JSONArray array = new JSONArray(String str);  //将String转为JSONArray</p>
+
+<p>int length = array.length(); //返回Array的长度；</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">JSONArray</span> <span class="n">jsonarray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="o">(</span><span class="s">&quot;[{&#39;name&#39;:&#39;xiazdong&#39;,&#39;age&#39;:20},{&#39;name&#39;:&#39;xzdong&#39;,&#39;age&#39;:15}]&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">jsonarray</span><span class="o">.</span><span class="na">length</span><span class="o">();</span><span class="n">i</span><span class="o">++){</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">jsonarray</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="n">jsonarray</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;name=&quot;</span><span class="o">+</span><span class="n">name</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;age=&quot;</span><span class="o">+</span><span class="n">age</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>3.嵌套JSONObject和JSONArray代码实例</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;{&#39;name&#39;:&#39;xiazdong&#39;,&#39;age&#39;:20,&#39;book&#39;:[&#39;book1&#39;,&#39;book2&#39;]&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>4.JSONStringer代码示例</h3>
+
+<p>JSONStringer可以用来快速构建一个JSON格式的文本，并转换成String，可以写入文件；</p>
+
+<p>JSONStringer是JSONWriter的子类;</p>
+
+<p>JSONStringer一般通过object().key().value().key().value().endObject()进行构造;</p>
+
+<p>object()表明开始一个对象，即添加｛  ;</p>
+
+<p>endObject()表明结束一个对象，即添加 ｝ ;</p>
+
+<p>array()表明开始一个数组,即添加一个 [ ;</p>
+
+<p>endArray()表明结束一个数组，即添加一个 ] ;</p>
+
+<p>key()表示添加一个key;</p>
+
+<p>value()表示添加一个value;</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONStringer</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">JSONStringer</span> <span class="n">stringer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONStringer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">stringer</span><span class="o">.</span><span class="na">object</span><span class="o">().</span><span class="na">key</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">).</span><span class="na">value</span><span class="o">(</span><span class="s">&quot;xiazdong&quot;</span><span class="o">).</span><span class="na">key</span><span class="o">(</span><span class="s">&quot;age&quot;</span><span class="o">).</span><span class="na">value</span><span class="o">(</span><span class="mi">20</span><span class="o">).</span><span class="na">endObject</span><span class="o">().</span><span class="na">toString</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>复杂JSON格式写入</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONArray</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONStringer</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONTokener</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">JSONStringer</span> <span class="n">js</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONStringer</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj4</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">obj4</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">,</span> <span class="s">&quot;book1&quot;</span><span class="o">).</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;price&quot;</span><span class="o">,</span> <span class="s">&quot;$11&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">obj3</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">,</span> <span class="n">obj4</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">obj3</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;author&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;author-1&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj5</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj6</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">obj6</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">,</span> <span class="s">&quot;book2&quot;</span><span class="o">).</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;price&quot;</span><span class="o">,</span> <span class="s">&quot;$22&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">obj5</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">,</span> <span class="n">obj6</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">obj5</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;author&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;author-2&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">JSONArray</span> <span class="n">obj7</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">obj7</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">obj3</span><span class="o">).</span><span class="na">put</span><span class="o">(</span><span class="n">obj5</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">obj2</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">,</span><span class="s">&quot;BOOK&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">obj2</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;signing&quot;</span><span class="o">,</span> <span class="n">obj7</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">js</span><span class="o">.</span><span class="na">object</span><span class="o">().</span><span class="na">key</span><span class="o">(</span><span class="s">&quot;session&quot;</span><span class="o">).</span><span class="na">value</span><span class="o">(</span><span class="n">obj2</span><span class="o">).</span><span class="na">endObject</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">js</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">PrintWriter</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PrintWriter</span><span class="o">(</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="mi">1</span><span class="o">.</span><span class="na">txt</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">js</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>以上代码生成了如下JSON格式：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">{</span><span class="s">&quot;section&quot;</span><span class="o">:{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="s">&quot;title&quot;</span><span class="o">:</span><span class="s">&quot;BOOK&quot;</span><span class="o">,</span>
+</span><span class='line'>    <span class="s">&quot;signing&quot;</span><span class="o">:[</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>        <span class="s">&quot;author&quot;</span><span class="o">:</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="o">:</span><span class="s">&quot;author-1&quot;</span>
+</span><span class='line'>        <span class="o">},</span>
+</span><span class='line'>        <span class="s">&quot;book&quot;</span><span class="o">:</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="s">&quot;title&quot;</span><span class="o">:</span><span class="s">&quot;book1&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s">&quot;price&quot;</span><span class="o">:</span><span class="s">&quot;$11&quot;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">},</span>
+</span><span class='line'>    <span class="o">{</span>
+</span><span class='line'>        <span class="s">&quot;author&quot;</span><span class="o">:</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="o">:</span><span class="s">&quot;author-2&quot;</span>
+</span><span class='line'>        <span class="o">},</span>
+</span><span class='line'>        <span class="s">&quot;book&quot;</span><span class="o">:</span>
+</span><span class='line'>        <span class="o">{</span>
+</span><span class='line'>            <span class="s">&quot;title&quot;</span><span class="o">:</span><span class="s">&quot;book2&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s">&quot;price&quot;</span><span class="o">:</span><span class="s">&quot;$22&quot;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="o">]}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>5.JSONTokener代码示例</h3>
+
+<p>JSONTokener是用来读取JSON格式的文件;</p>
+
+<p>JSONObject obj = new JSONObject( new JSONTokener(java.io.Reader));可以从文件中读取一个JSONObject;</p>
+
+<p>JSONArray obj = new JSONArray( new JSONTokener(java.io.Reader)); 可以从文件中读取一个JSONArray;</p>
+
+<p>1.txt</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;p>{&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>'name':'xiazdong',  
+</span><span class='line'>'book':['book1','book2']  
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}&lt;br/></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONTokener</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="k">new</span> <span class="n">JSONTokener</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">&quot;1.txt&quot;</span><span class="o">))));</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;book&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span> <span class="c1">//可以读取book2  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>复杂JSON格式的读取代码：</p>
+
+<h3>1.txt</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{"section":{&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;pre>&lt;code>    "title":"BOOK",  
+</span><span class='line'>    "signing":[  
+</span><span class='line'>    {  
+</span><span class='line'>        "author":  
+</span><span class='line'>        {  
+</span><span class='line'>            "name":"author-1"  
+</span><span class='line'>        },  
+</span><span class='line'>        "book":  
+</span><span class='line'>        {  
+</span><span class='line'>            "title":"book1",  
+</span><span class='line'>            "price":"$11"  
+</span><span class='line'>        }  
+</span><span class='line'>    },  
+</span><span class='line'>    {  
+</span><span class='line'>        "author":  
+</span><span class='line'>        {  
+</span><span class='line'>            "name":"author-2"  
+</span><span class='line'>        },  
+</span><span class='line'>        "book":  
+</span><span class='line'>        {  
+</span><span class='line'>            "title":"book2",  
+</span><span class='line'>            "price":"$22"  
+</span><span class='line'>        }  
+</span><span class='line'>    }     
+</span><span class='line'>    ]}  
+</span><span class='line'>}  
+</span><span class='line'>&lt;/code>&lt;/pre>
+</span><span class='line'>
+</span><span class='line'>&lt;p>}&lt;br/></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">xiazdong</span><span class="o">.</span><span class="na">json</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.FileReader</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONObject</span><span class="o">;&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">weibo4j.org.json.JSONTokener</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JsonStringerDemo</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+</span><span class='line'>    <span class="n">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="o">(</span><span class="k">new</span> <span class="n">JSONTokener</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">&quot;1.txt&quot;</span><span class="o">))));</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;section&quot;</span><span class="o">).</span><span class="na">getJSONArray</span><span class="o">(</span><span class="s">&quot;signing&quot;</span><span class="o">).</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getJSONObject</span><span class="o">(</span><span class="s">&quot;author&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">));</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">span</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;white-space:pre&quot;</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span>     <span class="o">&amp;</span><span class="n">lt</span><span class="o">;/</span><span class="n">span</span><span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span><span class="c1">//获取author-1  </span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>总结：</h3>
+
+<ol>
+<li><p>在Java中JSON格式的String最好用单引号表示;</p></li>
+<li><p>利用JSONObject+JSONTokener能够读取JSON格式文件对象;</p></li>
+<li><p>利用PrintWriter+JSONStringer可以写入JSON文件;</p></li>
+</ol>
+
+
+<p>注：由于原本想要试图用JSONWriter写入，但是没有成功；所以只能利用JSONStringer+PrintWriter写入;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[String,StringBuffer与StringBuilder]]></title>
+    <link href="http://dande618.github.com/blog/2013/06/04/stringbuffer/"/>
+    <updated>2013-06-04T15:21:00+08:00</updated>
+    <id>http://dande618.github.com/blog/2013/06/04/stringbuffer</id>
+    <content type="html"><![CDATA[<p><a href="http://www.cnblogs.com/springcsc/archive/2009/12/03/1616330.html">http://www.cnblogs.com/springcsc/archive/2009/12/03/1616330.html</a></p>
+
+<p>StringBuffer类和String一样，也用来代表字符串，只是由于StringBuffer的内部实现方式和String不同，所以StringBuffer在进行字符串处理时，不生成新的对象，在内存使用上要优于String类。</p>
+
+<p>所以在实际使用时，如果经常需要对一个字符串进行修改，例如插入、删除等操作，使用StringBuffer要更加适合一些。</p>
+
+<p>在StringBuffer类中存在很多和String类一样的方法，这些方法在功能上和String类中的功能是完全一样的。</p>
+
+<p>但是有一个最显著的区别在于，对于StringBuffer对象的每次修改都会改变对象自身，这点是和String类最大的区别。</p>
+
+<p>另外由于StringBuffer是线程安全的，关于线程的概念后续有专门的章节进行介绍，所以在多线程程序中也可以很方便的进行使用，但是程序的执行效率相对来说就要稍微慢一些。</p>
+
+<!-- more -->
+
+
+<h2>1、StringBuffer对象的初始化</h2>
+
+<p>StringBuffer对象的初始化不像String类的初始化一样，Java提供的有特殊的语法，而通常情况下一般使用构造方法进行初始化。</p>
+
+<p>例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这样初始化出的StringBuffer对象是一个空的对象。</p>
+
+<p>如果需要创建带有内容的StringBuffer对象，则可以使用：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;abc&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这样初始化出的StringBuffer对象的内容就是字符串"abc"。</p>
+
+<p>需要注意的是，StringBuffer和String属于不同的类型，也不能直接进行强制类型转换，下面的代码都是错误的：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;abc&quot;</span><span class="o">;</span>      <span class="c1">//赋值类型不匹配</span>
+</span><span class='line'><span class="n">StringBuffer</span> <span class="n">s</span> <span class="o">=</span> <span class="o">(</span><span class="n">StringBuffer</span><span class="o">)</span><span class="s">&quot;abc&quot;</span><span class="o">;</span>    <span class="c1">//不存在继承关系，无法进行强转</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>StringBuffer对象和String对象之间的互转的代码如下：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;abc&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">StringBuffer</span> <span class="n">sb1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;123&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">StringBuffer</span> <span class="n">sb2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>   <span class="c1">//String转换为StringBuffer</span>
+</span><span class='line'><span class="n">String</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">sb1</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>     <span class="c1">//StringBuffer转换为String</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>2、StringBuffer的常用方法</h2>
+
+<p>StringBuffer类中的方法主要偏重于对于字符串的变化，例如追加、插入和删除等，这个也是StringBuffer和String类的主要区别。</p>
+
+<h3>a、append方法</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">StringBuffer</span> <span class="nf">append</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是追加内容到当前StringBuffer对象的末尾，类似于字符串的连接。调用该方法以后，StringBuffer对象的内容也发生改变，例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;abc&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>则对象sb的值将变成"abctrue"。</p>
+
+<p>使用该方法进行字符串的连接，将比String更加节约内容，例如应用于数据库SQL语句的连接，例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">();</span>
+</span><span class='line'><span class="n">String</span> <span class="n">user</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">String</span> <span class="n">pwd</span> <span class="o">=</span> <span class="s">&quot;123&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;select * from userInfo where username=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot; and pwd=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">pwd</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这样对象sb的值就是字符串</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"select * from userInfo where username=test and pwd=123"。</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>b、deleteCharAt方法</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">StringBuffer</span> <span class="nf">deleteCharAt</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">){}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是删除指定位置的字符，然后将剩余的内容形成新的字符串。例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;Test&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span> <span class="nf">deleteCharAt</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该代码的作用删除字符串对象sb中索引值为1的字符，也就是删除第二个字符，剩余的内容组成一个新的字符串。所以对象sb的值变为"Tst"。</p>
+
+<p>还存在一个功能类似的delete方法：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">StringBuffer</span> <span class="nf">delete</span><span class="o">(</span><span class="kt">int</span> <span class="n">start</span><span class="o">,</span><span class="kt">int</span> <span class="n">end</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是删除指定区间以内的所有字符，包含start，不包含end索引值的区间。例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;TestString&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span> <span class="nf">delete</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">4</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该代码的作用是删除索引值1(包括)到索引值4(不包括)之间的所有字符，剩余的字符形成新的字符串。则对象sb的值是"TString"。</p>
+
+<h3>c、insert方法</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">StringBuffer</span> <span class="nf">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">offset</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是在StringBuffer对象中插入内容，然后形成新的字符串。例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;TestString&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span><span class="kc">false</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该示例代码的作用是在对象sb的索引值4的位置插入false值，形成新的字符串，则执行以后对象sb的值是"TestfalseString"。</p>
+
+<h3>d、reverse方法</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">StringBuffer</span> <span class="nf">reverse</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是将StringBuffer对象中的内容反转，然后形成新的字符串。例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;abc&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span><span class="na">reverse</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>经过反转以后，对象sb中的内容将变为"cba"。</p>
+
+<h3>e、setCharAt方法</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCharAt</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="kt">char</span> <span class="n">ch</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是修改对象中索引值为index位置的字符为新的字符ch。例如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">(</span><span class="s">&quot;abc&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">sb</span><span class="o">.</span><span class="na">setCharAt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="sc">&#39;D&#39;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>则对象sb的值将变成"aDc"。</p>
+
+<h3>f、trimToSize方法</h3>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">trimToSize</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>该方法的作用是将StringBuffer对象的中存储空间缩小到和字符串长度一样的长度，减少空间的浪费。</p>
+
+<p>总之，在实际使用时，String和StringBuffer各有优势和不足，可以根据具体的使用环境，选择对应的类型进行使用。</p>
+
+<h1>String,StringBuffer与StringBuilder的区别</h1>
+
+<ul>
+<li><p><strong>String 字符串常量</strong></p></li>
+<li><p><strong>StringBuffer 字符串变量（线程安全）</strong></p></li>
+<li><p><strong>StringBuilder 字符串变量（非线程安全）</strong></p></li>
+</ul>
+
+
+<p>简要的说， String 类型和 StringBuffer 类型的主要性能区别其实在于 String 是不可变的对象, 因此在每次对 String 类型进行改变的时候其实都等同于生成了一个新的 String 对象，然后将指针指向新的 String 对象，所以经常改变内容的字符串最好不要用 String ，因为每次生成对象都会对系统性能产生影响，特别当内存中无引用对象多了以后， JVM 的 GC 就会开始工作，那速度是一定会相当慢的。</p>
+
+<p>而如果是使用 StringBuffer 类则结果就不一样了，每次结果都会对 StringBuffer 对象本身进行操作，而不是生成新的对象，再改变对象引用。所以在一般情况下我们推荐使用 StringBuffer ，特别是字符串对象经常改变的情况下。而在某些特别情况下， String 对象的字符串拼接其实是被 JVM 解释成了 StringBuffer 对象的拼接，所以这些时候 String 对象的速度并不会比 StringBuffer 对象慢，而特别是以下的字符串对象生成中， String 效率是远要比 StringBuffer 快的：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">S1</span> <span class="o">=</span> <span class="s">&quot;This is only a&quot;</span> <span class="o">+</span> <span class="s">&quot; simple&quot;</span> <span class="o">+</span> <span class="s">&quot; test&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">StringBuffer</span> <span class="n">Sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">(</span><span class="s">&quot;This is only a&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot; simple&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot; test&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>你会很惊讶的发现，生成 String S1 对象的速度简直太快了，而这个时候 StringBuffer 居然速度上根本一点都不占优势。其实这是 JVM 的一个把戏，在 JVM 眼里，这个</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">S1</span> <span class="o">=</span> <span class="s">&quot;This is only a&quot;</span> <span class="o">+</span> <span class="s">&quot; simple&quot;</span> <span class="o">+</span> <span class="s">&quot;test&quot;</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>其实就是：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">S1</span> <span class="o">=</span> <span class="s">&quot;This is only a simple test&quot;</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>所以当然不需要太多的时间了。但大家这里要注意的是，如果你的字符串是来自另外的 String 对象的话，速度就没那么快了，譬如：</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">S2</span> <span class="o">=</span> <span class="s">&quot;This is only a&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">String</span> <span class="n">S3</span> <span class="o">=</span> <span class="s">&quot; simple&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">String</span> <span class="n">S4</span> <span class="o">=</span> <span class="s">&quot; test&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">String</span> <span class="n">S1</span> <span class="o">=</span> <span class="n">S2</span> <span class="o">+</span><span class="n">S3</span> <span class="o">+</span> <span class="n">S4</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>这时候 JVM 会规规矩矩的按照原来的方式去做</p>
+
+<p><span style="color:red">在大部分情况下 <strong>StringBuffer > String</strong></span></p>
+
+<h2>StringBuffer</h2>
+
+<p>Java.lang.StringBuffer线程安全的可变字符序列。一个类似于 String 的字符串缓冲区，但不能修改。虽然在任意时间点上它都包含某种特定的字符序列，但通过某些方法调用可以改变该序列的长度和内容。</p>
+
+<p>可将字符串缓冲区安全地用于多个线程。可以在必要时对这些方法进行同步，因此任意特定实例上的所有操作就好像是以串行顺序发生的，该顺序与所涉及的每个线程进行的方法调用顺序一致。</p>
+
+<p>StringBuffer 上的主要操作是 append 和 insert 方法，可重载这些方法，以接受任意类型的数据。每个方法都能有效地将给定的数据转换成字符串，然后将该字符串的字符追加或插入到字符串缓冲区中。append 方法始终将这些字符添加到缓冲区的末端；而 insert 方法则在指定的点添加字符。</p>
+
+<p>例如，如果 z 引用一个当前内容是"start"的字符串缓冲区对象，则此方法调用 z.append("le") 会使字符串缓冲区包含"startle"，而 z.insert(4, "le") 将更改字符串缓冲区，使之包含"starlet"。</p>
+
+<p><span style="color:red">在大部分情况下 <strong>StringBuilder > StringBuffer</strong></span></p>
+
+<h2>java.lang.StringBuilder</h2>
+
+<p>java.lang.StringBuilder一个可变的字符序列是5.0新增的。此类提供一个与 StringBuffer 兼容的 API，但不保证同步。该类被设计用作 StringBuffer 的一个简易替换，用在字符串缓冲区被单个线程使用的时候（这种情况很普遍）。如果可能，建议优先采用该类，因为在大多数实现中，它比 StringBuffer 要快。两者的方法基本相同。</p>
+]]></content>
+  </entry>
+  
+</feed>
