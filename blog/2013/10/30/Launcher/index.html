@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>分析Launcher支持用户设置cell数目 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="对比原生Launcher2，分析cyanogenmod中的Trebuchet的设置实现方式。 下载cyanogenmod源码及编译方法 http://wiki.cyanogenmod.org/w/Build_for_grouper#Install_the_repo_command &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/10/30/Launcher/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">分析Launcher支持用户设置cell数目</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-30T16:43:00+08:00" pubdate data-updated="true">Oct 30<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>对比原生Launcher2，分析cyanogenmod中的<strong>Trebuchet</strong>的设置实现方式。</p>
+
+<blockquote><p>下载cyanogenmod源码及编译方法</p>
+
+<p><a href="http://wiki.cyanogenmod.org/w/Build_for_grouper#Install_the_repo_command">http://wiki.cyanogenmod.org/w/Build_for_grouper#Install_the_repo_command</a></p></blockquote>
+
+<!-- more -->
+
+
+<h3>在settings显示Launcher设置</h3>
+
+<p>如果设置Trebuchet为默认启动器，就可以在cm的settings里看到设置Trebuchet的选项。</p>
+
+<p>在Trebuchet的mainifest中，设置的activity定义为：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;activity</span> <span class="na">android:name=</span><span class="s">&quot;com.cyanogenmod.trebuchet.preference.Preferences&quot;</span>
+</span><span class='line'>    <span class="na">android:label=</span><span class="s">&quot;@string/preferences_title&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;intent-filter&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&quot;android.intent.action.MAIN&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&quot;com.cyanogenmod.category.LAUNCHER_PREFERENCES&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/intent-filter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/activity&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过搜索，在 <code>/packages/apps/Settings/src/com/android/settings/settings.java</code> 中，在 <code style="color:red">updateHeaderList</code> 方法中添加了对此category的判断（代码省略）。</p>
+
+<p>同时，在<strong>res/xml/settings_headers.xml</strong>中的适合位置，添加了以下header：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;header</span> <span class="na">android:id=</span><span class="s">&quot;@+id/homescreen_settings&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;@string/homescreen_settings_title&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/ic_settings_cmlauncher&quot;</span><span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p style="color:blue">To be continue&#8230;</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-30T16:43:00+08:00" pubdate data-updated="true">Oct 30<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/29/FFMepg/" title="Previous Post: 使用FFMpeg2和SDL2在android播放音频">&laquo; 使用FFMpeg2和SDL2在android播放音频</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/10/30/Launcher/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/10/30/Launcher/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

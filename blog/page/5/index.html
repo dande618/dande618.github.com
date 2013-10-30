@@ -9,7 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="目的是使用Service写入SQLite数据库，然后通知UI更新。 首先使用ContentProvider提供修改SQLite数据库的接口方法（使用SQLiteOpenHelper创建数据库）。 ">
+  <meta name="description" content="需要注意的是，使用了registerContentObserver后，一定要使用unregisterContentObserver，否则会多次注册引起多次onChange。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -57,6 +57,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/17/ContentObserver/">简单使用ContentObserver观察数据库更新</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-17T20:54:00+08:00" pubdate data-updated="true">May 17<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/17/ContentObserver/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>需要注意的是，使用了registerContentObserver后，一定要使用unregisterContentObserver，否则会多次注册引起多次onChange。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/17/ContentObserver/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -451,49 +494,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/03/14/threadpool/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/12/attr/">【转载】Android组合控件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-12T19:22:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/12/attr/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>来源地址：<a href="http://blog.csdn.net/lincyang/article/details/7421734">http://blog.csdn.net/lincyang/article/details/7421734</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/12/attr/">Read on &rarr;</a>
     </footer>
   
 

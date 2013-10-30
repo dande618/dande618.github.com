@@ -9,8 +9,7 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="准备工作 编译环境 Ubuntu12.04 64位。 下载对应环境的 ndk9 ：http://developer.android.com/tools/sdk/ndk/index.html
-下载 FFMpeg，网上的资源，使用0.11版本的较多，使用2.0及以后的较少， &hellip;">
+  <meta name="description" content="对比原生Launcher2，分析cyanogenmod中的Trebuchet的设置实现方式。 下载cyanogenmod源码及编译方法 http://wiki.cyanogenmod.org/w/Build_for_grouper#Install_the_repo_command ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +57,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/30/Launcher/">分析Launcher支持用户设置cell数目</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-30T16:43:00+08:00" pubdate data-updated="true">Oct 30<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/10/30/Launcher/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>对比原生Launcher2，分析cyanogenmod中的<strong>Trebuchet</strong>的设置实现方式。</p>
+
+<blockquote><p>下载cyanogenmod源码及编译方法</p>
+
+<p><a href="http://wiki.cyanogenmod.org/w/Build_for_grouper#Install_the_repo_command">http://wiki.cyanogenmod.org/w/Build_for_grouper#Install_the_repo_command</a></p></blockquote>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/10/30/Launcher/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -630,51 +676,6 @@
 <p>调用顺序依次是onClick【Launcher.java】 -> handleFolderClick【Launcher.java】 -> openFolder【Launcher.java】 -> growAndFadeOutFolderIcon【Launcher.java】 -> setFolderLeaveBehindCell【CellLayout.java】 -> invalidate【CellLayout.java】</p>
 </div>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/15/launcher2/">4.2.2_r1版本源码的launcher2布局介绍</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-15T18:20:00+08:00" pubdate data-updated="true">Jul 15<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/07/15/launcher2/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><img class="center" src="http://image142.poco.cn/mypoco/myphoto/20130714/18/4309479020130714181905068.jpg"></p>
-
-<p>AndroidManifest.xml里面，有两个Activity，其中一个是Launcher，一个是壁纸选择。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/15/launcher2/">Read on &rarr;</a>
-    </footer>
   
 
 
