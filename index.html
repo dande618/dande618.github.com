@@ -9,7 +9,9 @@
   <meta name="author" content="dande618">
 
   
-  <meta name="description" content="test ">
+  <meta name="description" content="1
+mStatueBarManager.disable(0x00000000); 准备工作 编译环境 Ubuntu12.04 64位。 下载对应环境的 ndk9 ：http://developer.android.com/tools/sdk/ndk/index.html
+下载 FFMpeg， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,7 +65,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/10/29/SDL/">Test</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/10/29/FFMepg/">使用FFMpeg2和SDL2在android播放音频</a></h1>
     
     
       <p class="meta">
@@ -81,20 +83,43 @@
 
 <time datetime="2013-10-29T15:10:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/10/29/SDL/#disqus_thread">Comments</a>
+         | <a href="/blog/2013/10/29/FFMepg/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>test</p>
+  <div class="entry-content">
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mStatueBarManager</span><span class="o">.</span><span class="na">disable</span><span class="o">(</span><span class="mh">0x00000000</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>准备工作</h2>
+
+<p>编译环境 Ubuntu12.04 64位。</p>
+
+<ol>
+<li><p>下载对应环境的 ndk9 ：<a href="http://developer.android.com/tools/sdk/ndk/index.html">http://developer.android.com/tools/sdk/ndk/index.html</a></p></li>
+<li><p>下载 FFMpeg，网上的资源，使用0.11版本的较多，使用2.0及以后的较少，api中函数名称和传入参数略有不同。</p>
+
+<p> 下载地址 <a href="https://github.com/FFmpeg/FFmpeg">https://github.com/FFmpeg/FFmpeg</a>，下载master或其他分支，这里下载的2.0版本。</p>
+
+<pre><code> git clone -b release/2.0 https://github.com/FFmpeg/FFmpeg.git
+</code></pre></li>
+<li><p>下载SDL，网上的资源，使用1.2及以下的资源很多，关于2.0的资料非常少，但据说效率有提高。</p></li>
+</ol>
+
+
+<p>下载地址 <a href="http://www.libsdl.org/download-2.0.php">http://www.libsdl.org/download-2.0.php</a></p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2013/10/29/SDL/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2013/10/29/FFMepg/">Read on &rarr;</a>
     </footer>
   
 

@@ -1,0 +1,1460 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用FFMpeg2和SDL2在android播放音频 - 初心</title>
+  <meta name="author" content="dande618">
+
+  
+  <meta name="description" content="1
+mStatueBarManager.disable(0x00000000); 准备工作 编译环境 Ubuntu12.04 64位。 下载对应环境的 ndk9 ：http://developer.android.com/tools/sdk/ndk/index.html
+下载 FFMpeg， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://dande618.github.com/blog/2013/10/29/FFMepg/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="初心" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body    class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">初心</a></h1>
+  
+    <h2>何期自性，本自具足</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">使用FFMpeg2和SDL2在android播放音频</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-29T15:10:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mStatueBarManager</span><span class="o">.</span><span class="na">disable</span><span class="o">(</span><span class="mh">0x00000000</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>准备工作</h2>
+
+<p>编译环境 Ubuntu12.04 64位。</p>
+
+<ol>
+<li><p>下载对应环境的 ndk9 ：<a href="http://developer.android.com/tools/sdk/ndk/index.html">http://developer.android.com/tools/sdk/ndk/index.html</a></p></li>
+<li><p>下载 FFMpeg，网上的资源，使用0.11版本的较多，使用2.0及以后的较少，api中函数名称和传入参数略有不同。</p>
+
+<p> 下载地址 <a href="https://github.com/FFmpeg/FFmpeg">https://github.com/FFmpeg/FFmpeg</a>，下载master或其他分支，这里下载的2.0版本。</p>
+
+<pre><code> git clone -b release/2.0 https://github.com/FFmpeg/FFmpeg.git
+</code></pre></li>
+<li><p>下载SDL，网上的资源，使用1.2及以下的资源很多，关于2.0的资料非常少，但据说效率有提高。</p></li>
+</ol>
+
+
+<p>下载地址 <a href="http://www.libsdl.org/download-2.0.php">http://www.libsdl.org/download-2.0.php</a></p>
+
+<!-- more -->
+
+
+<h2>编译 FFMpeg2.0</h2>
+
+<p>主要参考这篇博客 <a href="http://blog.sina.com.cn/s/blog_4868f98601016o4e.html">http://blog.sina.com.cn/s/blog_4868f98601016o4e.html</a></p>
+
+<p>先使用FFMpeg自带的make编译静态库.a，相对编译动态库，出现的错误较少。之后使用ndk编译时，再引用这些库生成动态库。</p>
+
+<h4>1.config.sh</h4>
+
+<p>首先在FFMpeg目录下新建config.sh，注意配置ndk路径和prebuilt路径。这里有很多FFMpeg的设置，比如对应的cpu、是否使用neon、是否使用GPL协议的功能等，可以按需配置。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='makefile'><span class='line'><span class="k">export </span><span class="nv">TMPDIR</span><span class="o">=</span><span class="s2">&quot;/work/tmp/&quot;</span>
+</span><span class='line'><span class="k">export </span><span class="nv">NDKROOT</span><span class="o">=</span><span class="s2">&quot;/home/archermind/Downloads/android-ndk-r9&quot;</span>
+</span><span class='line'><span class="nv">PREBUILT</span><span class="o">=</span><span class="nv">$NDKROOT</span>/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64
+</span><span class='line'><span class="err">./configure</span> <span class="nv">--target-os</span><span class="o">=</span>linux <span class="se">\</span>
+</span><span class='line'>--arch<span class="o">=</span>arm <span class="se">\</span>
+</span><span class='line'>--cpu<span class="o">=</span>armv7-a <span class="se">\</span>
+</span><span class='line'>--enable-cross-compile <span class="se">\</span>
+</span><span class='line'>--cc<span class="o">=</span><span class="nv">$PREBUILT</span>/bin/arm-linux-androideabi-gcc <span class="se">\</span>
+</span><span class='line'>--cross-prefix<span class="o">=</span><span class="nv">$PREBUILT</span>/bin/arm-linux-androideabi- <span class="se">\</span>
+</span><span class='line'>--nm<span class="o">=</span><span class="nv">$PREBUILT</span>/bin/arm-linux-androideabi-nm <span class="se">\</span>
+</span><span class='line'>--extra-cflags<span class="o">=</span><span class="s2">&quot;-fPIC -DANDROID -mfpu=neon -mfloat-abi=softfp -I$NDKROOT/platforms/android-9/arch-arm/usr/include&quot;</span> <span class="se">\</span>
+</span><span class='line'>--enable-asm <span class="se">\</span>
+</span><span class='line'>--disable-yasm <span class="se">\</span>
+</span><span class='line'>--enable-static <span class="se">\</span>
+</span><span class='line'>--disable-shared <span class="se">\</span>
+</span><span class='line'>--enable-small <span class="se">\</span>
+</span><span class='line'>--enable-gpl <span class="se">\</span>
+</span><span class='line'>--enable-version3 <span class="se">\</span>
+</span><span class='line'>--enable-nonfree <span class="se">\</span>
+</span><span class='line'>--enable-neon <span class="se">\</span>
+</span><span class='line'>--disable-ffmpeg <span class="se">\</span>
+</span><span class='line'>--disable-ffplay <span class="se">\</span>
+</span><span class='line'>--disable-ffserver <span class="se">\</span>
+</span><span class='line'>--disable-ffprobe <span class="se">\</span>
+</span><span class='line'>--prefix<span class="o">=</span>/home/ffmpeg-android-bin <span class="se">\</span>
+</span><span class='line'>--extra-ldflags<span class="o">=</span><span class="err">&quot;</span>-Wl,-T,<span class="nv">$PREBUILT</span>/arm-linux-androideabi/lib/ldscripts/armelf_linux_eabi.x <span class="se">\</span>
+</span><span class='line'>-Wl,-rpath-link<span class="o">=</span><span class="nv">$NDKROOT</span>/platforms/android-9/arch-arm/usr/lib -L<span class="nv">$NDKROOT</span>/platforms/android-9/arch-arm/usr/lib <span class="se">\</span>
+</span><span class='line'>-nostdlib <span class="nv">$PREBUILT</span>/lib/gcc/arm-linux-androideabi/4.6/crtbegin.o <span class="se">\</span>
+</span><span class='line'><span class="err">$PREBUILT/lib/gcc/arm-linux-androideabi/4.6/crtend.o</span> <span class="err">-lc</span> <span class="err">-lm</span> <span class="err">-ldl&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2.之后进行编译。cd到FFMpeg所在的文件夹，依次执行[code]sudo sh config.sh[/code][code]make[/code]编译成功后，在各个文件夹中会生成.a文件，可以复制到jni文件夹下以方便调用。</p>
+
+<h2>编译 SDL2 2.0.0</h2>
+
+<p>SDL2.0支持android，并提供写好的SDLActivity，这里直接使用</p>
+
+<p>注意<span style="color:red">一定不要</span>用其自带的编译make，直接使用ndk-build，过程如下</p>
+
+<ol>
+<li><p>将下载的 SDL2 文件夹下的 android-project 剪切出来，以此为工程目录</p></li>
+<li><p>将SDL2文件夹放入android-project/jni下，改名为SDL。将FFmpeg代码文件夹放入android-project/jni下，改名为ffmpeg。这样，jni下有SDL、ffmpeg、src三个文件夹，之后就在src文件夹写播放器的代码。</p></li>
+<li><p>jni下的Android.mk文件，写</p>
+
+<pre><code>include $(call all-subdir-makefiles) 
+</code></pre>
+
+<p>Application.mk文件，需要指定cpu，APP_PLATFORM要在10或更高</p>
+
+<pre><code>APP_ABI := armeabi
+APP_PLATFORM := android-17
+APP_CFLAGS += -Wno-error=format-security
+</code></pre></li>
+<li><p>SDL下的Android.mk无需改动，ffmpeg下不用写mk文件</p></li>
+<li><p>将之前生成的几个.a库放到jni/src文件夹下，方便调用</p></li>
+<li><p>修改jni/src文件夹下的Android.mk文件</p></li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='makefile'><span class='line'><span class="nv">LOCAL_PATH</span> <span class="o">:=</span> <span class="k">$(</span>call my-dir<span class="k">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span>    <span class="o">:=</span> avfilter
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> libavfilter.a
+</span><span class='line'><span class="c">#这几个prebuild是为了把库预编译一下，ndk会将它移动到libs目录下面去</span>
+</span><span class='line'><span class="cp">include $(PREBUILT_STATIC_LIBRARY)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span>    <span class="o">:=</span> avutil
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> libavutil.a
+</span><span class='line'><span class="cp">include $(PREBUILT_STATIC_LIBRARY)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span>    <span class="o">:=</span> avcodec
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> libavcodec.a
+</span><span class='line'><span class="cp">include $(PREBUILT_STATIC_LIBRARY)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span>    <span class="o">:=</span> avdevice
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> libavdevice.a
+</span><span class='line'><span class="cp">include $(PREBUILT_STATIC_LIBRARY)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span>    <span class="o">:=</span> swscale
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> libswscale.a
+</span><span class='line'><span class="cp">include $(PREBUILT_STATIC_LIBRARY)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span>    <span class="o">:=</span> swresample
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> libswresample.a
+</span><span class='line'><span class="cp">include $(PREBUILT_STATIC_LIBRARY)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'><span class="nv">LOCAL_CFLAGS</span> <span class="o">:=</span> -D__STDC_CONSTANT_MACROS -Wno-sign-compare -Wno-switch -Wno-pointer-sign -DHAVE_NEON<span class="o">=</span>1 <span class="se">\</span>
+</span><span class='line'>      -mfpu<span class="o">=</span>neon -mfloat-abi<span class="o">=</span>softfp -fPIC -DANDROID  <span class="c">#这里的Cflag是照抄之前的config.sh里面的，实际可能用不到这么多</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(CLEAR_VARS)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">LOCAL_MODULE</span> <span class="o">:=</span> main
+</span><span class='line'>
+</span><span class='line'><span class="nv">SDL_PATH</span> <span class="o">:=</span> ../SDL
+</span><span class='line'>
+</span><span class='line'><span class="nv">LOCAL_C_INCLUDES</span> <span class="o">:=</span> <span class="k">$(</span>LOCAL_PATH<span class="k">)</span>/<span class="k">$(</span>SDL_PATH<span class="k">)</span>/include /work/MySDL/jni/ffmpeg <span class="c">#注意添加ffmpeg代码文件夹地址</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#Add your application source files here...</span>
+</span><span class='line'><span class="nv">LOCAL_SRC_FILES</span> <span class="o">:=</span> <span class="k">$(</span>SDL_PATH<span class="k">)</span>/src/main/android/SDL_android_main.c <span class="se">\</span>
+</span><span class='line'><span class="err">hello-jni.c</span> <span class="c">#这里写播放器代码</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">LOCAL_SHARED_LIBRARIES</span> <span class="o">:=</span> SDL2
+</span><span class='line'>
+</span><span class='line'><span class="nv">LOCAL_LDLIBS</span> <span class="o">:=</span> -L<span class="k">$(</span>NDK_PLATFORMS_ROOT<span class="k">)</span>/<span class="k">$(</span>TARGET_PLATFORM<span class="k">)</span>/arch-arm/usr/lib <span class="se">\</span>
+</span><span class='line'>-L<span class="k">$(</span>LOCAL_PATH<span class="k">)</span>  -lavformat -lavcodec -lavdevice -lavfilter -lavutil <span class="se">\</span>
+</span><span class='line'><span class="err">-lswscale</span> <span class="err">-lswresample</span> <span class="err">-llog</span> <span class="err">-ljnigraphics</span> <span class="err">-lz</span> <span class="err">-ldl</span> <span class="err">-lgcc</span> <span class="err">-lGLESv1_CM</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">include $(BUILD_SHARED_LIBRARY)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>7.</strong> 编写播放器文件hello-jni.c，此代码源自 <a href="http://lnmcc.net/2013/03/28/ffmpeg-sdl%E9%9F%B3%E9%A2%91%E6%92%AD%E6%94%BE%E5%88%86%E6%9E%90/">点我查看</a></p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+<span class='line-number'>340</span>
+<span class='line-number'>341</span>
+<span class='line-number'>342</span>
+<span class='line-number'>343</span>
+<span class='line-number'>344</span>
+<span class='line-number'>345</span>
+<span class='line-number'>346</span>
+<span class='line-number'>347</span>
+<span class='line-number'>348</span>
+<span class='line-number'>349</span>
+<span class='line-number'>350</span>
+<span class='line-number'>351</span>
+<span class='line-number'>352</span>
+<span class='line-number'>353</span>
+<span class='line-number'>354</span>
+<span class='line-number'>355</span>
+<span class='line-number'>356</span>
+<span class='line-number'>357</span>
+<span class='line-number'>358</span>
+<span class='line-number'>359</span>
+<span class='line-number'>360</span>
+<span class='line-number'>361</span>
+<span class='line-number'>362</span>
+<span class='line-number'>363</span>
+<span class='line-number'>364</span>
+<span class='line-number'>365</span>
+<span class='line-number'>366</span>
+<span class='line-number'>367</span>
+<span class='line-number'>368</span>
+<span class='line-number'>369</span>
+<span class='line-number'>370</span>
+<span class='line-number'>371</span>
+<span class='line-number'>372</span>
+<span class='line-number'>373</span>
+<span class='line-number'>374</span>
+<span class='line-number'>375</span>
+<span class='line-number'>376</span>
+<span class='line-number'>377</span>
+<span class='line-number'>378</span>
+<span class='line-number'>379</span>
+<span class='line-number'>380</span>
+<span class='line-number'>381</span>
+<span class='line-number'>382</span>
+<span class='line-number'>383</span>
+<span class='line-number'>384</span>
+<span class='line-number'>385</span>
+<span class='line-number'>386</span>
+<span class='line-number'>387</span>
+<span class='line-number'>388</span>
+<span class='line-number'>389</span>
+<span class='line-number'>390</span>
+<span class='line-number'>391</span>
+<span class='line-number'>392</span>
+<span class='line-number'>393</span>
+<span class='line-number'>394</span>
+<span class='line-number'>395</span>
+<span class='line-number'>396</span>
+<span class='line-number'>397</span>
+<span class='line-number'>398</span>
+<span class='line-number'>399</span>
+<span class='line-number'>400</span>
+<span class='line-number'>401</span>
+<span class='line-number'>402</span>
+<span class='line-number'>403</span>
+<span class='line-number'>404</span>
+<span class='line-number'>405</span>
+<span class='line-number'>406</span>
+<span class='line-number'>407</span>
+<span class='line-number'>408</span>
+<span class='line-number'>409</span>
+<span class='line-number'>410</span>
+<span class='line-number'>411</span>
+<span class='line-number'>412</span>
+<span class='line-number'>413</span>
+<span class='line-number'>414</span>
+<span class='line-number'>415</span>
+<span class='line-number'>416</span>
+<span class='line-number'>417</span>
+<span class='line-number'>418</span>
+<span class='line-number'>419</span>
+<span class='line-number'>420</span>
+<span class='line-number'>421</span>
+<span class='line-number'>422</span>
+<span class='line-number'>423</span>
+<span class='line-number'>424</span>
+<span class='line-number'>425</span>
+<span class='line-number'>426</span>
+<span class='line-number'>427</span>
+<span class='line-number'>428</span>
+<span class='line-number'>429</span>
+<span class='line-number'>430</span>
+<span class='line-number'>431</span>
+<span class='line-number'>432</span>
+<span class='line-number'>433</span>
+<span class='line-number'>434</span>
+<span class='line-number'>435</span>
+<span class='line-number'>436</span>
+<span class='line-number'>437</span>
+<span class='line-number'>438</span>
+<span class='line-number'>439</span>
+<span class='line-number'>440</span>
+<span class='line-number'>441</span>
+<span class='line-number'>442</span>
+<span class='line-number'>443</span>
+<span class='line-number'>444</span>
+<span class='line-number'>445</span>
+<span class='line-number'>446</span>
+<span class='line-number'>447</span>
+<span class='line-number'>448</span>
+<span class='line-number'>449</span>
+<span class='line-number'>450</span>
+<span class='line-number'>451</span>
+<span class='line-number'>452</span>
+<span class='line-number'>453</span>
+<span class='line-number'>454</span>
+<span class='line-number'>455</span>
+<span class='line-number'>456</span>
+<span class='line-number'>457</span>
+<span class='line-number'>458</span>
+<span class='line-number'>459</span>
+<span class='line-number'>460</span>
+<span class='line-number'>461</span>
+<span class='line-number'>462</span>
+<span class='line-number'>463</span>
+<span class='line-number'>464</span>
+<span class='line-number'>465</span>
+<span class='line-number'>466</span>
+<span class='line-number'>467</span>
+<span class='line-number'>468</span>
+<span class='line-number'>469</span>
+<span class='line-number'>470</span>
+<span class='line-number'>471</span>
+<span class='line-number'>472</span>
+<span class='line-number'>473</span>
+<span class='line-number'>474</span>
+<span class='line-number'>475</span>
+<span class='line-number'>476</span>
+<span class='line-number'>477</span>
+<span class='line-number'>478</span>
+<span class='line-number'>479</span>
+<span class='line-number'>480</span>
+<span class='line-number'>481</span>
+<span class='line-number'>482</span>
+<span class='line-number'>483</span>
+<span class='line-number'>484</span>
+<span class='line-number'>485</span>
+<span class='line-number'>486</span>
+<span class='line-number'>487</span>
+<span class='line-number'>488</span>
+<span class='line-number'>489</span>
+<span class='line-number'>490</span>
+<span class='line-number'>491</span>
+<span class='line-number'>492</span>
+<span class='line-number'>493</span>
+<span class='line-number'>494</span>
+<span class='line-number'>495</span>
+<span class='line-number'>496</span>
+<span class='line-number'>497</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;libavcodec/avcodec.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;libavformat/avformat.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;libswscale/swscale.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;libswresample/swresample.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;libavutil/avstring.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;libavutil/pixfmt.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;libavutil/log.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;SDL.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;SDL_thread.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;math.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;android/log.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define SDL_AUDIO_BUFFER_SIZE 1024 </span>
+</span><span class='line'><span class="cp">#define MAX_AUDIOQ_SIZE (1 * 1024 * 1024)</span>
+</span><span class='line'><span class="cp">#define FF_ALLOC_EVENT   (SDL_USEREVENT)</span>
+</span><span class='line'><span class="cp">#define FF_REFRESH_EVENT (SDL_USEREVENT + 1)</span>
+</span><span class='line'><span class="cp">#define FF_QUIT_EVENT (SDL_USEREVENT + 2)</span>
+</span><span class='line'><span class="cp">#define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">PacketQueue</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">AVPacketList</span> <span class="o">*</span><span class="n">first_pkt</span><span class="p">,</span> <span class="o">*</span><span class="n">last_pkt</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">nb_packets</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SDL_mutex</span> <span class="o">*</span><span class="n">mutex</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SDL_cond</span> <span class="o">*</span><span class="n">cond</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">PacketQueue</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">VideoState</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">char</span>            <span class="n">filename</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">AVFormatContext</span> <span class="o">*</span><span class="n">ic</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">videoStream</span><span class="p">,</span> <span class="n">audioStream</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVStream</span>        <span class="o">*</span><span class="n">audio_st</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVFrame</span>         <span class="o">*</span><span class="n">audio_frame</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">PacketQueue</span>     <span class="n">audioq</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">int</span>    <span class="n">audio_buf_size</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">int</span>    <span class="n">audio_buf_index</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVPacket</span>        <span class="n">audio_pkt</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>         <span class="o">*</span><span class="n">audio_pkt_data</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">audio_pkt_size</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>         <span class="o">*</span><span class="n">audio_buf</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">uint8_t</span>         <span class="o">*</span><span class="n">audio_buf1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">DECLARE_ALIGNED</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="kt">uint8_t</span><span class="p">,</span><span class="n">audio_buf2</span><span class="p">)[</span><span class="n">AVCODEC_MAX_AUDIO_FRAME_SIZE</span> <span class="o">*</span> <span class="mi">4</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">enum</span> <span class="n">AVSampleFormat</span>  <span class="n">audio_src_fmt</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">enum</span> <span class="n">AVSampleFormat</span>  <span class="n">audio_tgt_fmt</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">audio_src_channels</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">audio_tgt_channels</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int64_t</span>         <span class="n">audio_src_channel_layout</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int64_t</span>         <span class="n">audio_tgt_channel_layout</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">audio_src_freq</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">audio_tgt_freq</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">SwrContext</span> <span class="o">*</span><span class="n">swr_ctx</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SDL_Thread</span>      <span class="o">*</span><span class="n">parse_tid</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span>             <span class="n">quit</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">VideoState</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">VideoState</span> <span class="o">*</span><span class="n">global_video_state</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">packet_queue_init</span><span class="p">(</span><span class="n">PacketQueue</span> <span class="o">*</span><span class="n">q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">memset</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">PacketQueue</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span> <span class="o">=</span> <span class="n">SDL_CreateMutex</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">cond</span> <span class="o">=</span> <span class="n">SDL_CreateCond</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">packet_queue_put</span><span class="p">(</span><span class="n">PacketQueue</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">pkt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">AVPacketList</span> <span class="o">*</span><span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">pkt1</span> <span class="o">=</span> <span class="p">(</span><span class="n">AVPacketList</span> <span class="o">*</span><span class="p">)</span><span class="n">av_malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">AVPacketList</span><span class="p">));</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">pkt1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span> <span class="o">=</span> <span class="o">*</span><span class="n">pkt</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SDL_LockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">nb_packets</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">+=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SDL_CondSignal</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">SDL_UnlockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="kt">int</span> <span class="nf">packet_queue_get</span><span class="p">(</span><span class="n">PacketQueue</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">pkt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">block</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">AVPacketList</span> <span class="o">*</span><span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SDL_LockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">global_video_state</span><span class="o">-&gt;</span><span class="n">quit</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">ret</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">pkt1</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">pkt1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">q</span><span class="o">-&gt;</span><span class="n">nb_packets</span><span class="o">--</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">q</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">-=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'>            <span class="o">*</span><span class="n">pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">av_free</span><span class="p">(</span><span class="n">pkt1</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">ret</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">block</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">SDL_CondWait</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">,</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SDL_UnlockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="nf">packet_queue_flush</span><span class="p">(</span><span class="n">PacketQueue</span> <span class="o">*</span><span class="n">q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">AVPacketList</span> <span class="o">*</span><span class="n">pkt</span><span class="p">,</span> <span class="o">*</span><span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">SDL_LockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">pkt</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span><span class="p">;</span> <span class="n">pkt</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">pkt1</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">av_free_packet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">av_freep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">nb_packets</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">q</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SDL_UnlockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">audio_decode_frame</span><span class="p">(</span><span class="n">VideoState</span> <span class="o">*</span><span class="n">is</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">len1</span><span class="p">,</span> <span class="n">len2</span><span class="p">,</span> <span class="n">decoded_data_size</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVPacket</span> <span class="o">*</span><span class="n">pkt</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">got_frame</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int64_t</span> <span class="n">dec_channel_layout</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">wanted_nb_samples</span><span class="p">,</span> <span class="n">resampled_data_size</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span> <span class="o">=</span> <span class="n">avcodec_alloc_frame</span><span class="p">()))</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="k">return</span> <span class="n">AVERROR</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">else</span>
+</span><span class='line'>                <span class="n">avcodec_get_frame_defaults</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">len1</span> <span class="o">=</span> <span class="n">avcodec_decode_audio4</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_st</span><span class="o">-&gt;</span><span class="n">codec</span><span class="p">,</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">got_frame</span><span class="p">,</span>  <span class="n">pkt</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">len1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// error, skip the frame</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt_data</span> <span class="o">+=</span> <span class="n">len1</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt_size</span> <span class="o">-=</span> <span class="n">len1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">got_frame</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">decoded_data_size</span> <span class="o">=</span> <span class="n">av_samples_get_buffer_size</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span>
+</span><span class='line'>                                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">,</span>
+</span><span class='line'>                                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">nb_samples</span><span class="p">,</span>
+</span><span class='line'>                                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">format</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">dec_channel_layout</span> <span class="o">=</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">channel_layout</span> <span class="o">&amp;&amp;</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">channels</span>
+</span><span class='line'>                                  <span class="o">==</span> <span class="n">av_get_channel_layout_nb_channels</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">channel_layout</span><span class="p">))</span>
+</span><span class='line'>                                 <span class="o">?</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">channel_layout</span>
+</span><span class='line'>                                 <span class="o">:</span> <span class="n">av_get_default_channel_layout</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">wanted_nb_samples</span> <span class="o">=</span>  <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">nb_samples</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//fprintf(stderr, &quot;wanted_nb_samples = %d\n&quot;, wanted_nb_samples);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">format</span> <span class="o">!=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_fmt</span> <span class="o">||</span>
+</span><span class='line'>                <span class="n">dec_channel_layout</span> <span class="o">!=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_channel_layout</span> <span class="o">||</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">sample_rate</span> <span class="o">!=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_freq</span> <span class="o">||</span>
+</span><span class='line'>                <span class="p">(</span><span class="n">wanted_nb_samples</span> <span class="o">!=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">nb_samples</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">)</span> <span class="n">swr_free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span> <span class="o">=</span> <span class="n">swr_alloc_set_opts</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_channel_layout</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_fmt</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_freq</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="n">dec_channel_layout</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">format</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">sample_rate</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="mi">0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span> <span class="o">||</span> <span class="n">swr_init</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;swr_init() failed</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_channel_layout</span> <span class="o">=</span> <span class="n">dec_channel_layout</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_channels</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_st</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_freq</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_st</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">sample_rate</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_fmt</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_st</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">sample_fmt</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>               <span class="c1">// const uint8_t *in[] = { is-&gt;audio_frame-&gt;data[0] };</span>
+</span><span class='line'>                <span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">**</span><span class="n">in</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">**</span><span class="p">)</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">extended_data</span><span class="p">;</span>
+</span><span class='line'>                <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">out</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf2</span> <span class="p">};</span>
+</span><span class='line'>                                <span class="k">if</span> <span class="p">(</span><span class="n">wanted_nb_samples</span> <span class="o">!=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">nb_samples</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                                         <span class="k">if</span> <span class="p">(</span><span class="n">swr_set_compensation</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">,</span> <span class="p">(</span><span class="n">wanted_nb_samples</span> <span class="o">-</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">nb_samples</span><span class="p">)</span>
+</span><span class='line'>                                                                                                 <span class="o">*</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_freq</span> <span class="o">/</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">sample_rate</span><span class="p">,</span>
+</span><span class='line'>                                                                                                 <span class="n">wanted_nb_samples</span> <span class="o">*</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_freq</span> <span class="o">/</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">sample_rate</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                                                 <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;swr_set_compensation() failed</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>                                                 <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                                         <span class="p">}</span>
+</span><span class='line'>                                 <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">len2</span> <span class="o">=</span> <span class="n">swr_convert</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span>
+</span><span class='line'>                                   <span class="k">sizeof</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf2</span><span class="p">)</span>
+</span><span class='line'>                                   <span class="o">/</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_channels</span>
+</span><span class='line'>                                   <span class="o">/</span> <span class="n">av_get_bytes_per_sample</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_fmt</span><span class="p">),</span>
+</span><span class='line'>                                   <span class="n">in</span><span class="p">,</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">nb_samples</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">len2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;swr_convert() failed</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">len2</span> <span class="o">==</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf2</span><span class="p">)</span> <span class="o">/</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_channels</span> <span class="o">/</span> <span class="n">av_get_bytes_per_sample</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_fmt</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;warning: audio buffer is probably too small</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>                    <span class="n">swr_init</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">swr_ctx</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf2</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">resampled_data_size</span> <span class="o">=</span> <span class="n">len2</span> <span class="o">*</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_channels</span> <span class="o">*</span> <span class="n">av_get_bytes_per_sample</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_fmt</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                                <span class="n">resampled_data_size</span> <span class="o">=</span> <span class="n">decoded_data_size</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_frame</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="c1">// We have data, return it and come back for more later</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">resampled_data_size</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">pkt</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">)</span> <span class="n">av_free_packet</span><span class="p">(</span><span class="n">pkt</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">memset</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">pkt</span><span class="p">));</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">quit</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">packet_queue_get</span><span class="p">(</span><span class="o">&amp;</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audioq</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt_data</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt_size</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">audio_callback</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">userdata</span><span class="p">,</span> <span class="n">Uint8</span> <span class="o">*</span><span class="n">stream</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">VideoState</span> <span class="o">*</span><span class="n">is</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoState</span> <span class="o">*</span><span class="p">)</span><span class="n">userdata</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">len1</span><span class="p">,</span> <span class="n">audio_data_size</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_index</span> <span class="o">&gt;=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_size</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">audio_data_size</span> <span class="o">=</span> <span class="n">audio_decode_frame</span><span class="p">(</span><span class="n">is</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="n">audio_data_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="cm">/* silence */</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_size</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">memset</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_size</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_size</span> <span class="o">=</span> <span class="n">audio_data_size</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">len1</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_size</span> <span class="o">-</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_index</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">len1</span> <span class="o">&gt;</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">len1</span> <span class="o">=</span> <span class="n">len</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">memcpy</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf</span> <span class="o">+</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_index</span><span class="p">,</span> <span class="n">len1</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">len</span> <span class="o">-=</span> <span class="n">len1</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">stream</span> <span class="o">+=</span> <span class="n">len1</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_index</span> <span class="o">+=</span> <span class="n">len1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">stream_component_open</span><span class="p">(</span><span class="n">VideoState</span> <span class="o">*</span><span class="n">is</span><span class="p">,</span> <span class="kt">int</span> <span class="n">stream_index</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">AVFormatContext</span> <span class="o">*</span><span class="n">ic</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">ic</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVCodecContext</span> <span class="o">*</span><span class="n">codecCtx</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVCodec</span> <span class="o">*</span><span class="n">codec</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SDL_AudioSpec</span> <span class="n">wanted_spec</span><span class="p">,</span> <span class="n">spec</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int64_t</span> <span class="n">wanted_channel_layout</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">wanted_nb_channels</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">const</span> <span class="kt">int</span> <span class="n">next_nb_channels</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">,</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">stream_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">stream_index</span> <span class="o">&gt;=</span> <span class="n">ic</span><span class="o">-&gt;</span><span class="n">nb_streams</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">codecCtx</span> <span class="o">=</span> <span class="n">ic</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">stream_index</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">codec</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">wanted_nb_channels</span> <span class="o">=</span> <span class="n">codecCtx</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">wanted_channel_layout</span> <span class="o">||</span> <span class="n">wanted_nb_channels</span> <span class="o">!=</span> <span class="n">av_get_channel_layout_nb_channels</span><span class="p">(</span><span class="n">wanted_channel_layout</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">wanted_channel_layout</span> <span class="o">=</span> <span class="n">av_get_default_channel_layout</span><span class="p">(</span><span class="n">wanted_nb_channels</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">wanted_channel_layout</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">AV_CH_LAYOUT_STEREO_DOWNMIX</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">av_get_channel_layout_nb_channels</span><span class="p">(</span><span class="n">wanted_channel_layout</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">freq</span> <span class="o">=</span> <span class="n">codecCtx</span><span class="o">-&gt;</span><span class="n">sample_rate</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">wanted_spec</span><span class="p">.</span><span class="n">freq</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Invalid sample rate or channel count!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">AUDIO_S16SYS</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">silence</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">SDL_AUDIO_BUFFER_SIZE</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">audio_callback</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">wanted_spec</span><span class="p">.</span><span class="n">userdata</span> <span class="o">=</span> <span class="n">is</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span><span class="p">(</span><span class="n">SDL_OpenAudio</span><span class="p">(</span><span class="o">&amp;</span><span class="n">wanted_spec</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">spec</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;SDL_OpenAudio (%d channels): %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span><span class="p">,</span> <span class="n">SDL_GetError</span><span class="p">());</span>
+</span><span class='line'>                <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">next_nb_channels</span><span class="p">[</span><span class="n">FFMIN</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span><span class="p">)];</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;No more channel combinations to tyu, audio open failed</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>                        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="n">wanted_channel_layout</span> <span class="o">=</span> <span class="n">av_get_default_channel_layout</span><span class="p">(</span><span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">format</span> <span class="o">!=</span> <span class="n">AUDIO_S16SYS</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;SDL advised audio format %d is not supported!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">.</span><span class="n">format</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">channels</span> <span class="o">!=</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">wanted_channel_layout</span> <span class="o">=</span> <span class="n">av_get_default_channel_layout</span><span class="p">(</span><span class="n">spec</span><span class="p">.</span><span class="n">channels</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">wanted_channel_layout</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;SDL advised channel count %d is not supported!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">.</span><span class="n">channels</span><span class="p">);</span>
+</span><span class='line'>                        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: wanted_spec.format = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">format</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: wanted_spec.samples = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">samples</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: wanted_spec.channels = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">channels</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: wanted_spec.freq = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">wanted_spec</span><span class="p">.</span><span class="n">freq</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: spec.format = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">spec</span><span class="p">.</span><span class="n">format</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: spec.samples = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">spec</span><span class="p">.</span><span class="n">samples</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: spec.channels = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">spec</span><span class="p">.</span><span class="n">channels</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%d: spec.freq = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">spec</span><span class="p">.</span><span class="n">freq</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_fmt</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_fmt</span> <span class="o">=</span> <span class="n">AV_SAMPLE_FMT_S16</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_freq</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_freq</span> <span class="o">=</span> <span class="n">spec</span><span class="p">.</span><span class="n">freq</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_channel_layout</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_channel_layout</span> <span class="o">=</span> <span class="n">wanted_channel_layout</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_src_channels</span> <span class="o">=</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_tgt_channels</span> <span class="o">=</span> <span class="n">spec</span><span class="p">.</span><span class="n">channels</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">codec</span> <span class="o">=</span> <span class="n">avcodec_find_decoder</span><span class="p">(</span><span class="n">codecCtx</span><span class="o">-&gt;</span><span class="n">codec_id</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">codec</span> <span class="o">||</span> <span class="p">(</span><span class="n">avcodec_open2</span><span class="p">(</span><span class="n">codecCtx</span><span class="p">,</span> <span class="n">codec</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Unsupported codec!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>        <span class="n">ic</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">stream_index</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">discard</span> <span class="o">=</span> <span class="n">AVDISCARD_DEFAULT</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">switch</span><span class="p">(</span><span class="n">codecCtx</span><span class="o">-&gt;</span><span class="n">codec_type</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">AVMEDIA_TYPE_AUDIO</span>:
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audioStream</span> <span class="o">=</span> <span class="n">stream_index</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_st</span> <span class="o">=</span> <span class="n">ic</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">stream_index</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_buf_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audio_pkt</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">packet_queue_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audioq</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">SDL_PauseAudio</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="nl">default:</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">static void stream_component_close(VideoState *is, int stream_index) {</span>
+</span><span class='line'><span class="cm">        AVFormatContext *oc = is-&gt;;</span>
+</span><span class='line'><span class="cm">        AVCodecContext *avctx;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">        if(stream_index &lt; 0 || stream_index &gt;= ic-&gt;nb_streams)        return;</span>
+</span><span class='line'><span class="cm">        avctx = ic-&gt;streams[stream_index]-&gt;codec;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">}</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">int</span> <span class="nf">decode_thread</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">VideoState</span> <span class="o">*</span><span class="n">is</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoState</span> <span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVFormatContext</span> <span class="o">*</span><span class="n">ic</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">AVPacket</span> <span class="n">pkt1</span><span class="p">,</span> <span class="o">*</span><span class="n">packet</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">pkt1</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">audio_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">is</span><span class="o">-&gt;</span><span class="n">audioStream</span><span class="o">=-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">global_video_state</span> <span class="o">=</span> <span class="n">is</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">avformat_open_input</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ic</span><span class="p">,</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">filename</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">is</span><span class="o">-&gt;</span><span class="n">ic</span> <span class="o">=</span> <span class="n">ic</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">avformat_find_stream_info</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">av_dump_format</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">filename</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">ic</span><span class="o">-&gt;</span><span class="n">nb_streams</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">ic</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">codec_type</span><span class="o">==</span><span class="n">AVMEDIA_TYPE_AUDIO</span> <span class="o">&amp;&amp;</span> <span class="n">audio_index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">audio_index</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">audio_index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">stream_component_open</span><span class="p">(</span><span class="n">is</span><span class="p">,</span> <span class="n">audio_index</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audioStream</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%s: could not open codecs</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">filename</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">goto</span> <span class="n">fail</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// main decode loop</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">quit</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audioq</span><span class="p">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">MAX_AUDIOQ_SIZE</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">SDL_Delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="n">av_read_frame</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">ic</span><span class="p">,</span> <span class="n">packet</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="n">AVERROR_EOF</span> <span class="o">||</span> <span class="n">url_feof</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">ic</span><span class="o">-&gt;</span><span class="n">pb</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">ic</span><span class="o">-&gt;</span><span class="n">pb</span> <span class="o">&amp;&amp;</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">ic</span><span class="o">-&gt;</span><span class="n">pb</span><span class="o">-&gt;</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">packet</span><span class="o">-&gt;</span><span class="n">stream_index</span> <span class="o">==</span> <span class="n">is</span><span class="o">-&gt;</span><span class="n">audioStream</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">packet_queue_put</span><span class="p">(</span><span class="o">&amp;</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">audioq</span><span class="p">,</span> <span class="n">packet</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">av_free_packet</span><span class="p">(</span><span class="n">packet</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">quit</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">SDL_Delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nl">fail:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">SDL_Event</span> <span class="n">event</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">event</span><span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">FF_QUIT_EVENT</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">event</span><span class="p">.</span><span class="n">user</span><span class="p">.</span><span class="n">data1</span> <span class="o">=</span> <span class="n">is</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">SDL_PushEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">25</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">sprintf</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="n">avcodec_version</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">__android_log_print</span><span class="p">(</span><span class="n">ANDROID_LOG_INFO</span><span class="p">,</span> <span class="s">&quot;SDL&quot;</span><span class="p">,</span> <span class="n">str</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">SDL_Event</span>       <span class="n">event</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">VideoState</span>      <span class="o">*</span><span class="n">is</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">av_register_all</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">is</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoState</span> <span class="o">*</span><span class="p">)</span><span class="n">av_mallocz</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">VideoState</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//    if (argc &lt; 2) {</span>
+</span><span class='line'><span class="c1">//       fprintf(stderr, &quot;Usage: test &lt;file&gt;\n&quot;);</span>
+</span><span class='line'><span class="c1">//        exit(1);</span>
+</span><span class='line'><span class="c1">//    }</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">SDL_Init</span><span class="p">(</span><span class="n">SDL_INIT_AUDIO</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Could not initialize SDL - %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">SDL_GetError</span><span class="p">());</span>
+</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">av_strlcpy</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;/mnt/sdcard/1.mp3&quot;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">filename</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;Particles&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">is</span><span class="o">-&gt;</span><span class="n">parse_tid</span> <span class="o">=</span> <span class="n">SDL_CreateThread</span><span class="p">(</span><span class="n">decode_thread</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">is</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is</span><span class="o">-&gt;</span><span class="n">parse_tid</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">av_free</span><span class="p">(</span><span class="n">is</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">SDL_WaitEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">switch</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">FF_QUIT_EVENT</span>:
+</span><span class='line'>        <span class="k">case</span> <span class="n">SDL_QUIT</span>:
+</span><span class='line'>            <span class="n">is</span><span class="o">-&gt;</span><span class="n">quit</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">SDL_Quit</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="nl">default:</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在下面的main函数里修改成安卓机器里音视频的<span style="color:red">绝对路径</span>。</p>
+
+<p>  <strong>8.</strong> 进入<span style="color:green">jni文件夹</span>，使用ndk-build如果前面都配置正确，就可以正确的编译成功，在工程目录libs下生成.so库。</p>
+
+<p>  <strong>9.</strong> 修改SDLActivity中，对库的调用。</p>
+
+<p>  <strong>10.</strong> 可以继承或直接使用SDLActivity，就可以听到声音了。</p>
+
+<p>在使用中发现，退出或切出程序时会崩溃，猜测可能是SDLActivity对应的c文件中存在问题，还需修改。</p>
+
+<p>如果想要播放视频，暂时还没有找到能用的代码，网上的代码都使用SDL2.0以下的版本，API变动很大，需要详细深入学习修改，以下是可以共参考的资料</p>
+
+<p><a href="https://github.com/chelyaev/ffmpeg-tutorial">https://github.com/chelyaev/ffmpeg-tutorial</a> 使用SDL和FFMpeg播放视频的例子</p>
+
+<p><a href="http://wiki.libsdl.org/MigrationGuide">http://wiki.libsdl.org/MigrationGuide</a> 官方对1.2 to 2.0的guide</p>
+
+<p><a href="http://blog.sina.com.cn/s/blog_4868f98601016qd3.html">http://blog.sina.com.cn/s/blog_4868f98601016qd3.html</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">dande618</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-29T15:10:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/28/statusbar/" title="Previous Post: android隐藏下方系统栏statusbar">&laquo; android隐藏下方系统栏statusbar</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - dande618 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a>.</span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'dande618sblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dande618.github.com/blog/2013/10/29/FFMepg/';
+        var disqus_url = 'http://dande618.github.com/blog/2013/10/29/FFMepg/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
