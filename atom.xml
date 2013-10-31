@@ -4,7 +4,7 @@
   <title><![CDATA[初心]]></title>
   <link href="http://dande618.github.com/atom.xml" rel="self"/>
   <link href="http://dande618.github.com/"/>
-  <updated>2013-10-30T17:50:17+08:00</updated>
+  <updated>2013-10-31T15:36:44+08:00</updated>
   <id>http://dande618.github.com/</id>
   <author>
     <name><![CDATA[dande618]]></name>
@@ -31,22 +31,10 @@
 
 <p>如果设置Trebuchet为默认启动器，就可以在cm的settings里看到设置Trebuchet的选项。</p>
 
-<p>在Trebuchet的mainifest中，设置的activity定义为：</p>
+<p>在Trebuchet的mainifest中，对应设置的activity添加了：</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;activity</span> <span class="na">android:name=</span><span class="s">&quot;com.cyanogenmod.trebuchet.preference.Preferences&quot;</span>
-</span><span class='line'>    <span class="na">android:label=</span><span class="s">&quot;@string/preferences_title&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;intent-filter&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&quot;android.intent.action.MAIN&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&quot;com.cyanogenmod.category.LAUNCHER_PREFERENCES&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/intent-filter&gt;</span>
-</span><span class='line'><span class="nt">&lt;/activity&gt;</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&quot;com.cyanogenmod.category.LAUNCHER_PREFERENCES&quot;</span> <span class="nt">/&gt;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -63,10 +51,45 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h2>修改Cell宽高以适应数目变化</h2>
+
+<p>之后在Trebuchet的设置界面，监听设置变化。用户更改设置，使用sharedpreference中的一个数值记录设置是否变化。</p>
+
+<p>在Launcher.java的onResume方法中判断这个值是否变化，如果变化，则使用以下代码重启，同时设此值为false：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">preferencesChanged</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Process</span><span class="o">.</span><span class="na">killProcess</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Process</span><span class="o">.</span><span class="na">myPid</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p style="color:blue">To be continue&#8230;</p>
+<p>在Workspace.java中，判断如果有用户设置就读取用户设置，并设置LauncherModel的静态变量sWorkspaceCellCountX、sWorkspaceCellCountY。</p>
 
+<p>在CellLayout的构造函数中，添加了下面的<code style="color:red">关键代码</code>：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span> <span class="o">(!</span><span class="n">LauncherApplication</span><span class="o">.</span><span class="na">isScreenLarge</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">mCellWidth</span> <span class="o">=</span> <span class="o">(</span><span class="n">mCellWidth</span> <span class="o">*</span> <span class="n">res</span>
+</span><span class='line'>      <span class="o">.</span><span class="na">getInteger</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">default_cell_count_x</span><span class="o">))</span> <span class="o">/</span> <span class="n">mCountX</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">mCellHeight</span> <span class="o">=</span> <span class="o">(</span><span class="n">mCellHeight</span> <span class="o">*</span> <span class="n">res</span>
+</span><span class='line'>      <span class="o">.</span><span class="na">getInteger</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">default_cell_count_y</span><span class="o">))</span> <span class="o">/</span> <span class="n">mCountY</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段代码前的mCellWidth、mCellHeight直接读取自res。</p>
+
+<p>其中default_cell_count_x是在res里定义的默认数目。mCountX、mCountY来自LauncherModel，然后就算出了适应的<code>mCellWidth</code>和<code>mCellHeight</code>。</p>
+
+<p>简单抄袭了下，确实可以设置数目了，显示也正常。不过hotset和folder中的间距也收到影响，待继续研究。。。</p>
 ]]></content>
   </entry>
   
